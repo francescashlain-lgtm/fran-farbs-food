@@ -624,9 +624,16 @@ body {
   padding-right: 2rem;
 }
 
-.library-card-source {
-  font-size: 0.75rem;
+.library-card-author {
+  display: inline-block;
+  background: var(--color-cream-dark);
+  border: 1px solid var(--color-border-dark);
   color: var(--color-ink-muted);
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
 }
 
 /* Grocery Tab */
@@ -865,6 +872,40 @@ body {
 .modal-category-select:focus {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+.modal-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.modal-author-input {
+  padding: 0.5rem 1rem;
+  background: var(--color-cream-dark);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  min-width: 150px;
+  transition: all var(--transition-smooth);
+}
+
+.modal-author-input::placeholder {
+  color: var(--color-ink-muted);
+}
+
+.modal-author-input:hover {
+  border-color: var(--color-ink-muted);
+}
+
+.modal-author-input:focus {
+  outline: none;
+  border-color: var(--color-olive);
+  box-shadow: 0 0 0 3px rgba(77, 85, 50, 0.1);
 }
 
 .modal-body {

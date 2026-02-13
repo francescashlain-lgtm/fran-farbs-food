@@ -21,7 +21,8 @@ let userPreferences = {
   removed: [],
   notes: {},
   titleEdits: {},
-  categoryEdits: {}
+  categoryEdits: {},
+  authorEdits: {}
 };
 let weeklyPicks = {
   pasta: null,
@@ -445,13 +446,16 @@ function renderLibrary() {
     return;
   }
 
-  grid.innerHTML = filtered.map(recipe => `
+  grid.innerHTML = filtered.map(recipe => {
+    const author = getRecipeAuthor(recipe);
+    return `
     <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''}" onclick="openRecipeModal('${recipe.id}')">
       <div class="library-card-category">${getRecipeCategory(recipe)}</div>
       <h4 class="library-card-title">${getRecipeTitle(recipe)}</h4>
-      <div class="library-card-source">${recipe.source}</div>
+      ${author ? `<div class="library-card-author">${author}</div>` : ''}
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // Open recipe modal
@@ -462,9 +466,11 @@ function openRecipeModal(id) {
   // Get edited values or use original
   const displayTitle = userPreferences.titleEdits[id] || recipe.name;
   const displayCategory = userPreferences.categoryEdits[id] || recipe.category;
+  const displayAuthor = userPreferences.authorEdits[id] || '';
 
   document.getElementById('modal-title').value = displayTitle;
   document.getElementById('modal-category').value = displayCategory;
+  document.getElementById('modal-author').value = displayAuthor;
 
   document.getElementById('modal-ingredients').innerHTML = recipe.ingredients.map(i => `<li>${i}</li>`).join('');
   document.getElementById('modal-instructions').innerHTML = recipe.instructions.split('\n').map(p => `<p>${p}</p>`).join('');
@@ -542,6 +548,21 @@ function saveCategoryEdit() {
   renderLibrary();
 }
 
+// Save author edit
+function saveAuthorEdit() {
+  const modal = document.getElementById('recipe-modal');
+  const id = modal.dataset.recipeId;
+  const newAuthor = document.getElementById('modal-author').value.trim();
+
+  if (newAuthor) {
+    userPreferences.authorEdits[id] = newAuthor;
+  } else {
+    delete userPreferences.authorEdits[id];
+  }
+  saveUserPreferences();
+  renderLibrary();
+}
+
 // Get display title for a recipe (edited or original)
 function getRecipeTitle(recipe) {
   return userPreferences.titleEdits[recipe.id] || recipe.name;
@@ -550,6 +571,11 @@ function getRecipeTitle(recipe) {
 // Get display category for a recipe (edited or original)
 function getRecipeCategory(recipe) {
   return userPreferences.categoryEdits[recipe.id] || recipe.category;
+}
+
+// Get display author for a recipe
+function getRecipeAuthor(recipe) {
+  return userPreferences.authorEdits[recipe.id] || '';
 }
 
 // Remove recipe
@@ -638,7 +664,7 @@ function setupEventListeners() {
   document.getElementById('save-notes').addEventListener('click', saveNotes);
   document.getElementById('modal-remove').addEventListener('click', removeRecipe);
 
-  // Title and category editing
+  // Title, category, and author editing
   document.getElementById('modal-title').addEventListener('blur', saveTitleEdit);
   document.getElementById('modal-title').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -647,6 +673,13 @@ function setupEventListeners() {
     }
   });
   document.getElementById('modal-category').addEventListener('change', saveCategoryEdit);
+  document.getElementById('modal-author').addEventListener('blur', saveAuthorEdit);
+  document.getElementById('modal-author').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
 
   // Keyboard
   document.addEventListener('keydown', (e) => {
