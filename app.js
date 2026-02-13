@@ -468,6 +468,9 @@ function openRecipeModal(id) {
   const displayCategory = userPreferences.categoryEdits[id] || recipe.category;
   const displayAuthor = userPreferences.authorEdits[id] || '';
 
+  // Populate author dropdown with existing authors
+  populateAuthorDatalist();
+
   document.getElementById('modal-title').value = displayTitle;
   document.getElementById('modal-category').value = displayCategory;
   document.getElementById('modal-author').value = displayAuthor;
@@ -576,6 +579,19 @@ function getRecipeCategory(recipe) {
 // Get display author for a recipe
 function getRecipeAuthor(recipe) {
   return userPreferences.authorEdits[recipe.id] || '';
+}
+
+// Get all unique authors from preferences
+function getAllAuthors() {
+  const authors = Object.values(userPreferences.authorEdits).filter(a => a && a.trim());
+  return [...new Set(authors)].sort();
+}
+
+// Populate the author datalist
+function populateAuthorDatalist() {
+  const datalist = document.getElementById('author-list');
+  const authors = getAllAuthors();
+  datalist.innerHTML = authors.map(author => `<option value="${author}">`).join('');
 }
 
 // Remove recipe
