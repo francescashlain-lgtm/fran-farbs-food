@@ -143,12 +143,13 @@ function getRecipesByType(type) {
     meat: ['beef', 'pork', 'lamb']
   };
 
-  const categories = categoryMap[type];
-  return recipes.filter(r =>
-    categories.includes(r.category) &&
-    !userPreferences.removed.includes(r.id) &&
-    !skippedRecipes[type].includes(r.id)
-  );
+  const targetCategories = categoryMap[type];
+  return recipes.filter(r => {
+    const recipeCategories = getRecipeCategories(r);
+    return recipeCategories.some(cat => targetCategories.includes(cat)) &&
+      !userPreferences.removed.includes(r.id) &&
+      !skippedRecipes[type].includes(r.id);
+  });
 }
 
 // Generate weekly picks
@@ -407,9 +408,9 @@ function renderLibrary() {
 
   let filtered = recipes.filter(r => !userPreferences.removed.includes(r.id));
 
-  // Apply category filter (check edited category too)
+  // Apply category filter (check edited categories too)
   if (categoryFilter !== 'all') {
-    filtered = filtered.filter(r => getRecipeCategory(r) === categoryFilter);
+    filtered = filtered.filter(r => getRecipeCategories(r).includes(categoryFilter));
   }
 
   // Apply status filter
@@ -448,9 +449,10 @@ function renderLibrary() {
 
   grid.innerHTML = filtered.map(recipe => {
     const author = getRecipeAuthor(recipe);
+    const categories = getRecipeCategories(recipe);
     return `
     <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''}" onclick="openRecipeModal('${recipe.id}')">
-      <div class="library-card-category">${getRecipeCategory(recipe)}</div>
+      <div class="library-card-categories">${categories.map(cat => `<span class="library-card-category">${cat}</span>`).join('')}</div>
       <h4 class="library-card-title">${getRecipeTitle(recipe)}</h4>
       ${author ? `<div class="library-card-author">${author}</div>` : ''}
     </div>
@@ -465,14 +467,20 @@ function openRecipeModal(id) {
 
   // Get edited values or use original
   const displayTitle = userPreferences.titleEdits[id] || recipe.name;
-  const displayCategory = userPreferences.categoryEdits[id] || recipe.category;
+  const displayCategories = getRecipeCategories(recipe);
   const displayAuthor = userPreferences.authorEdits[id] || '';
 
   // Populate author dropdown with existing authors
   populateAuthorDatalist();
 
   document.getElementById('modal-title').value = displayTitle;
-  document.getElementById('modal-category').value = displayCategory;
+
+  // Set category checkboxes
+  const checkboxes = document.querySelectorAll('#modal-categories input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = displayCategories.includes(cb.value);
+  });
+
   document.getElementById('modal-author').value = displayAuthor;
 
   document.getElementById('modal-ingredients').innerHTML = recipe.ingredients.map(i => `<li>${i}</li>`).join('');
@@ -544,9 +552,15 @@ function saveTitleEdit() {
 function saveCategoryEdit() {
   const modal = document.getElementById('recipe-modal');
   const id = modal.dataset.recipeId;
-  const newCategory = document.getElementById('modal-category').value;
+  const checkboxes = document.querySelectorAll('#modal-categories input[type="checkbox"]:checked');
+  const newCategories = Array.from(checkboxes).map(cb => cb.value);
 
-  userPreferences.categoryEdits[id] = newCategory;
+  if (newCategories.length > 0) {
+    userPreferences.categoryEdits[id] = newCategories;
+  } else {
+    // If nothing selected, keep at least the original category
+    delete userPreferences.categoryEdits[id];
+  }
   saveUserPreferences();
   renderLibrary();
 }
@@ -571,9 +585,20 @@ function getRecipeTitle(recipe) {
   return userPreferences.titleEdits[recipe.id] || recipe.name;
 }
 
-// Get display category for a recipe (edited or original)
+// Get display categories for a recipe (edited or original) - always returns array
+function getRecipeCategories(recipe) {
+  const edited = userPreferences.categoryEdits[recipe.id];
+  if (edited) {
+    return Array.isArray(edited) ? edited : [edited];
+  }
+  const original = recipe.category;
+  return Array.isArray(original) ? original : [original];
+}
+
+// Backward compatible - returns first category or comma-separated string for display
 function getRecipeCategory(recipe) {
-  return userPreferences.categoryEdits[recipe.id] || recipe.category;
+  const cats = getRecipeCategories(recipe);
+  return cats.join(', ');
 }
 
 // Get display author for a recipe
@@ -688,7 +713,9 @@ function setupEventListeners() {
       e.target.blur();
     }
   });
-  document.getElementById('modal-category').addEventListener('change', saveCategoryEdit);
+  document.querySelectorAll('#modal-categories input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', saveCategoryEdit);
+  });
   document.getElementById('modal-author').addEventListener('blur', saveAuthorEdit);
   document.getElementById('modal-author').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
