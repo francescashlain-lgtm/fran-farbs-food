@@ -14,6 +14,18 @@ const seasonalProduce = {
   december: ['apples', 'beetroot', 'broccoli', 'cabbage', 'carrots', 'cauliflower', 'celery root', 'fennel', 'hardy herbs', 'horseradish', 'juniper berries', 'leeks', 'mushrooms', 'nopales', 'parsnips', 'persimmon', 'potatoes', 'rutabaga', 'sunchokes', 'swiss chard', 'turnips', 'winter squash']
 };
 
+// Default categories
+const defaultCategories = [
+  'pasta', 'chicken', 'beef', 'pork', 'lamb', 'seafood',
+  'vegetarian', 'soup', 'salad', 'side', 'bread', 'sauce',
+  'dessert', 'breakfast'
+];
+
+// Category display names (for nicer formatting)
+const categoryDisplayNames = {
+  'side': 'Side Dish'
+};
+
 // App State
 let recipes = [];
 let userPreferences = {
@@ -22,8 +34,11 @@ let userPreferences = {
   notes: {},
   titleEdits: {},
   categoryEdits: {},
-  authorEdits: {}
+  authorEdits: {},
+  customCategories: [],
+  deletedCategories: []
 };
+let manageMode = false;
 let weeklyPicks = {
   pasta: null,
   chicken: null,
@@ -47,6 +62,7 @@ async function init() {
   await loadRecipes();
   setupEventListeners();
   updateSeasonalDisplay();
+  renderCategoryFilter();
   generateWeeklyPicks();
   renderLibrary();
 }
@@ -475,11 +491,8 @@ function openRecipeModal(id) {
 
   document.getElementById('modal-title').value = displayTitle;
 
-  // Set category checkboxes
-  const checkboxes = document.querySelectorAll('#modal-categories input[type="checkbox"]');
-  checkboxes.forEach(cb => {
-    cb.checked = displayCategories.includes(cb.value);
-  });
+  // Render category checkboxes with current selections
+  renderCategoryCheckboxes(displayCategories);
 
   document.getElementById('modal-author').value = displayAuthor;
 
@@ -612,6 +625,239 @@ function getAllAuthors() {
   return [...new Set(authors)].sort();
 }
 
+// Get all available categories (default + custom, minus deleted)
+function getAllCategories() {
+  const deleted = userPreferences.deletedCategories || [];
+  const custom = userPreferences.customCategories || [];
+  const all = [...defaultCategories.filter(c => !deleted.includes(c)), ...custom];
+  return [...new Set(all)].sort();
+}
+
+// Get display name for a category
+function getCategoryDisplayName(cat) {
+  return categoryDisplayNames[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+// Render category checkboxes in modal
+function renderCategoryCheckboxes(selectedCategories = []) {
+  const container = document.getElementById('modal-categories');
+  const categories = getAllCategories();
+
+  container.innerHTML = categories.map(cat => {
+    const checked = selectedCategories.includes(cat) ? 'checked' : '';
+    const displayName = getCategoryDisplayName(cat);
+    if (manageMode) {
+      return `
+        <label class="category-checkbox manage-mode" data-category="${cat}">
+          <input type="checkbox" value="${cat}" ${checked}>
+          <span class="category-name" contenteditable="true">${displayName}</span>
+          <button type="button" class="category-delete" onclick="deleteCategory('${cat}')" title="Delete category">&times;</button>
+        </label>
+      `;
+    } else {
+      return `
+        <label class="category-checkbox">
+          <input type="checkbox" value="${cat}" ${checked}>
+          <span>${displayName}</span>
+        </label>
+      `;
+    }
+  }).join('');
+
+  // Re-attach event listeners for checkboxes
+  container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', saveCategoryEdit);
+  });
+
+  // Attach event listeners for category name editing in manage mode
+  if (manageMode) {
+    container.querySelectorAll('.category-name').forEach(span => {
+      span.addEventListener('blur', handleCategoryRename);
+      span.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          span.blur();
+        }
+      });
+    });
+  }
+}
+
+// Render category filter dropdown in library
+function renderCategoryFilter() {
+  const select = document.getElementById('category-filter');
+  const currentValue = select.value;
+  const categories = getAllCategories();
+
+  select.innerHTML = '<option value="all">All Categories</option>' +
+    categories.map(cat => `<option value="${cat}">${getCategoryDisplayName(cat)}</option>`).join('');
+
+  // Restore selection if still valid
+  if (categories.includes(currentValue) || currentValue === 'all') {
+    select.value = currentValue;
+  }
+}
+
+// Add a new category
+function addCategory(name) {
+  const normalized = name.trim().toLowerCase();
+  if (!normalized) return false;
+
+  const existing = getAllCategories();
+  if (existing.includes(normalized)) {
+    alert('This category already exists.');
+    return false;
+  }
+
+  if (!userPreferences.customCategories) {
+    userPreferences.customCategories = [];
+  }
+  userPreferences.customCategories.push(normalized);
+
+  // If it was previously deleted, remove from deleted list
+  if (userPreferences.deletedCategories) {
+    userPreferences.deletedCategories = userPreferences.deletedCategories.filter(c => c !== normalized);
+  }
+
+  saveUserPreferences();
+  return true;
+}
+
+// Delete a category
+function deleteCategory(cat) {
+  if (!confirm(`Delete the "${getCategoryDisplayName(cat)}" category? Recipes will keep their other categories.`)) {
+    return;
+  }
+
+  // Remove from custom categories if it's there
+  if (userPreferences.customCategories) {
+    userPreferences.customCategories = userPreferences.customCategories.filter(c => c !== cat);
+  }
+
+  // Add to deleted list if it's a default category
+  if (defaultCategories.includes(cat)) {
+    if (!userPreferences.deletedCategories) {
+      userPreferences.deletedCategories = [];
+    }
+    userPreferences.deletedCategories.push(cat);
+  }
+
+  // Remove this category from all recipe edits
+  Object.keys(userPreferences.categoryEdits).forEach(id => {
+    const cats = userPreferences.categoryEdits[id];
+    if (Array.isArray(cats)) {
+      userPreferences.categoryEdits[id] = cats.filter(c => c !== cat);
+      if (userPreferences.categoryEdits[id].length === 0) {
+        delete userPreferences.categoryEdits[id];
+      }
+    } else if (cats === cat) {
+      delete userPreferences.categoryEdits[id];
+    }
+  });
+
+  saveUserPreferences();
+
+  // Re-render
+  const modal = document.getElementById('recipe-modal');
+  if (modal.classList.contains('active')) {
+    const id = modal.dataset.recipeId;
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      renderCategoryCheckboxes(getRecipeCategories(recipe));
+    }
+  }
+  renderCategoryFilter();
+  renderLibrary();
+}
+
+// Handle category rename
+function handleCategoryRename(e) {
+  const span = e.target;
+  const label = span.closest('.category-checkbox');
+  const oldCat = label.dataset.category;
+  const newName = span.textContent.trim().toLowerCase();
+
+  if (newName === oldCat || newName === getCategoryDisplayName(oldCat).toLowerCase()) {
+    return; // No change
+  }
+
+  if (!newName) {
+    span.textContent = getCategoryDisplayName(oldCat);
+    return;
+  }
+
+  const existing = getAllCategories();
+  if (existing.includes(newName) && newName !== oldCat) {
+    alert('A category with this name already exists.');
+    span.textContent = getCategoryDisplayName(oldCat);
+    return;
+  }
+
+  // Rename: add new, update recipes, delete old
+  addCategory(newName);
+
+  // Update all recipes that use the old category
+  Object.keys(userPreferences.categoryEdits).forEach(id => {
+    const cats = userPreferences.categoryEdits[id];
+    if (Array.isArray(cats) && cats.includes(oldCat)) {
+      userPreferences.categoryEdits[id] = cats.map(c => c === oldCat ? newName : c);
+    } else if (cats === oldCat) {
+      userPreferences.categoryEdits[id] = newName;
+    }
+  });
+
+  // Also update recipes in the original data reference
+  recipes.forEach(r => {
+    if (Array.isArray(r.category) && r.category.includes(oldCat)) {
+      // Need to create an edit entry if not exists
+      if (!userPreferences.categoryEdits[r.id]) {
+        userPreferences.categoryEdits[r.id] = r.category.map(c => c === oldCat ? newName : c);
+      }
+    } else if (r.category === oldCat) {
+      if (!userPreferences.categoryEdits[r.id]) {
+        userPreferences.categoryEdits[r.id] = [newName];
+      }
+    }
+  });
+
+  // Remove old category
+  if (userPreferences.customCategories) {
+    userPreferences.customCategories = userPreferences.customCategories.filter(c => c !== oldCat);
+  }
+  if (defaultCategories.includes(oldCat)) {
+    if (!userPreferences.deletedCategories) {
+      userPreferences.deletedCategories = [];
+    }
+    userPreferences.deletedCategories.push(oldCat);
+  }
+
+  saveUserPreferences();
+
+  // Re-render
+  const modal = document.getElementById('recipe-modal');
+  const id = modal.dataset.recipeId;
+  const recipe = recipes.find(r => r.id === id);
+  if (recipe) {
+    renderCategoryCheckboxes(getRecipeCategories(recipe));
+  }
+  renderCategoryFilter();
+  renderLibrary();
+}
+
+// Toggle manage mode
+function toggleManageMode() {
+  manageMode = !manageMode;
+  const btn = document.getElementById('manage-categories-btn');
+  btn.classList.toggle('active', manageMode);
+
+  const modal = document.getElementById('recipe-modal');
+  const id = modal.dataset.recipeId;
+  const recipe = recipes.find(r => r.id === id);
+  if (recipe) {
+    renderCategoryCheckboxes(getRecipeCategories(recipe));
+  }
+}
+
 // Populate the author datalist
 function populateAuthorDatalist() {
   const datalist = document.getElementById('author-list');
@@ -713,9 +959,25 @@ function setupEventListeners() {
       e.target.blur();
     }
   });
-  document.querySelectorAll('#modal-categories input[type="checkbox"]').forEach(cb => {
-    cb.addEventListener('change', saveCategoryEdit);
+  // Category management
+  document.getElementById('new-category-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const input = e.target;
+      if (addCategory(input.value)) {
+        input.value = '';
+        const modal = document.getElementById('recipe-modal');
+        const id = modal.dataset.recipeId;
+        const recipe = recipes.find(r => r.id === id);
+        if (recipe) {
+          renderCategoryCheckboxes(getRecipeCategories(recipe));
+        }
+        renderCategoryFilter();
+      }
+    }
   });
+  document.getElementById('manage-categories-btn').addEventListener('click', toggleManageMode);
+
   document.getElementById('modal-author').addEventListener('blur', saveAuthorEdit);
   document.getElementById('modal-author').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -733,6 +995,7 @@ function setupEventListeners() {
 // Make functions available globally
 window.toggleGroceryItem = toggleGroceryItem;
 window.openRecipeModal = openRecipeModal;
+window.deleteCategory = deleteCategory;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);

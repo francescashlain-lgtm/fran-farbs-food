@@ -903,6 +903,101 @@ body {
   border-color: var(--color-ink);
 }
 
+/* Manage mode for categories */
+.category-checkbox.manage-mode {
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.category-checkbox .category-name {
+  outline: none;
+  min-width: 20px;
+}
+
+.category-checkbox.manage-mode .category-name:focus {
+  border-bottom: 1px dashed currentColor;
+}
+
+.category-checkbox .category-delete {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0 0.25rem;
+}
+
+.category-checkbox .category-delete:hover {
+  opacity: 1;
+  color: #c00;
+}
+
+.modal-categories-wrapper {
+  width: 100%;
+}
+
+.category-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.new-category-input {
+  flex: 1;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: 1px dashed var(--color-border-dark);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+  max-width: 150px;
+  transition: all var(--transition-smooth);
+}
+
+.new-category-input:focus {
+  outline: none;
+  border-style: solid;
+  border-color: var(--color-olive);
+  color: var(--color-ink);
+}
+
+.new-category-input::placeholder {
+  color: var(--color-ink-muted);
+}
+
+.manage-categories-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-cream-dark);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  color: var(--color-ink-muted);
+}
+
+.manage-categories-btn:hover {
+  border-color: var(--color-olive);
+  color: var(--color-olive);
+}
+
+.manage-categories-btn.active {
+  background: var(--color-olive);
+  border-color: var(--color-olive);
+  color: var(--color-cream);
+}
+
 .modal-meta {
   display: flex;
   gap: 0.75rem;

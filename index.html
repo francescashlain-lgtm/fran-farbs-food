@@ -104,18 +104,7 @@
         <div class="library-filters">
           <select id="category-filter">
             <option value="all">All Categories</option>
-            <option value="pasta">Pasta</option>
-            <option value="chicken">Chicken</option>
-            <option value="beef">Beef</option>
-            <option value="pork">Pork</option>
-            <option value="lamb">Lamb</option>
-            <option value="seafood">Seafood</option>
-            <option value="vegetarian">Vegetarian</option>
-            <option value="soup">Soup</option>
-            <option value="salad">Salad</option>
-            <option value="side">Side Dish</option>
-            <option value="bread">Bread</option>
-            <option value="sauce">Sauce</option>
+            <!-- Categories populated dynamically -->
           </select>
           <select id="status-filter">
             <option value="all">All Recipes</option>
@@ -164,21 +153,19 @@
       <div class="modal-header">
         <input type="text" id="modal-title" class="modal-title-input" placeholder="Recipe title">
         <div class="modal-meta">
-          <div class="modal-categories" id="modal-categories">
-            <label class="category-checkbox"><input type="checkbox" value="pasta"><span>Pasta</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="chicken"><span>Chicken</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="beef"><span>Beef</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="pork"><span>Pork</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="lamb"><span>Lamb</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="seafood"><span>Seafood</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="vegetarian"><span>Vegetarian</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="soup"><span>Soup</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="salad"><span>Salad</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="side"><span>Side Dish</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="bread"><span>Bread</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="sauce"><span>Sauce</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="dessert"><span>Dessert</span></label>
-            <label class="category-checkbox"><input type="checkbox" value="breakfast"><span>Breakfast</span></label>
+          <div class="modal-categories-wrapper">
+            <div class="modal-categories" id="modal-categories">
+              <!-- Categories rendered dynamically -->
+            </div>
+            <div class="category-actions">
+              <input type="text" id="new-category-input" class="new-category-input" placeholder="+ Add category">
+              <button type="button" id="manage-categories-btn" class="manage-categories-btn" title="Edit/Remove categories">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
           </div>
           <input type="text" id="modal-author" class="modal-author-input" placeholder="Cookbook author" list="author-list">
           <datalist id="author-list"></datalist>
