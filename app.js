@@ -252,20 +252,29 @@ function renderRecipeCard(type, recipe) {
   // Update card state
   if (keptRecipes[type]) {
     card.classList.add('kept');
-    content.querySelector('.btn-keep').textContent = 'Kept!';
-    content.querySelector('.btn-keep').disabled = true;
-    content.querySelector('.btn-skip').style.display = 'none';
+    content.querySelector('.btn-keep').textContent = 'Kept ✓';
+    content.querySelector('.btn-keep').disabled = false;
+    content.querySelector('.btn-keep').classList.add('btn-kept');
+    content.querySelector('.btn-skip').textContent = 'Switch';
+    content.querySelector('.btn-skip').style.display = 'inline-block';
   } else {
     card.classList.remove('kept');
     content.querySelector('.btn-keep').textContent = 'Keep';
     content.querySelector('.btn-keep').disabled = false;
+    content.querySelector('.btn-keep').classList.remove('btn-kept');
+    content.querySelector('.btn-skip').textContent = 'Skip';
     content.querySelector('.btn-skip').style.display = 'inline-block';
   }
 }
 
-// Handle keep action
+// Handle keep action (toggle)
 function handleKeep(type) {
-  keptRecipes[type] = true;
+  if (keptRecipes[type]) {
+    // Unkeep - allow switching
+    keptRecipes[type] = false;
+  } else {
+    keptRecipes[type] = true;
+  }
   renderRecipeCard(type, weeklyPicks[type]);
   updateGenerateGroceryButton();
 }

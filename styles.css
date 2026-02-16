@@ -498,6 +498,18 @@ body {
   cursor: default;
 }
 
+.btn-keep.btn-kept {
+  background: transparent;
+  border: 1px solid var(--color-olive);
+  color: var(--color-olive);
+}
+
+.btn-keep.btn-kept:hover {
+  background: var(--color-cream-dark);
+  border-color: var(--color-ink-muted);
+  color: var(--color-ink-muted);
+}
+
 .btn-skip {
   flex: 1;
   background: transparent;
