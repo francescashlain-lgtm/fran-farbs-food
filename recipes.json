@@ -5139,7 +5139,7 @@
     "id": "220",
     "name": "Sweet Potato Bread with Miso Tahini Butter",
     "category": "baking",
-    "author": "HEALTH NUT COOKBOOK",
+    "author": "HOW SWEET EATS",
     "ingredients": [
       "4 large orange-fleshed sweet potatoes",
       "½ recipe Miso Tahini Butter",
@@ -5158,5 +5158,56 @@
     "instructions": "Bake the sweet potatoes: Preheat the oven to 425°F (220°C). Line a rimmed baking sheet with parchment paper, and place 4 sweet potatoes on it. Prick all over with a fork. Bake until tender, about 45 minutes. Let cool before removing the skins, then use a fork, potato masher, immersion blender, or food processor to create a smooth puree out of the flesh (about 1¾ cups/425 g).\n\nPrep the pan: Preheat the oven to 350°F (175°C). Butter a 9 by 5-inch loaf pan.\n\nMake the bread dough: In a large bowl, whisk together 1¾ cups sweet potato puree, ½ cup vegetable oil, 3 large eggs, and 1 cup cane sugar until smooth.\n\nIn another bowl, whisk together the 2¼ cups flour, 1½ teaspoons baking powder, ¾ teaspoon baking soda, 1 teaspoon salt, ¾ teaspoon cinnamon, ¼ teaspoon nutmeg, ½ teaspoon ginger, and a big pinch of ground cloves until well combined. Add the dry ingredients to the wet and stir, just until combined. Scrape into the prepared pan and smooth the top.\n\nMake the topping: In a small dish, stir 2 tablespoons cane sugar and 1 teaspoon cinnamon together. Sprinkle over the top of the batter.\n\nBake and serve: Bake the bread for 65 to 75 minutes, until a tester poked into all parts of the bread comes out clean.\n\nLet cool in the pan for 10 minutes and then remove the loaf, or let it cool completely in the pan before serving with miso tahini butter. Wrap in foil or plastic wrap and enjoy for up to 4 days.",
     "servings": "1 loaf",
     "time": "2 hours"
+  },
+  {
+    "id": "221",
+    "name": "Seared Scallops with Tomato Cream Sauce",
+    "category": "seafood",
+    "author": "HOW SWEET EATS",
+    "ingredients": [
+      "1 tablespoon extra-virgin olive oil",
+      "1 shallot, diced",
+      "2 garlic cloves, minced",
+      "Kosher salt",
+      "1 tablespoon brown sugar",
+      "1 tablespoon tomato paste",
+      "½ teaspoon dried basil",
+      "½ teaspoon dried oregano",
+      "1 (14-ounce) can fire roasted tomatoes",
+      "½ cup heavy cream",
+      "2 tablespoons unsalted butter",
+      "1 pound scallops",
+      "Black pepper"
+    ],
+    "instructions": "Heat a pot or large skillet over medium heat and add the olive oil. Add the shallot and garlic with a pinch of salt. Cook, stirring often, until softened. Stir in the brown sugar, tomato paste, basil, and oregano. Cook for 5 minutes. Stir in the fire roasted tomatoes. Bring to a boil, then reduce to a simmer and cook for 10 minutes. Transfer to a blender and puree or use an immersion blender to smooth it out.\n\nPour the sauce back in the pot and heat on low. Stir in the cream. Turn off the heat.\n\nHeat a large saucepan over medium heat and add the butter. Pat the scallops dry with a paper towel and sprinkle with salt and pepper. Wait until the butter just begins to brown, then add the scallops in a single layer - do not crowd the pan. You may need to work in batches. Cook the scallops for 1 to 2 minutes per side.\n\nServe the scallops over the tomato cream sauce, drizzling any extra brown butter from the skillet on top.\n\nMeal prep tip: Make the tomato cream sauce the day before and store it in the fridge. Reheat in a saucepan over low heat until warm and creamy.",
+    "servings": "2-4",
+    "time": "30 minutes"
+  },
+  {
+    "id": "222",
+    "name": "Bang Bang Salmon Burgers",
+    "category": "seafood",
+    "author": "HOW SWEET EATS",
+    "ingredients": [
+      "1 (1-pound) boneless skinless salmon fillet",
+      "1 shallot, minced",
+      "2 garlic cloves, minced",
+      "1 large egg",
+      "⅓ cup seasoned bread crumbs",
+      "½ teaspoon smoked paprika",
+      "½ teaspoon kosher salt",
+      "½ teaspoon black pepper",
+      "2 tablespoons chopped fresh parsley",
+      "1 cup panko bread crumbs",
+      "4 tablespoons extra-virgin olive oil",
+      "4 buns, for serving",
+      "For bang bang sauce: ½ cup mayonnaise",
+      "For bang bang sauce: 2 tablespoons Thai sweet chili sauce",
+      "For bang bang sauce: 1 teaspoon sriracha",
+      "Napa slaw, for serving"
+    ],
+    "instructions": "Put the salmon fillet (cut into 4 pieces) into a food processor. Pulse until it is in small pieces but not completely ground up. Remove the salmon and put it in a large bowl. Add the shallot, garlic, egg, seasoned bread crumbs, smoked paprika, salt, pepper, and parsley to the bowl. Stir with a large spoon to combine, then bring the mixture together with your hands. Form the mixture into 4 burgers (or make 8 sliders). Roll each burger in the panko bread crumbs.\n\nHeat a large skillet over medium heat and add 2 tablespoons of the olive oil. Add 2 of the burgers and cook on both sides until golden brown, about 2 to 3 minutes per side. Turn the heat down to low and cover the skillet for another minute or two after the second side has browned to ensure they are cooked through. Remove from the pan and repeat with the remaining olive oil and burgers.\n\nFor the bang bang sauce: In a small bowl, whisk together the mayonnaise, chili sauce, and sriracha.\n\nTo assemble, place each burger on a bun and top with bang bang sauce and slaw.\n\nMeal prep tip: Burgers can be formed ahead and stored in the fridge for up to 2 days, or frozen individually wrapped for up to 3 months. Bang bang sauce can be made ahead and stored in the fridge.",
+    "servings": "4 burgers",
+    "time": "30 minutes"
   }
 ]
