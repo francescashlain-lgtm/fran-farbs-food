@@ -3363,5 +3363,58 @@
     "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
     "servings": "1",
     "time": "5 minutes"
+  },
+  {
+    "id": "147",
+    "name": "I Dream of Strawberries and Cream Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "¾ cup unsweetened almond milk or canned light coconut milk, plus more as needed",
+      "½ cup plain whole-milk Greek yogurt (or sub dairy-free yogurt)",
+      "1½ cups frozen strawberries",
+      "¼ cup raw cashews",
+      "2 large pitted Medjool dates",
+      "1 teaspoon vanilla extract",
+      "½ teaspoon almond extract"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
+  },
+  {
+    "id": "148",
+    "name": "Glowing Skin Vitamin A Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "½ cup fresh orange juice or canned light coconut milk, plus more as needed",
+      "1 medium orange, peeled and segmented, membrane removed",
+      "1 cup frozen mango chunks",
+      "1 large carrot, peeled and cut into 2-inch chunks",
+      "1 (½-inch) slice fresh ginger, peeled"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more orange juice or coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
+  },
+  {
+    "id": "149",
+    "name": "Anti-Inflammatory Tummy Soothing Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "½ cup plain whole-milk Greek yogurt (or sub dairy-free yogurt)",
+      "½ cup canned light coconut milk, plus more as needed",
+      "1 small clementine or orange, peeled and segmented, membrane removed",
+      "1 cup frozen pineapple chunks",
+      "½ frozen ripe banana, peeled",
+      "1 (½-inch) slice fresh ginger, peeled",
+      "1 teaspoon chia seeds",
+      "¼ teaspoon ground turmeric"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
   }
 ]
