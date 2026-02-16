@@ -857,22 +857,29 @@ const prepPatterns = [
   { pattern: /chop(?:ped|ping)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Chop', category: 'Cutting' },
   { pattern: /dice(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Dice', category: 'Cutting' },
   { pattern: /mince(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Mince', category: 'Cutting' },
-  { pattern: /slice(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Slice', category: 'Cutting' },
+  { pattern: /slice(?:d|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Slice', category: 'Cutting' },
   { pattern: /julienne(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Julienne', category: 'Cutting' },
-  { pattern: /grate(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Grate', category: 'Cutting' },
+  { pattern: /grate(?:d|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Grate', category: 'Cutting' },
   { pattern: /shred(?:ded)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Shred', category: 'Cutting' },
   { pattern: /crush(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Crush', category: 'Cutting' },
   { pattern: /zest(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Zest', category: 'Cutting' },
   { pattern: /marinate\s+(?:the\s+)?(.+?)(?:\s+for|\s+in|\.|,|;|$)/gi, action: 'Marinate', category: 'Marinating' },
   { pattern: /marinade\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Marinate', category: 'Marinating' },
-  { pattern: /(?:make|prepare|mix)\s+(?:the\s+)?(?:a\s+)?(.+?sauce|.+?dressing|.+?marinade|.+?vinaigrette)(?:\.|,|;|$)/gi, action: 'Make', category: 'Sauces & Dressings' },
-  { pattern: /toast(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Toast', category: 'Toasting' },
+  { pattern: /(?:make|prepare|mix|whisk)\s+(?:the\s+)?(?:a\s+)?(.+?sauce|.+?dressing|.+?marinade|.+?vinaigrette)(?:\.|,|;|$)/gi, action: 'Make', category: 'Sauces & Dressings' },
+  { pattern: /whisk\s+(?:the\s+)?(?:together\s+)?(.+?ingredients|.+?sauce|.+?dressing)(?:\.|,|;|$)/gi, action: 'Whisk', category: 'Sauces & Dressings' },
+  { pattern: /toast(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|until|$)/gi, action: 'Toast', category: 'Toasting' },
   { pattern: /soak(?:ed|ing)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Soak', category: 'Soaking' },
   { pattern: /wash(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Wash', category: 'Washing' },
   { pattern: /peel(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Peel', category: 'Cutting' },
   { pattern: /trim(?:med)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Trim', category: 'Cutting' },
   { pattern: /(?:de-?seed|seed|remove\s+seeds?\s+from)\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Deseed', category: 'Cutting' },
   { pattern: /cube(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Cube', category: 'Cutting' },
+  { pattern: /halve(?:d|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Halve', category: 'Cutting' },
+  { pattern: /quarter(?:ed|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Quarter', category: 'Cutting' },
+  { pattern: /cut\s+(?:the\s+)?(.+?)\s+into\s+(?:pieces|chunks|cubes|strips|wedges|slices)/gi, action: 'Cut', category: 'Cutting' },
+  { pattern: /blend(?:ed)?\s+(?:the\s+)?(.+?)(?:\s+until|\.|,|;|$)/gi, action: 'Blend', category: 'Mixing' },
+  { pattern: /pur[eé]e(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Puree', category: 'Mixing' },
+  { pattern: /pulse\s+(?:the\s+)?(.+?)\s+(?:in|until)/gi, action: 'Pulse', category: 'Mixing' },
 ];
 
 // Extract prep tasks from a recipe
@@ -907,10 +914,15 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
     const lower = ing.toLowerCase();
     const prepWords = [
       { word: 'chopped', action: 'Chop' },
+      { word: 'finely chopped', action: 'Finely chop' },
+      { word: 'roughly chopped', action: 'Roughly chop' },
+      { word: 'coarsely chopped', action: 'Coarsely chop' },
       { word: 'diced', action: 'Dice' },
       { word: 'minced', action: 'Mince' },
       { word: 'sliced', action: 'Slice' },
+      { word: 'thinly sliced', action: 'Thinly slice' },
       { word: 'grated', action: 'Grate' },
+      { word: 'finely grated', action: 'Finely grate' },
       { word: 'shredded', action: 'Shred' },
       { word: 'julienned', action: 'Julienne' },
       { word: 'crushed', action: 'Crush' },
@@ -918,36 +930,78 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
       { word: 'peeled', action: 'Peel' },
       { word: 'trimmed', action: 'Trim' },
       { word: 'cubed', action: 'Cube' },
+      { word: 'halved', action: 'Halve' },
+      { word: 'quartered', action: 'Quarter' },
+      { word: 'torn', action: 'Tear' },
+      { word: 'cut into', action: 'Cut' },
+      { word: 'broken into', action: 'Break' },
+      { word: 'separated', action: 'Separate' },
+      { word: 'deveined', action: 'Devein' },
+      { word: 'deboned', action: 'Debone' },
+      { word: 'seeded', action: 'Seed' },
+      { word: 'cored', action: 'Core' },
+      { word: 'ribbons', action: 'Cut into ribbons' },
+      { word: 'toasted', action: 'Toast' },
+      { word: 'roasted', action: 'Roast' },
+      { word: 'blanched', action: 'Blanch' },
     ];
 
-    prepWords.forEach(({ word, action }) => {
+    // Sort prep words by length (longest first) to match "finely chopped" before "chopped"
+    const sortedPrepWords = [...prepWords].sort((a, b) => b.word.length - a.word.length);
+
+    // Use for loop so we can break after first match
+    for (const { word, action } of sortedPrepWords) {
       if (lower.includes(word)) {
         // Extract quantity from start of ingredient
-        const qtyMatch = ing.match(/^([\d\s\/½⅓⅔¼¾⅛]+)/);
+        const qtyMatch = ing.match(/^([\d\s\/½⅓⅔¼¾⅛-]+)/);
         const quantity = qtyMatch ? qtyMatch[1].trim() : '';
 
-        // Extract the ingredient name (before the comma or prep word)
-        let item = ing.split(',')[0].trim();
+        // Try to extract the ingredient name intelligently
+        // First, try to get text before the prep word if it's after a comma
+        let item = '';
+        const commaIdx = ing.indexOf(',');
+        if (commaIdx > -1 && lower.indexOf(word) > commaIdx) {
+          // Prep word is after comma, get text before comma
+          item = ing.substring(0, commaIdx).trim();
+        } else {
+          // Prep word might be in the middle of description
+          // Try to extract what comes after common patterns
+          item = ing.split(',')[0].trim();
+        }
+
         // Remove quantity from item for display
-        let itemWithoutQty = item.replace(/^[\d\s\/½⅓⅔¼¾⅛]+/, '').trim();
-        // Remove units
-        itemWithoutQty = itemWithoutQty.replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|large|medium|small)\s+(?:of\s+)?/i, '').trim();
+        let itemWithoutQty = item.replace(/^[\d\s\/½⅓⅔¼¾⅛-]+/, '').trim();
+
+        // Remove units and size descriptors
+        itemWithoutQty = itemWithoutQty.replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|lb|cloves?|heads?|bunche?s?|cans?|large|medium|small|inch|cm)\s+(?:of\s+)?/gi, '').trim();
+
+        // Remove additional size descriptors that might remain
+        itemWithoutQty = itemWithoutQty.replace(/^\d+[\s-]*(inch|cm)\s*/gi, '').trim();
 
         if (itemWithoutQty.length > 2) {
           // Include quantity in the item display
           const displayItem = quantity ? `${quantity} ${itemWithoutQty}` : itemWithoutQty;
+          // Determine category based on action
+          let category = 'Cutting';
+          if (action === 'Toast') category = 'Toasting';
+          else if (action === 'Roast') category = 'Roasting';
+          else if (action === 'Blanch') category = 'Blanching';
+          else if (action === 'Tear' || action === 'Break' || action === 'Separate') category = 'Cutting';
+
           tasks.push({
             action,
             item: displayItem,
             itemBase: itemWithoutQty, // For combining similar items
             quantity,
-            category: 'Cutting',
+            category,
             recipe: recipeName,
             recipeColor
           });
+          // Only match the first (most specific) prep word, then stop
+          break;
         }
       }
-    });
+    }
   });
 
   return tasks;
