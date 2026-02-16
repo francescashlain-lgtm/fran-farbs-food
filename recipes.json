@@ -1933,5 +1933,59 @@
     "servings": "4",
     "time": "30 minutes",
     "author": "BROCC YOUR BODY"
+  },
+  {
+    "id": "88",
+    "name": "Banana Cake with Dark Chocolate Frosting & Sea Salt",
+    "category": "dessert",
+    "ingredients": [
+      "For the cake:",
+      "Nonstick cooking spray",
+      "2 cups mashed ripe bananas (about 4 large bananas)",
+      "1 cup (200 grams) granulated sugar",
+      "1 cup (200 grams) lightly packed light brown sugar",
+      "3 large eggs, at room temperature",
+      "3/4 cup (155 grams) unrefined coconut oil, melted, or vegetable oil",
+      "1 cup (240 grams) sour cream, at room temperature",
+      "1 teaspoon vanilla extract",
+      "3 cups (380 grams) all-purpose flour",
+      "1 1/4 teaspoons baking soda",
+      "1 teaspoon kosher salt",
+      "1/4 teaspoon ground cinnamon",
+      "For the frosting:",
+      "9 ounces (255 grams) dark chocolate (70 to 85% cacao), broken into pieces",
+      "1/3 cup (80 grams) heavy cream, at room temperature",
+      "1/2 teaspoon instant espresso powder",
+      "2 sticks (8 ounces/226 grams) unsalted butter, at room temperature",
+      "1 cup (110 grams) confectioners' sugar, sifted",
+      "Flaky sea salt, for serving"
+    ],
+    "instructions": "Preheat oven to 350\u00b0F. Grease a 9x13-inch cake pan with cooking spray and line bottom with parchment paper. In a large bowl, combine banana, granulated sugar, brown sugar, eggs, coconut oil, sour cream, and vanilla and whisk until smooth. In a separate bowl, whisk together flour, baking soda, salt, and cinnamon. Pour dry ingredients into wet and mix until combined. Pour into pan and bake until a tester comes out clean, 35 to 40 minutes. Let cool 30 minutes in pan, then invert onto board, remove parchment, and invert onto serving platter. For frosting: Melt chocolate in a heatproof bowl over simmering water. Set aside to cool completely. Combine heavy cream and espresso powder. In a stand mixer, beat butter until fluffy, 2 to 3 minutes. Add confectioners' sugar and beat until smooth. Gradually add cream mixture. Gradually add cooled chocolate and mix until smooth. Spread frosting over cooled cake and sprinkle with sea salt.",
+    "source": "cooking real life recipes.pdf",
+    "servings": "12 to 15",
+    "time": "1 hour 30 minutes"
+  },
+  {
+    "id": "89",
+    "name": "Blueberry Muffin Sugar Cookies",
+    "category": "dessert",
+    "ingredients": [
+      "2 1/2 cups (325 grams) all-purpose flour",
+      "1/4 cup (30 grams) cornstarch",
+      "1 1/2 teaspoons baking powder",
+      "1 teaspoon kosher salt",
+      "Pinch of ground cinnamon",
+      "2 sticks (8 ounces/226 grams) unsalted butter, at room temperature",
+      "2 ounces (57 grams) cream cheese, at room temperature",
+      "3/4 cup (150 grams) granulated sugar, plus more for sprinkling",
+      "1/4 cup (100 grams) lightly packed light brown sugar",
+      "1 large egg, at room temperature",
+      "1 1/2 teaspoons vanilla extract",
+      "1 cup (150 grams) blueberries, rinsed and patted dry"
+    ],
+    "instructions": "Preheat oven to 350\u00b0F and line two sheet pans with parchment paper. In a medium bowl, whisk together flour, cornstarch, baking powder, salt, and cinnamon. In a stand mixer fitted with paddle attachment, beat butter, cream cheese, granulated sugar, and brown sugar on medium-high speed until light and fluffy, about 3 minutes. Add egg and vanilla and mix until combined. With mixer on low, add dry ingredients and mix until just combined. Gently fold in blueberries by hand. Scoop 3-tablespoon balls of dough onto prepared pans, spacing them apart. Bake one pan at a time until cookies are just starting to brown at edges but still soft, 20 to 22 minutes. Cool 10 minutes on pan, then transfer to wire rack. Store in sealed container at room temperature for up to 3 days.",
+    "source": "cooking real life recipes.pdf",
+    "servings": "Makes 16 to 18 cookies",
+    "time": "35 minutes"
   }
 ]
