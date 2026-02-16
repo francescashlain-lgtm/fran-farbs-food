@@ -793,6 +793,253 @@ function clearGroceryList() {
   }
 }
 
+// ==================== PREP LIST ====================
+
+// Prep task patterns to look for in instructions and ingredients
+const prepPatterns = [
+  { pattern: /chop(?:ped|ping)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Chop', category: 'Cutting' },
+  { pattern: /dice(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Dice', category: 'Cutting' },
+  { pattern: /mince(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Mince', category: 'Cutting' },
+  { pattern: /slice(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Slice', category: 'Cutting' },
+  { pattern: /julienne(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Julienne', category: 'Cutting' },
+  { pattern: /grate(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Grate', category: 'Cutting' },
+  { pattern: /shred(?:ded)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Shred', category: 'Cutting' },
+  { pattern: /crush(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Crush', category: 'Cutting' },
+  { pattern: /zest(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Zest', category: 'Cutting' },
+  { pattern: /marinate\s+(?:the\s+)?(.+?)(?:\s+for|\s+in|\.|,|;|$)/gi, action: 'Marinate', category: 'Marinating' },
+  { pattern: /marinade\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Marinate', category: 'Marinating' },
+  { pattern: /(?:make|prepare|mix)\s+(?:the\s+)?(?:a\s+)?(.+?sauce|.+?dressing|.+?marinade|.+?vinaigrette)(?:\.|,|;|$)/gi, action: 'Make', category: 'Sauces & Dressings' },
+  { pattern: /toast(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Toast', category: 'Toasting' },
+  { pattern: /soak(?:ed|ing)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Soak', category: 'Soaking' },
+  { pattern: /wash(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Wash', category: 'Washing' },
+  { pattern: /peel(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Peel', category: 'Cutting' },
+  { pattern: /trim(?:med)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Trim', category: 'Cutting' },
+  { pattern: /(?:de-?seed|seed|remove\s+seeds?\s+from)\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Deseed', category: 'Cutting' },
+  { pattern: /cube(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Cube', category: 'Cutting' },
+];
+
+// Extract prep tasks from a recipe
+function extractPrepTasks(recipe, recipeName, recipeColor) {
+  const tasks = [];
+  const instructions = recipe.instructions || '';
+  const ingredients = recipe.ingredients || [];
+
+  // Check instructions for prep tasks
+  prepPatterns.forEach(({ pattern, action, category }) => {
+    let match;
+    const regex = new RegExp(pattern.source, pattern.flags);
+    while ((match = regex.exec(instructions)) !== null) {
+      let item = match[1].trim();
+      // Clean up the item
+      item = item.replace(/^(and|the|a|an)\s+/i, '').trim();
+      item = item.replace(/\s+(and|then|until|before|after).*$/i, '').trim();
+      if (item.length > 2 && item.length < 50) {
+        tasks.push({
+          action,
+          item,
+          category,
+          recipe: recipeName,
+          recipeColor
+        });
+      }
+    }
+  });
+
+  // Check ingredients for prep instructions (e.g., "1 onion, diced")
+  ingredients.forEach(ing => {
+    const lower = ing.toLowerCase();
+    const prepWords = [
+      { word: 'chopped', action: 'Chop' },
+      { word: 'diced', action: 'Dice' },
+      { word: 'minced', action: 'Mince' },
+      { word: 'sliced', action: 'Slice' },
+      { word: 'grated', action: 'Grate' },
+      { word: 'shredded', action: 'Shred' },
+      { word: 'julienned', action: 'Julienne' },
+      { word: 'crushed', action: 'Crush' },
+      { word: 'zested', action: 'Zest' },
+      { word: 'peeled', action: 'Peel' },
+      { word: 'trimmed', action: 'Trim' },
+      { word: 'cubed', action: 'Cube' },
+    ];
+
+    prepWords.forEach(({ word, action }) => {
+      if (lower.includes(word)) {
+        // Extract the ingredient name (before the comma or prep word)
+        let item = ing.split(',')[0].trim();
+        // Remove quantity
+        item = item.replace(/^[\d\s\/½⅓⅔¼¾⅛]+/, '').trim();
+        // Remove units
+        item = item.replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|large|medium|small)\s+/i, '').trim();
+        if (item.length > 2) {
+          tasks.push({
+            action,
+            item,
+            category: 'Cutting',
+            recipe: recipeName,
+            recipeColor
+          });
+        }
+      }
+    });
+  });
+
+  return tasks;
+}
+
+// Combine similar prep tasks across recipes
+function combinePrepTasks(allTasks) {
+  const combined = new Map();
+
+  allTasks.forEach(task => {
+    // Create a key for grouping similar tasks
+    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/s$/, '')}`;
+
+    if (combined.has(key)) {
+      const existing = combined.get(key);
+      if (!existing.recipes.includes(task.recipe)) {
+        existing.recipes.push(task.recipe);
+        existing.recipeColors.push(task.recipeColor);
+      }
+    } else {
+      combined.set(key, {
+        action: task.action,
+        item: task.item,
+        category: task.category,
+        recipes: [task.recipe],
+        recipeColors: [task.recipeColor],
+        checked: false
+      });
+    }
+  });
+
+  return Array.from(combined.values());
+}
+
+// Get all kept recipes for prep list
+function getKeptRecipesForPrep() {
+  const keptList = [];
+
+  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+    if (weeklyPicks[type] && keptRecipes[type]) {
+      const recipe = weeklyPicks[type];
+      keptList.push({
+        recipe,
+        name: recipe.name,
+        color: recipeColorsByType[type]
+      });
+    }
+  });
+
+  // Add manually kept recipes
+  const manualColor = '#7a6c5d';
+  manuallyKeptRecipes.forEach(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      keptList.push({
+        recipe,
+        name: getRecipeTitle(recipe),
+        color: manualColor
+      });
+    }
+  });
+
+  return keptList;
+}
+
+// Render prep list
+function renderPrepList() {
+  const keptRecipesList = getKeptRecipesForPrep();
+
+  // Show recipes we're prepping for
+  const recipeListEl = document.getElementById('prep-recipe-list');
+  const prepRecipesContainer = document.getElementById('prep-recipes');
+
+  if (keptRecipesList.length === 0) {
+    prepRecipesContainer.style.display = 'none';
+    document.getElementById('prep-categories').innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+        <h3>No recipes selected</h3>
+        <p>Keep some recipes from This Week's Menu to see your prep list</p>
+      </div>
+    `;
+    return;
+  }
+
+  prepRecipesContainer.style.display = 'block';
+  recipeListEl.innerHTML = keptRecipesList.map(r =>
+    `<span class="grocery-recipe-tag" style="background-color: ${r.color}">${r.name}</span>`
+  ).join('');
+
+  // Extract all prep tasks
+  let allTasks = [];
+  keptRecipesList.forEach(({ recipe, name, color }) => {
+    const tasks = extractPrepTasks(recipe, name, color);
+    allTasks = allTasks.concat(tasks);
+  });
+
+  // Combine similar tasks
+  const combinedTasks = combinePrepTasks(allTasks);
+
+  if (combinedTasks.length === 0) {
+    document.getElementById('prep-categories').innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <line x1="9" y1="9" x2="9.01" y2="9"/>
+          <line x1="15" y1="9" x2="15.01" y2="9"/>
+        </svg>
+        <h3>No prep tasks found</h3>
+        <p>These recipes don't have identifiable prep steps, or everything is done during cooking</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by category
+  const categories = {};
+  combinedTasks.forEach(task => {
+    if (!categories[task.category]) {
+      categories[task.category] = [];
+    }
+    categories[task.category].push(task);
+  });
+
+  // Sort tasks within each category - multi-recipe tasks first
+  Object.values(categories).forEach(tasks => {
+    tasks.sort((a, b) => b.recipes.length - a.recipes.length);
+  });
+
+  // Render categories
+  const categoriesEl = document.getElementById('prep-categories');
+  categoriesEl.innerHTML = Object.entries(categories).map(([category, tasks]) => `
+    <div class="prep-category">
+      <div class="prep-category-header">${category}</div>
+      <div class="prep-category-items">
+        ${tasks.map((task, idx) => {
+          const colorDots = task.recipeColors
+            .map(color => `<span class="ingredient-color-dot" style="background-color: ${color}"></span>`)
+            .join('');
+          const multiRecipe = task.recipes.length > 1 ? 'multi-recipe' : '';
+          return `
+          <div class="prep-item ${multiRecipe}" title="For: ${task.recipes.join(', ')}">
+            <div class="ingredient-color-dots">${colorDots}</div>
+            <div class="prep-task-text">
+              <span class="prep-action">${task.action}</span>
+              <span class="prep-ingredient">${task.item}</span>
+              ${task.recipes.length > 1 ? `<span class="prep-count">(${task.recipes.length} recipes)</span>` : ''}
+            </div>
+          </div>
+        `}).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
 // Render recipe library
 function renderLibrary() {
   const grid = document.getElementById('library-grid');
@@ -1282,6 +1529,8 @@ function switchTab(tabName) {
     renderLibrary();
   } else if (tabName === 'grocery') {
     renderGroceryList();
+  } else if (tabName === 'prep') {
+    renderPrepList();
   }
 }
 
