@@ -44,8 +44,8 @@
       </div>
 
       <div class="weekly-picks">
-        <h3>Your 3 Dinners This Week</h3>
-        <p class="picks-subtitle">One pasta, one chicken, one meat dish - selected for seasonal freshness</p>
+        <h3>Your Dinners This Week</h3>
+        <p class="picks-subtitle">Keep 3 dishes - selected for seasonal freshness</p>
 
         <div class="recipe-cards">
           <div class="recipe-card" id="pasta-pick">
@@ -79,6 +79,20 @@
           <div class="recipe-card" id="meat-pick">
             <div class="card-category meat">Meat Dish</div>
             <div class="card-loading">Finding the perfect meat dish...</div>
+            <div class="card-content" style="display: none;">
+              <h4 class="card-title"></h4>
+              <div class="card-seasonal-tags"></div>
+              <div class="card-ingredients"></div>
+              <div class="card-actions">
+                <button class="btn-keep">Keep</button>
+                <button class="btn-skip">Skip</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="recipe-card" id="vegetarian-pick">
+            <div class="card-category vegetarian">Vegetarian Dish</div>
+            <div class="card-loading">Finding the perfect vegetarian dish...</div>
             <div class="card-content" style="display: none;">
               <h4 class="card-title"></h4>
               <div class="card-seasonal-tags"></div>

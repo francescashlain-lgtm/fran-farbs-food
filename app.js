@@ -42,18 +42,21 @@ let manageMode = false;
 let weeklyPicks = {
   pasta: null,
   chicken: null,
-  meat: null
+  meat: null,
+  vegetarian: null
 };
 let keptRecipes = {
   pasta: false,
   chicken: false,
-  meat: false
+  meat: false,
+  vegetarian: false
 };
 let groceryList = [];
 let skippedRecipes = {
   pasta: [],
   chicken: [],
-  meat: []
+  meat: [],
+  vegetarian: []
 };
 
 // Initialize the app
@@ -156,7 +159,8 @@ function getRecipesByType(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb']
+    meat: ['beef', 'pork', 'lamb'],
+    vegetarian: ['vegetarian']
   };
 
   const targetCategories = categoryMap[type];
@@ -174,7 +178,7 @@ function generateWeeklyPicks() {
   const expiringInput = document.getElementById('expiring-input');
   const expiringIngredients = expiringInput.value ? expiringInput.value.split(',').map(s => s.trim()) : [];
 
-  ['pasta', 'chicken', 'meat'].forEach(type => {
+  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
     if (!keptRecipes[type]) {
       const available = getRecipesByType(type);
 
@@ -265,7 +269,8 @@ function handleSkip(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb']
+    meat: ['beef', 'pork', 'lamb'],
+    vegetarian: ['vegetarian']
   };
   const targetCategories = categoryMap[type];
   const allInCategory = recipes.filter(r => {
@@ -284,9 +289,10 @@ function handleSkip(type) {
 
 // Update the generate grocery button visibility
 function updateGenerateGroceryButton() {
-  const allKept = keptRecipes.pasta && keptRecipes.chicken && keptRecipes.meat;
+  // Show button when at least 3 recipes are kept
+  const keptCount = Object.values(keptRecipes).filter(Boolean).length;
   const btn = document.getElementById('generate-grocery');
-  btn.style.display = allKept ? 'inline-flex' : 'none';
+  btn.style.display = keptCount >= 3 ? 'inline-flex' : 'none';
 }
 
 // Generate grocery list
@@ -294,7 +300,7 @@ function generateGroceryList() {
   groceryList = [];
   const keptRecipesList = [];
 
-  ['pasta', 'chicken', 'meat'].forEach(type => {
+  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
       keptRecipesList.push(weeklyPicks[type]);
       weeklyPicks[type].ingredients.forEach(ingredient => {
@@ -945,8 +951,8 @@ function setupEventListeners() {
   // Expiring ingredients
   document.getElementById('apply-expiring').addEventListener('click', () => {
     // Reset skipped recipes when applying new expiring ingredients
-    skippedRecipes = { pasta: [], chicken: [], meat: [] };
-    keptRecipes = { pasta: false, chicken: false, meat: false };
+    skippedRecipes = { pasta: [], chicken: [], meat: [], vegetarian: [] };
+    keptRecipes = { pasta: false, chicken: false, meat: false, vegetarian: false };
     generateWeeklyPicks();
   });
 

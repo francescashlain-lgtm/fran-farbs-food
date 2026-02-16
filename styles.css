@@ -421,6 +421,11 @@ body {
   color: var(--color-cream);
 }
 
+.card-category.vegetarian {
+  background: var(--color-olive);
+  color: var(--color-cream);
+}
+
 .card-loading {
   text-align: center;
   padding: 2.5rem 1rem;
