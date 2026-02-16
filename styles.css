@@ -18,10 +18,9 @@
   --color-border: rgba(38, 66, 43, 0.12);
   --color-border-dark: rgba(38, 66, 43, 0.2);
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Fraunces', Georgia, serif;
-  --font-handwritten: 'Fraunces', Georgia, serif;
-  --font-title: 'Fraunces', Georgia, serif;
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Space Mono', monospace;
+  --font-heading: 'Space Grotesk', -apple-system, sans-serif;
 
   --shadow-soft: 0 2px 20px rgba(55, 32, 32, 0.08);
   --shadow-medium: 0 4px 30px rgba(55, 32, 32, 0.12);
@@ -56,12 +55,10 @@ body {
   font-family: var(--font-body);
   background: var(--color-cream);
   color: var(--color-ink);
-  line-height: 1.7;
+  line-height: 1.6;
   min-height: 100vh;
-  letter-spacing: 0.01em;
-  background-image:
-    radial-gradient(circle at 20% 80%, rgba(242, 78, 7, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(204, 229, 255, 0.08) 0%, transparent 50%);
+  letter-spacing: 0;
+  font-size: 0.875rem;
 }
 
 /* Selection */
@@ -85,76 +82,24 @@ body {
 .header-content {
   text-align: center;
   padding-bottom: 2rem;
-  position: relative;
-}
-
-.header-illustrations {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.header-icon {
-  position: absolute;
-  height: 80px;
-  color: var(--color-orange);
-  opacity: 0.4;
-}
-
-.header-icon-left {
-  left: 10%;
-  top: 10%;
-  transform: rotate(-15deg);
-}
-
-.header-icon-right {
-  right: 10%;
-  top: 5%;
-  transform: rotate(15deg);
-}
-
-.header-doodles {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 0.5rem;
-  font-size: 1.25rem;
-  opacity: 0.7;
-}
-
-.doodle {
-  display: inline-block;
-  animation: float 3s ease-in-out infinite;
-}
-
-.doodle-tomato { animation-delay: 0s; }
-.doodle-leaf { animation-delay: 0.5s; }
-.doodle-lemon { animation-delay: 1s; }
-.doodle-pepper { animation-delay: 1.5s; }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
 }
 
 .main-header h1 {
-  font-family: var(--font-title);
-  font-size: 2.75rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--color-coffee);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
 }
 
 .tagline {
-  font-size: 0.85rem;
-  color: var(--color-orange);
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  font-weight: 400;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -235,24 +180,23 @@ body {
 
 /* Seasonal Banner */
 .seasonal-banner {
-  background: var(--color-blue);
-  color: var(--color-ink);
-  border-radius: var(--radius-lg);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  border-radius: 0;
   padding: 2rem 2.5rem;
   margin-bottom: 3rem;
-  box-shadow: var(--shadow-medium);
-  border: 2px solid var(--color-ink);
-  position: relative;
+  box-shadow: none;
+  border: none;
 }
 
 .seasonal-info h2 {
-  font-family: var(--font-handwritten);
-  font-size: 2.25rem;
-  font-weight: 600;
-  color: var(--color-ink);
-  text-transform: capitalize;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  text-transform: uppercase;
   margin-bottom: 1.25rem;
-  font-style: italic;
+  letter-spacing: -0.02em;
 }
 
 .seasonal-list {
@@ -264,12 +208,13 @@ body {
 }
 
 .seasonal-list li {
-  color: var(--color-ink);
-  font-size: 0.85rem;
+  color: var(--color-cream);
+  font-size: 0.75rem;
   font-weight: 400;
   padding: 0.2rem 0;
-  text-transform: capitalize;
+  text-transform: lowercase;
   break-inside: avoid;
+  opacity: 0.8;
 }
 
 @media (max-width: 900px) {
@@ -345,14 +290,14 @@ body {
 .btn-primary {
   background: var(--color-orange);
   color: var(--color-cream);
-  border: none;
-  padding: 1rem 2rem;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  border: 2px solid var(--color-orange);
+  padding: 0.875rem 1.5rem;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-smooth);
   display: inline-flex;
@@ -362,21 +307,21 @@ body {
 
 .btn-primary:hover {
   background: var(--color-ink);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lifted);
+  border-color: var(--color-ink);
+  transform: none;
 }
 
 .btn-secondary {
   background: transparent;
   color: var(--color-ink);
-  border: 1px solid var(--color-border-dark);
-  padding: 0.75rem 1.25rem;
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  border: 2px solid var(--color-ink);
+  padding: 0.625rem 1rem;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-smooth);
 }
@@ -384,7 +329,6 @@ body {
 .btn-secondary:hover {
   background: var(--color-ink);
   color: var(--color-cream);
-  border-color: var(--color-ink);
 }
 
 /* Weekly Picks */
@@ -397,12 +341,13 @@ body {
 }
 
 .weekly-picks h3 {
-  font-family: var(--font-handwritten);
-  font-size: 2rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
-  color: var(--color-coffee);
-  font-style: italic;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .picks-subtitle {
@@ -450,25 +395,30 @@ body {
 
 /* Recipe Card */
 .recipe-card {
-  background: var(--color-cream-light);
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-md);
-  padding: 1.75rem;
-  box-shadow: var(--shadow-soft);
+  background: var(--color-cream);
+  border: 3px solid var(--color-ink);
+  border-radius: 0;
+  padding: 1.5rem;
+  box-shadow: none;
   transition: all var(--transition-smooth);
   position: relative;
   overflow: hidden;
 }
 
 .recipe-card:hover {
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-4px);
-  border-color: var(--color-orange);
+  background: var(--color-blue);
+  transform: none;
 }
 
 .recipe-card.kept {
   border-color: var(--color-orange);
-  background: linear-gradient(135deg, var(--color-cream-light) 0%, rgba(255, 46, 46, 0.08) 100%);
+  background: var(--color-orange);
+}
+
+.recipe-card.kept .card-title,
+.recipe-card.kept .card-ingredients,
+.recipe-card.kept .card-category {
+  color: var(--color-cream);
 }
 
 .recipe-card.kept::after {
@@ -476,32 +426,33 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  width: 48px;
-  height: 48px;
-  background: var(--color-orange);
+  width: 40px;
+  height: 40px;
+  background: var(--color-ink);
   clip-path: polygon(100% 0, 0 0, 100% 100%);
 }
 
 .recipe-card.kept::before {
-  content: '\2713';
+  content: '✓';
   position: absolute;
-  top: 6px;
-  right: 6px;
-  color: var(--color-cream-light);
-  font-size: 0.75rem;
+  top: 4px;
+  right: 4px;
+  color: var(--color-cream);
+  font-size: 0.7rem;
   font-weight: bold;
   z-index: 1;
 }
 
 .card-category {
   display: inline-block;
-  padding: 0.375rem 0.875rem;
-  border-radius: var(--radius-full);
-  font-size: 0.65rem;
-  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 1.25rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
 }
 
 .card-category.pasta {
@@ -533,13 +484,14 @@ body {
 }
 
 .card-title {
-  font-family: var(--font-handwritten);
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
   margin-bottom: 0.75rem;
-  line-height: 1.25;
+  line-height: 1.2;
   color: var(--color-ink);
-  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .card-seasonal-tags {
@@ -551,15 +503,15 @@ body {
 
 .seasonal-tag {
   display: inline-block;
-  background: rgba(255, 46, 46, 0.15);
-  color: var(--color-orange);
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: capitalize;
-  border: 1px solid var(--color-orange);
+  background: var(--color-orange);
+  color: var(--color-cream);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: lowercase;
 }
 
 .card-ingredients {
@@ -576,23 +528,23 @@ body {
 
 .btn-keep {
   flex: 1;
-  background: var(--color-orange);
+  background: var(--color-ink);
   color: var(--color-cream);
-  border: none;
-  padding: 0.875rem;
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  border: 2px solid var(--color-ink);
+  padding: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-smooth);
 }
 
 .btn-keep:hover:not(:disabled) {
-  background: var(--color-ink);
-  transform: scale(1.02);
+  background: var(--color-orange);
+  border-color: var(--color-orange);
 }
 
 .btn-keep:disabled {
@@ -602,35 +554,32 @@ body {
 
 .btn-keep.btn-kept {
   background: transparent;
-  border: 1px solid var(--color-orange);
-  color: var(--color-orange);
+  border: 2px solid var(--color-ink);
+  color: var(--color-ink);
 }
 
 .btn-keep.btn-kept:hover {
-  background: var(--color-cream-dark);
-  border-color: var(--color-ink-muted);
-  color: var(--color-ink-muted);
+  background: var(--color-blue);
 }
 
 .btn-skip {
   flex: 1;
   background: transparent;
-  color: var(--color-ink-muted);
-  border: 1px solid var(--color-border-dark);
-  padding: 0.875rem;
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  padding: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-smooth);
 }
 
 .btn-skip:hover {
-  background: var(--color-cream-dark);
-  color: var(--color-ink);
+  background: var(--color-blue);
 }
 
 /* Library Tab */
@@ -639,12 +588,13 @@ body {
 }
 
 .library-header h2 {
-  font-family: var(--font-handwritten);
-  font-size: 2rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
-  color: var(--color-coffee);
-  font-style: italic;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .library-filters {
@@ -696,24 +646,23 @@ body {
 
 /* Library Card */
 .library-card {
-  background: var(--color-cream-light);
+  background: var(--color-cream);
   border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
-  padding: 1.5rem;
+  border-radius: 0;
+  padding: 1.25rem;
   cursor: pointer;
   transition: all var(--transition-smooth);
   position: relative;
 }
 
 .library-card:hover {
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-3px);
-  border-color: var(--color-orange);
+  background: var(--color-blue);
+  transform: none;
 }
 
 .library-card.liked {
   border-color: var(--color-orange);
-  background: linear-gradient(135deg, var(--color-cream-light) 0%, rgba(255, 46, 46, 0.08) 100%);
+  border-width: 3px;
 }
 
 .library-card.liked::before {
@@ -748,14 +697,15 @@ body {
 }
 
 .library-card-title {
-  font-family: var(--font-handwritten);
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
-  line-height: 1.25;
+  line-height: 1.2;
   padding-right: 2rem;
   color: var(--color-ink);
-  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
 .library-card-author {
@@ -783,11 +733,12 @@ body {
 }
 
 .grocery-header h2 {
-  font-family: var(--font-handwritten);
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--color-coffee);
-  font-style: italic;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .grocery-actions {
@@ -833,19 +784,20 @@ body {
 }
 
 .grocery-category {
-  background: var(--color-cream-light);
+  background: var(--color-cream);
   border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   overflow: hidden;
 }
 
 .grocery-category-header {
   background: var(--color-ink);
   color: var(--color-cream);
-  padding: 0.875rem 1.5rem;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-heading);
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
@@ -1523,12 +1475,13 @@ textarea:focus-visible {
 }
 
 .prep-header h2 {
-  font-family: var(--font-handwritten);
-  font-size: 2rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
-  color: var(--color-coffee);
-  font-style: italic;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .prep-subtitle {
@@ -1565,19 +1518,20 @@ textarea:focus-visible {
 }
 
 .prep-category {
-  background: var(--color-cream-light);
+  background: var(--color-cream);
   border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   overflow: hidden;
 }
 
 .prep-category-header {
-  background: var(--color-blue);
-  color: var(--color-ink);
-  padding: 0.875rem 1.5rem;
+  background: var(--color-coffee);
+  color: var(--color-cream);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-heading);
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
