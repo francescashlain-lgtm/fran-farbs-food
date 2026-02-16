@@ -805,6 +805,16 @@ body {
   font-weight: 500;
 }
 
+.grocery-recipe-tag.clickable {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.grocery-recipe-tag.clickable:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
 .grocery-categories {
   display: grid;
   gap: 1.25rem;

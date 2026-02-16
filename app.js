@@ -1192,7 +1192,7 @@ function renderPrepList() {
 
   prepRecipesContainer.style.display = 'block';
   recipeListEl.innerHTML = keptRecipesList.map(r =>
-    `<span class="grocery-recipe-tag" style="background-color: ${r.color}">${r.name}</span>`
+    `<span class="grocery-recipe-tag clickable" style="background-color: ${r.color}" onclick="openRecipeModal('${r.recipe.id}')" title="Click to view full recipe">${r.name}</span>`
   ).join('');
 
   // Extract all prep tasks
