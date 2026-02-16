@@ -295,27 +295,40 @@ function updateGenerateGroceryButton() {
   btn.style.display = keptCount >= 1 ? 'inline-flex' : 'none';
 }
 
+// Recipe colors for grocery list
+const recipeColors = [
+  '#d4a574', // warm tan (pasta)
+  '#c17c5e', // terracotta (chicken)
+  '#2d3232', // dark (meat)
+  '#4d5532'  // olive (vegetarian)
+];
+
 // Generate grocery list
 function generateGroceryList() {
   groceryList = [];
   const keptRecipesList = [];
+  let colorIndex = 0;
 
   ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
-      keptRecipesList.push(weeklyPicks[type]);
-      weeklyPicks[type].ingredients.forEach(ingredient => {
+      const recipe = weeklyPicks[type];
+      const color = recipeColors[colorIndex % recipeColors.length];
+      keptRecipesList.push({ name: recipe.name, color: color });
+      recipe.ingredients.forEach(ingredient => {
         groceryList.push({
           item: ingredient,
-          recipe: weeklyPicks[type].name,
+          recipe: recipe.name,
+          recipeColor: color,
           checked: false
         });
       });
+      colorIndex++;
     }
   });
 
   // Save to localStorage
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
-  localStorage.setItem('groceryRecipes', JSON.stringify(keptRecipesList.map(r => r.name)));
+  localStorage.setItem('groceryRecipes', JSON.stringify(keptRecipesList));
 
   // Switch to grocery tab
   switchTab('grocery');
@@ -343,13 +356,16 @@ function renderGroceryList() {
   }
 
   groceryList = JSON.parse(savedList);
-  const recipeNames = savedRecipes ? JSON.parse(savedRecipes) : [];
+  const recipesData = savedRecipes ? JSON.parse(savedRecipes) : [];
 
-  // Render recipe tags
+  // Render recipe tags with colors
   const recipeListEl = document.getElementById('grocery-recipe-list');
-  recipeListEl.innerHTML = recipeNames.map(name =>
-    `<span class="grocery-recipe-tag">${name}</span>`
-  ).join('');
+  recipeListEl.innerHTML = recipesData.map(r => {
+    // Handle both old format (string) and new format (object with color)
+    const name = typeof r === 'string' ? r : r.name;
+    const color = typeof r === 'object' && r.color ? r.color : '#4d5532';
+    return `<span class="grocery-recipe-tag" style="background-color: ${color}">${name}</span>`;
+  }).join('');
 
   // Categorize ingredients
   const categories = categorizeIngredients(groceryList);
@@ -362,6 +378,7 @@ function renderGroceryList() {
       <div class="grocery-category-items">
         ${items.map((item, idx) => `
           <div class="grocery-item ${item.checked ? 'checked' : ''}" data-idx="${groceryList.indexOf(item)}">
+            <span class="ingredient-color-dot" style="background-color: ${item.recipeColor || '#4d5532'}"></span>
             <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleGroceryItem(${groceryList.indexOf(item)})">
             <label>${item.item}</label>
           </div>

@@ -763,6 +763,17 @@ body {
   color: var(--color-ink-muted);
 }
 
+.ingredient-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.grocery-item.checked .ingredient-color-dot {
+  opacity: 0.4;
+}
+
 /* Modal */
 .modal {
   display: none;
