@@ -3307,5 +3307,61 @@
     "instructions": "Preheat the oven to 200°F if you'd like to keep your pancakes warm between batches.\n\nMake the batter: Place the ingredients in a blender in this order: the bananas, eggs, milk, vanilla, oats, baking powder, cinnamon, and salt. Blend on high speed until completely smooth, 30 seconds to 1 minute. Let the batter sit in the blender to thicken for 5 minutes while you heat up your pan.\n\nCook the pancakes: Place a large nonstick griddle or skillet over medium heat and lightly coat with coconut oil. Once the oil has melted, add approximately ¼ cup of the batter for each pancake (use 1 tablespoon for mini pancakes), leaving room for the batter to spread. If necessary, use the back of a spoon to spread about ½ inch thick. Cook until the pancakes slightly puff up and you see a few bubbles along the edges, 2 to 4 minutes.\n\nTo check if the pancakes are ready to be flipped, lift a corner with a flexible spatula; if they are golden brown on the bottom, it's time to flip.\n\nGently flip the cakes and cook until golden brown on the underside, about 2 minutes more. If the pancakes are browning too quickly, reduce the heat to medium-low. Transfer the finished pancakes to a baking sheet and place in the oven to keep warm.\n\nWipe the skillet clean and repeat with more oil as needed and the remaining batter.\n\nTransfer the pancakes to a plate, add your favorite toppings, and serve warm.",
     "servings": "10 pancakes",
     "time": "25 minutes"
+  },
+  {
+    "id": "144",
+    "name": "Wonder Woman's Essential Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "¾ to 1 cup canned light coconut milk, as needed",
+      "Zest of 1 lime",
+      "2 tablespoons fresh lime juice",
+      "2 cups fresh spinach",
+      "1 frozen ripe banana",
+      "½ cup frozen mango or pineapple chunks",
+      "2 tablespoons hemp hearts"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
+  },
+  {
+    "id": "145",
+    "name": "Omega-3 Wild Blueberry Tahini Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "¾ to 1 cup dairy-free milk of choice, as needed",
+      "1 cup frozen wild blueberries (regular will also work)",
+      "1 frozen ripe banana",
+      "2 tablespoons tahini (or sub natural creamy peanut, almond, or cashew butter)",
+      "1 teaspoon vanilla extract",
+      "1 tablespoon hemp hearts",
+      "2 teaspoons chia seeds",
+      "Zest of 1 lemon (optional)"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
+  },
+  {
+    "id": "146",
+    "name": "Wake Me Up Brazil Nut Cacao Coffee Smoothie",
+    "category": "smoothie",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "½ cup cold brew or cooled leftover coffee",
+      "¼ to ½ cup canned light coconut milk, as needed",
+      "1 cup frozen cooked cauliflower (or sub ice)",
+      "3 large pitted Medjool dates",
+      "3 large Brazil nuts (or sub ¼ cup raw cashews or 2 tablespoons natural creamy peanut butter)",
+      "2 tablespoons cacao or unsweetened cocoa powder",
+      "1 teaspoon vanilla extract",
+      "1 scoop protein powder of choice (plant-based, if desired)"
+    ],
+    "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
+    "servings": "1",
+    "time": "5 minutes"
   }
 ]
