@@ -2531,5 +2531,67 @@
     "instructions": "Preheat the oven to 350°F. Spray a 9x4-inch loaf pan with nonstick spray. Sugar the inside of the pan with ¼ cup of the Demerara sugar, tapping out any excess.\n\nIn a medium bowl, whisk the flour, cocoa powder, baking soda, and salt together; set aside.\n\nUsing an electric mixer, beat the butter, granulated sugar, light brown sugar, and vanilla on high speed until the mixture is super light and fluffy, 3 to 5 minutes. Scrape down the sides of the bowl and add the egg. Beat until well combined and the mixture returns to that previously light, fluffy state, about 2 minutes. With the mixer on low, slowly add the dry ingredients and beat just to blend. Using a spatula, fold in the mashed bananas, followed by the mascarpone, mixing just to blend.\n\nPour the batter into the prepared loaf pan, smoothing the top. Place the banana halves, cut-side up, on top of the batter. Sprinkle with the remaining ¼ cup Demerara sugar and bake until the sides start to pull away and the cake is baked through in the center, 90 to 100 minutes.\n\nLet cool completely before slicing.",
     "servings": "1 loaf",
     "time": "2 hours"
+  },
+  {
+    "id": "113",
+    "name": "Labne with Sizzled Scallions and Chile (Almost Ranch)",
+    "category": "side",
+    "author": "ALISON ROMAN",
+    "ingredients": [
+      "⅓ cup olive oil",
+      "4 scallions (or green garlic), white and light green parts, thinly sliced",
+      "1 teaspoon crushed red pepper flakes",
+      "2 tablespoons finely chopped fresh cilantro (tender leaves and stems) or chives, plus more for garnish",
+      "Flaky sea salt",
+      "Freshly ground black pepper",
+      "2 cups labne, full-fat Greek yogurt, or sour cream",
+      "2 tablespoons fresh lemon juice"
+    ],
+    "instructions": "Heat the olive oil, scallions, crushed red pepper flakes, and cilantro in a small pot over medium-low heat. Cook, swirling occasionally, until the scallions and red pepper flakes start to visually and audibly sizzle and frizzle and turn the oil a bright fiery orange. Remove from the heat and let cool enough to taste without burning your mouth, then season with salt and pepper.\n\nCombine the labne and lemon juice in a medium bowl and season with salt and pepper. Spoon into a bowl and swirl in the sizzled scallion mixture. Top with extra cilantro, if you like.",
+    "servings": "2 cups",
+    "time": "15 minutes"
+  },
+  {
+    "id": "114",
+    "name": "Creamy Cauliflower and Onion Gratin",
+    "category": "side",
+    "author": "ALISON ROMAN",
+    "ingredients": [
+      "1 cup heavy cream",
+      "4 tablespoons (½ stick) unsalted butter",
+      "2 garlic cloves, finely grated",
+      "Kosher salt and freshly ground black pepper",
+      "2½- to 3-pound cauliflower, leafy green parts removed",
+      "½ small sweet or yellow onion, very thinly sliced",
+      "6 ounces Gruyère or white cheddar cheese, grated (about 2½ cups)",
+      "Crushed red pepper flakes (optional)",
+      "2 cups fresh coarse bread crumbs or panko (optional)",
+      "3 tablespoons white sesame seeds",
+      "¼ cup olive oil (if using bread crumbs)"
+    ],
+    "instructions": "Preheat the oven to 425°F.\n\nBring the cream, butter, and garlic to a simmer in a small pot over medium heat. Season with salt and pepper and remove from heat.\n\nSlice the cauliflower into ½-inch-thick slabs (some of the bits will fall away and crumble into tiny florets; this is fine).\n\nLayer the cauliflower and onion in a baking dish, pour the cream mixture over, and top with cheese and sesame seeds. Cover and bake until cauliflower is tender, then uncover to brown the top.",
+    "servings": "6-10",
+    "time": "1 hour"
+  },
+  {
+    "id": "115",
+    "name": "One-Pot Chicken with Dates and Caramelized Lemon",
+    "category": "chicken",
+    "author": "ALISON ROMAN",
+    "ingredients": [
+      "3½- to 4-pound chicken, or 3 pounds bone-in, skin-on chicken thighs or legs",
+      "Kosher salt and freshly ground black pepper",
+      "4 tablespoons olive oil, divided",
+      "1 lemon, cut into thick slices crosswise, seeds removed",
+      "2 shallots, halved lengthwise",
+      "4-6 medjool dates (3 ounces), pitted",
+      "4 sprigs fresh thyme or oregano, plus more for serving",
+      "1 cup water",
+      "2 teaspoons ground Urfa chile, or 1 teaspoon crushed red pepper flakes",
+      "Flaky sea salt"
+    ],
+    "instructions": "Preheat the oven to 425°F.\n\nSeason the chicken all over with salt and pepper. Heat 2 tablespoons of the oil in a large (at least 8-quart) Dutch oven over medium-high heat. Place the chicken in the pot breast side up, and using tongs or your hands, press lightly to make sure the skin comes into even contact with the pot bottom. This is your chance to brown the legs and render that excess fat! (If using parts, just sear the chicken skin side down.)\n\nCook, without moving, until the chicken is nice and browned, 5 to 8 minutes. Seriously, no peeking!\n\nAdd the lemon slices and shallot, maneuvering the chicken however you need so that the slices come into contact with the bottom of the pot. Let everything sizzle in the chicken fat until lightly caramelized, about 2 minutes.\n\nAdd the dates, thyme, and water. Sprinkle the top of the chicken with the Urfa chile and place the lid on. Put the Dutch oven in the oven and roast until the dates are plump, the lemon is jammy, and the chicken is almost but not totally cooked through, 20 to 25 minutes.\n\nRemove the lid and drizzle the chicken with the remaining 2 tablespoons oil and continue to cook until the liquid has reduced by half and top of the chicken is an illustrious, glistening golden-brown, another 20 to 30 minutes, depending on if you're using parts or whole bird.\n\nLet the chicken rest in the Dutch oven for 10 minutes, then transfer to a cutting board and carve. Serve along with the shallot, lemon, and dates with some more thyme and flaky sea salt sprinkled over.",
+    "servings": "4-6",
+    "time": "1 hour 15 minutes"
   }
 ]
