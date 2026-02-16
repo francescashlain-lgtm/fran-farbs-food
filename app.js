@@ -64,11 +64,22 @@ let manuallyKeptRecipes = []; // Recipes kept from the library
 // Initialize the app
 async function init() {
   loadUserPreferences();
-  loadManuallyKeptRecipes();
-  loadWeeklyState();
+
+  // Check for URL sync first - this overrides localStorage if present
+  const hasUrlSync = checkURLSync();
+
+  if (!hasUrlSync) {
+    loadManuallyKeptRecipes();
+    loadWeeklyState();
+    loadMiscItems();
+  }
+
   loadPrepListState();
-  loadMiscItems();
   await loadRecipes();
+
+  // Resolve any pending sync picks now that recipes are loaded
+  resolvePendingSyncPicks();
+
   setupEventListeners();
   updateSeasonalDisplay();
   renderCategoryFilter();
@@ -108,6 +119,110 @@ function saveWeeklyState() {
   localStorage.setItem('keptRecipes', JSON.stringify(keptRecipes));
   localStorage.setItem('weeklyPicks', JSON.stringify(weeklyPicks));
   localStorage.setItem('skippedRecipes', JSON.stringify(skippedRecipes));
+}
+
+// ==================== URL SHARING ====================
+
+// Generate a shareable URL with current selections
+function generateShareableURL() {
+  const state = {
+    // Store just the recipe IDs for kept weekly picks
+    weeklyPicks: {},
+    keptRecipes: keptRecipes,
+    manuallyKept: manuallyKeptRecipes,
+    groceryList: groceryList,
+    miscItems: miscItems
+  };
+
+  // Only include kept recipes
+  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+    if (weeklyPicks[type] && keptRecipes[type]) {
+      state.weeklyPicks[type] = weeklyPicks[type].id;
+    }
+  });
+
+  const encoded = btoa(JSON.stringify(state));
+  const url = window.location.origin + window.location.pathname + '?sync=' + encoded;
+  return url;
+}
+
+// Copy shareable URL to clipboard
+function copyShareableURL() {
+  const url = generateShareableURL();
+  navigator.clipboard.writeText(url).then(() => {
+    alert('Sync link copied! Open this link on your other device to sync your weekly selections.');
+  }).catch(() => {
+    // Fallback for browsers that don't support clipboard API
+    prompt('Copy this link to sync on another device:', url);
+  });
+}
+
+// Check for and restore from URL parameters
+function checkURLSync() {
+  const params = new URLSearchParams(window.location.search);
+  const syncData = params.get('sync');
+
+  if (syncData) {
+    try {
+      const state = JSON.parse(atob(syncData));
+
+      // Restore kept recipes flags
+      if (state.keptRecipes) {
+        keptRecipes = state.keptRecipes;
+      }
+
+      // Restore weekly picks (will be matched to full recipes after recipes load)
+      if (state.weeklyPicks) {
+        // Store IDs temporarily, will be resolved after recipes load
+        window._pendingSyncPicks = state.weeklyPicks;
+      }
+
+      // Restore manually kept recipes
+      if (state.manuallyKept) {
+        manuallyKeptRecipes = state.manuallyKept;
+        localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+      }
+
+      // Restore grocery list
+      if (state.groceryList) {
+        groceryList = state.groceryList;
+        localStorage.setItem('groceryList', JSON.stringify(groceryList));
+      }
+
+      // Restore misc items
+      if (state.miscItems) {
+        miscItems = state.miscItems;
+        localStorage.setItem('miscItems', JSON.stringify(miscItems));
+      }
+
+      // Save to localStorage so it persists
+      saveWeeklyState();
+
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      return true;
+    } catch (e) {
+      console.error('Failed to parse sync data:', e);
+    }
+  }
+  return false;
+}
+
+// Resolve pending sync picks after recipes are loaded
+function resolvePendingSyncPicks() {
+  if (window._pendingSyncPicks) {
+    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+      if (window._pendingSyncPicks[type]) {
+        const recipe = recipes.find(r => r.id === window._pendingSyncPicks[type]);
+        if (recipe) {
+          weeklyPicks[type] = recipe;
+        }
+      }
+    });
+    delete window._pendingSyncPicks;
+    saveWeeklyState();
+  }
 }
 
 // Restore weekly picks from localStorage or generate new ones
@@ -170,8 +285,12 @@ function startNewWeek() {
 function updateStartNewWeekButton() {
   const hasSelections = Object.values(keptRecipes).some(Boolean) || manuallyKeptRecipes.length > 0;
   const btn = document.getElementById('start-new-week');
+  const syncBtn = document.getElementById('sync-device');
   if (btn) {
     btn.style.display = hasSelections ? 'inline-flex' : 'none';
+  }
+  if (syncBtn) {
+    syncBtn.style.display = hasSelections ? 'inline-flex' : 'none';
   }
 }
 
@@ -1822,6 +1941,9 @@ function setupEventListeners() {
 
   // Start new week
   document.getElementById('start-new-week').addEventListener('click', startNewWeek);
+
+  // Sync to device
+  document.getElementById('sync-device').addEventListener('click', copyShareableURL);
 
   // Library filters
   document.getElementById('category-filter').addEventListener('change', renderLibrary);
