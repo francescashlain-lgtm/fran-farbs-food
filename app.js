@@ -131,7 +131,13 @@ function generateShareableURL() {
     keptRecipes: keptRecipes,
     manuallyKept: manuallyKeptRecipes,
     groceryList: groceryList,
-    miscItems: miscItems
+    miscItems: miscItems,
+    // Include user preferences (liked, notes, edits)
+    liked: userPreferences.liked,
+    notes: userPreferences.notes,
+    titleEdits: userPreferences.titleEdits,
+    categoryEdits: userPreferences.categoryEdits,
+    authorEdits: userPreferences.authorEdits
   };
 
   // Only include kept recipes
@@ -194,6 +200,24 @@ function checkURLSync() {
         miscItems = state.miscItems;
         localStorage.setItem('miscItems', JSON.stringify(miscItems));
       }
+
+      // Restore user preferences (liked, notes, edits)
+      if (state.liked) {
+        userPreferences.liked = state.liked;
+      }
+      if (state.notes) {
+        userPreferences.notes = state.notes;
+      }
+      if (state.titleEdits) {
+        userPreferences.titleEdits = state.titleEdits;
+      }
+      if (state.categoryEdits) {
+        userPreferences.categoryEdits = state.categoryEdits;
+      }
+      if (state.authorEdits) {
+        userPreferences.authorEdits = state.authorEdits;
+      }
+      saveUserPreferences();
 
       // Save to localStorage so it persists
       saveWeeklyState();
