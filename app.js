@@ -289,10 +289,10 @@ function handleSkip(type) {
 
 // Update the generate grocery button visibility
 function updateGenerateGroceryButton() {
-  // Show button when at least 3 recipes are kept
+  // Show button when at least 1 recipe is kept
   const keptCount = Object.values(keptRecipes).filter(Boolean).length;
   const btn = document.getElementById('generate-grocery');
-  btn.style.display = keptCount >= 3 ? 'inline-flex' : 'none';
+  btn.style.display = keptCount >= 1 ? 'inline-flex' : 'none';
 }
 
 // Generate grocery list
