@@ -64,13 +64,15 @@ let manuallyKeptRecipes = []; // Recipes kept from the library
 async function init() {
   loadUserPreferences();
   loadManuallyKeptRecipes();
+  loadWeeklyState();
   await loadRecipes();
   setupEventListeners();
   updateSeasonalDisplay();
   renderCategoryFilter();
-  generateWeeklyPicks();
+  restoreOrGenerateWeeklyPicks();
   renderManualPicks();
   renderLibrary();
+  updateStartNewWeekButton();
 }
 
 // Load manually kept recipes from localStorage
@@ -78,6 +80,93 @@ function loadManuallyKeptRecipes() {
   const saved = localStorage.getItem('manuallyKeptRecipes');
   if (saved) {
     manuallyKeptRecipes = JSON.parse(saved);
+  }
+}
+
+// Load weekly state from localStorage
+function loadWeeklyState() {
+  const savedKept = localStorage.getItem('keptRecipes');
+  const savedPicks = localStorage.getItem('weeklyPicks');
+  const savedSkipped = localStorage.getItem('skippedRecipes');
+
+  if (savedKept) {
+    keptRecipes = JSON.parse(savedKept);
+  }
+  if (savedPicks) {
+    weeklyPicks = JSON.parse(savedPicks);
+  }
+  if (savedSkipped) {
+    skippedRecipes = JSON.parse(savedSkipped);
+  }
+}
+
+// Save weekly state to localStorage
+function saveWeeklyState() {
+  localStorage.setItem('keptRecipes', JSON.stringify(keptRecipes));
+  localStorage.setItem('weeklyPicks', JSON.stringify(weeklyPicks));
+  localStorage.setItem('skippedRecipes', JSON.stringify(skippedRecipes));
+}
+
+// Restore weekly picks from localStorage or generate new ones
+function restoreOrGenerateWeeklyPicks() {
+  const hasSavedPicks = Object.values(weeklyPicks).some(p => p !== null);
+
+  if (hasSavedPicks) {
+    // Restore saved picks - need to find full recipe objects
+    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+      if (weeklyPicks[type]) {
+        const recipe = recipes.find(r => r.id === weeklyPicks[type].id);
+        if (recipe) {
+          weeklyPicks[type] = recipe;
+          renderRecipeCard(type, recipe);
+        } else {
+          weeklyPicks[type] = null;
+          keptRecipes[type] = false;
+          renderRecipeCard(type, null);
+        }
+      } else {
+        renderRecipeCard(type, null);
+      }
+    });
+    updateGenerateGroceryButton();
+  } else {
+    generateWeeklyPicks();
+  }
+}
+
+// Start a new week - clear all selections
+function startNewWeek() {
+  if (!confirm('Start a new week? This will clear all your current selections and grocery list.')) {
+    return;
+  }
+
+  // Reset all state
+  weeklyPicks = { pasta: null, chicken: null, meat: null, vegetarian: null };
+  keptRecipes = { pasta: false, chicken: false, meat: false, vegetarian: false };
+  skippedRecipes = { pasta: [], chicken: [], meat: [], vegetarian: [] };
+  manuallyKeptRecipes = [];
+  groceryList = [];
+
+  // Clear localStorage
+  localStorage.removeItem('keptRecipes');
+  localStorage.removeItem('weeklyPicks');
+  localStorage.removeItem('skippedRecipes');
+  localStorage.removeItem('manuallyKeptRecipes');
+  localStorage.removeItem('groceryList');
+  localStorage.removeItem('groceryRecipes');
+
+  // Re-generate picks and update UI
+  generateWeeklyPicks();
+  renderManualPicks();
+  updateStartNewWeekButton();
+}
+
+// Update the Start New Week button visibility
+function updateStartNewWeekButton() {
+  const hasSelections = Object.values(keptRecipes).some(Boolean) || manuallyKeptRecipes.length > 0;
+  const btn = document.getElementById('start-new-week');
+  if (btn) {
+    btn.style.display = hasSelections ? 'inline-flex' : 'none';
   }
 }
 
@@ -210,6 +299,7 @@ function generateWeeklyPicks() {
     }
   });
 
+  saveWeeklyState();
   updateGenerateGroceryButton();
 }
 
@@ -275,8 +365,10 @@ function handleKeep(type) {
   } else {
     keptRecipes[type] = true;
   }
+  saveWeeklyState();
   renderRecipeCard(type, weeklyPicks[type]);
   updateGenerateGroceryButton();
+  updateStartNewWeekButton();
 }
 
 // Handle skip action
@@ -310,6 +402,8 @@ function handleSkip(type) {
   }
 
   generateWeeklyPicks();
+  saveWeeklyState();
+  updateStartNewWeekButton();
 }
 
 // Update the generate grocery button visibility
@@ -331,6 +425,7 @@ function toggleKeepForWeek(id) {
   localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
   renderManualPicks();
   updateGenerateGroceryButton();
+  updateStartNewWeekButton();
 }
 
 // Render manually kept recipes section
@@ -1231,6 +1326,9 @@ function setupEventListeners() {
 
   // Generate grocery list
   document.getElementById('generate-grocery').addEventListener('click', generateGroceryList);
+
+  // Start new week
+  document.getElementById('start-new-week').addEventListener('click', startNewWeek);
 
   // Library filters
   document.getElementById('category-filter').addEventListener('change', renderLibrary);

@@ -44,8 +44,19 @@
       </div>
 
       <div class="weekly-picks">
-        <h3>Your Dinners This Week</h3>
-        <p class="picks-subtitle">Keep 3 dishes - selected for seasonal freshness</p>
+        <div class="weekly-picks-header">
+          <div>
+            <h3>Your Dinners This Week</h3>
+            <p class="picks-subtitle">Keep 3 dishes - selected for seasonal freshness</p>
+          </div>
+          <button id="start-new-week" class="btn-new-week" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            Start a New Week
+          </button>
+        </div>
 
         <div class="recipe-cards">
           <div class="recipe-card" id="pasta-pick">

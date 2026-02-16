@@ -324,6 +324,14 @@ body {
 }
 
 /* Weekly Picks */
+.weekly-picks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
 .weekly-picks h3 {
   font-family: var(--font-display);
   font-size: 2rem;
@@ -333,8 +341,32 @@ body {
 
 .picks-subtitle {
   color: var(--color-ink-muted);
-  margin-bottom: 2rem;
   font-size: 0.95rem;
+}
+
+.btn-new-week {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-ink-muted);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  white-space: nowrap;
+}
+
+.btn-new-week:hover {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  border-color: var(--color-ink);
 }
 
 .recipe-cards {
