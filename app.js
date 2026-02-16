@@ -478,12 +478,11 @@ const recipeColorsByType = {
   vegetarian: '#4d5532'  // olive
 };
 
-// Parse an ingredient string to extract quantity and name
+// Parse an ingredient string to extract quantity for combining
 function parseIngredient(ingredientStr) {
   const str = ingredientStr.trim();
 
   // Match leading quantity (numbers, fractions, ranges)
-  // Examples: "2", "1/2", "2-3", "1 1/2", "½"
   const fractionMap = { '½': 0.5, '⅓': 0.33, '⅔': 0.67, '¼': 0.25, '¾': 0.75, '⅛': 0.125 };
 
   // Pattern to match quantities at the start
@@ -501,7 +500,6 @@ function parseIngredient(ingredientStr) {
     if (fractionMap[qtyStr]) {
       quantity = fractionMap[qtyStr];
     } else if (qtyStr.includes('/')) {
-      // Handle fractions like "1/2" or "1 1/2"
       const parts = qtyStr.split(/\s+/);
       quantity = 0;
       parts.forEach(p => {
@@ -513,7 +511,6 @@ function parseIngredient(ingredientStr) {
         }
       });
     } else if (qtyStr.includes('-') || qtyStr.includes('–')) {
-      // Range like "2-3", take the higher number
       const nums = qtyStr.split(/[-–]/).map(n => Number(n.trim()));
       quantity = Math.max(...nums);
     } else {
@@ -521,32 +518,30 @@ function parseIngredient(ingredientStr) {
     }
   }
 
-  // Extract the base ingredient name (remove unit measurements and prep instructions)
-  const unitPattern = /^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|sticks?|slices?|pieces?|pinch(?:es)?|large|medium|small|whole)\s+(?:of\s+)?/i;
-  let name = rest.replace(unitPattern, '').trim();
-
-  // Remove prep instructions in parentheses or after comma
-  name = name.replace(/\s*\([^)]*\)/g, '').replace(/,.*$/, '').trim();
-
-  // Normalize the name
-  name = name.toLowerCase()
-    .replace(/freshly\s+/g, '')
-    .replace(/fresh\s+/g, '')
-    .replace(/chopped|minced|diced|sliced|grated|shredded|crushed|ground/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  // Keep the full remaining text as the name (preserves "pound ground beef", etc.)
+  const name = rest.trim();
 
   return { quantity, name, original: ingredientStr };
 }
 
 // Get a normalized key for matching similar ingredients
-function getIngredientKey(name) {
-  // Further normalize for matching
-  let key = name.toLowerCase()
-    .replace(/s$/, '') // Remove trailing 's' for plurals
-    .replace(/es$/, '') // Remove 'es' plural
-    .replace(/ies$/, 'y') // 'berries' -> 'berry'
+// Only combine ingredients that are nearly identical
+function getIngredientKey(ingredientStr) {
+  // Normalize for matching - but keep important descriptors
+  let key = ingredientStr.toLowerCase()
+    .replace(/\s*\([^)]*\)/g, '') // Remove parenthetical notes
+    .replace(/,.*$/, '') // Remove text after comma
+    .replace(/freshly\s+/g, '')
+    .replace(/fresh\s+/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
+
+  // Remove trailing 's' for simple plurals only for very short ingredient names
+  // This helps match "lemon" with "lemons" but not "ground beef" with "ground beefs"
+  if (key.split(' ').length === 1 && key.endsWith('s') && key.length > 3) {
+    key = key.slice(0, -1);
+  }
+
   return key;
 }
 
@@ -575,7 +570,7 @@ function combineIngredients(rawList) {
     } else {
       combined.set(key, {
         key: key,
-        name: parsed.name,
+        name: parsed.name, // Keep the descriptive name like "pound ground beef"
         quantity: parsed.quantity,
         recipeColors: [item.recipeColor],
         recipes: [item.recipe],
@@ -590,28 +585,24 @@ function combineIngredients(rawList) {
 
 // Format combined ingredient for display
 function formatCombinedIngredient(item) {
+  // If there's only one original item, just show it as-is
+  if (item.originalItems && item.originalItems.length === 1) {
+    return item.originalItems[0];
+  }
+
+  // For combined items, show quantity + name
   if (item.quantity && item.quantity > 0) {
-    // Format quantity nicely
     let qtyStr;
     if (Number.isInteger(item.quantity)) {
       qtyStr = item.quantity.toString();
     } else {
-      // Round to 1 decimal place
       qtyStr = item.quantity.toFixed(1).replace(/\.0$/, '');
     }
-    // Pluralize if quantity > 1
-    let name = item.name;
-    if (item.quantity > 1 && !name.endsWith('s')) {
-      // Simple pluralization
-      if (name.endsWith('y') && !['ay', 'ey', 'oy', 'uy'].some(e => name.endsWith(e))) {
-        name = name.slice(0, -1) + 'ies';
-      } else {
-        name = name + 's';
-      }
-    }
-    return `${qtyStr} ${name}`;
+    return `${qtyStr} ${item.name}`;
   }
-  return item.name;
+
+  // Fallback to showing the first original item
+  return item.originalItems ? item.originalItems[0] : item.name;
 }
 
 // Generate grocery list
