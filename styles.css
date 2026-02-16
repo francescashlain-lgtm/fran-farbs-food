@@ -1519,6 +1519,45 @@ textarea:focus-visible {
   border-bottom: none;
 }
 
+.prep-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-olive);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.prep-item.checked .prep-task-text {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.prep-item.checked .ingredient-color-dot {
+  opacity: 0.4;
+}
+
+.prep-remove {
+  background: transparent;
+  border: none;
+  color: var(--color-ink-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+  padding: 0.25rem;
+  margin-left: auto;
+}
+
+.prep-item:hover .prep-remove {
+  opacity: 0.6;
+}
+
+.prep-remove:hover {
+  opacity: 1;
+  color: var(--color-terracotta);
+}
+
 .prep-item.multi-recipe {
   background: rgba(251, 192, 120, 0.1);
   margin: 0 -1.5rem;

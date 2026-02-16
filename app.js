@@ -65,6 +65,7 @@ async function init() {
   loadUserPreferences();
   loadManuallyKeptRecipes();
   loadWeeklyState();
+  loadPrepListState();
   await loadRecipes();
   setupEventListeners();
   updateSeasonalDisplay();
@@ -146,6 +147,7 @@ function startNewWeek() {
   skippedRecipes = { pasta: [], chicken: [], meat: [], vegetarian: [] };
   manuallyKeptRecipes = [];
   groceryList = [];
+  prepListState = { checked: [], removed: [] };
 
   // Clear localStorage
   localStorage.removeItem('keptRecipes');
@@ -154,6 +156,7 @@ function startNewWeek() {
   localStorage.removeItem('manuallyKeptRecipes');
   localStorage.removeItem('groceryList');
   localStorage.removeItem('groceryRecipes');
+  localStorage.removeItem('prepListState');
 
   // Re-generate picks and update UI
   generateWeeklyPicks();
@@ -795,6 +798,44 @@ function clearGroceryList() {
 
 // ==================== PREP LIST ====================
 
+// Prep list state
+let prepListState = {
+  checked: [],  // Array of task keys that are checked
+  removed: []   // Array of task keys that are removed
+};
+
+// Load prep list state from localStorage
+function loadPrepListState() {
+  const saved = localStorage.getItem('prepListState');
+  if (saved) {
+    prepListState = JSON.parse(saved);
+  }
+}
+
+// Save prep list state to localStorage
+function savePrepListState() {
+  localStorage.setItem('prepListState', JSON.stringify(prepListState));
+}
+
+// Toggle prep task checked state
+function togglePrepTask(key) {
+  const idx = prepListState.checked.indexOf(key);
+  if (idx > -1) {
+    prepListState.checked.splice(idx, 1);
+  } else {
+    prepListState.checked.push(key);
+  }
+  savePrepListState();
+  renderPrepList();
+}
+
+// Remove a prep task
+function removePrepTask(key) {
+  prepListState.removed.push(key);
+  savePrepListState();
+  renderPrepList();
+}
+
 // Prep task patterns to look for in instructions and ingredients
 const prepPatterns = [
   { pattern: /chop(?:ped|ping)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Chop', category: 'Cutting' },
@@ -865,16 +906,25 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
 
     prepWords.forEach(({ word, action }) => {
       if (lower.includes(word)) {
+        // Extract quantity from start of ingredient
+        const qtyMatch = ing.match(/^([\d\s\/½⅓⅔¼¾⅛]+)/);
+        const quantity = qtyMatch ? qtyMatch[1].trim() : '';
+
         // Extract the ingredient name (before the comma or prep word)
         let item = ing.split(',')[0].trim();
-        // Remove quantity
-        item = item.replace(/^[\d\s\/½⅓⅔¼¾⅛]+/, '').trim();
+        // Remove quantity from item for display
+        let itemWithoutQty = item.replace(/^[\d\s\/½⅓⅔¼¾⅛]+/, '').trim();
         // Remove units
-        item = item.replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|large|medium|small)\s+/i, '').trim();
-        if (item.length > 2) {
+        itemWithoutQty = itemWithoutQty.replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|large|medium|small)\s+(?:of\s+)?/i, '').trim();
+
+        if (itemWithoutQty.length > 2) {
+          // Include quantity in the item display
+          const displayItem = quantity ? `${quantity} ${itemWithoutQty}` : itemWithoutQty;
           tasks.push({
             action,
-            item,
+            item: displayItem,
+            itemBase: itemWithoutQty, // For combining similar items
+            quantity,
             category: 'Cutting',
             recipe: recipeName,
             recipeColor
@@ -892,22 +942,28 @@ function combinePrepTasks(allTasks) {
   const combined = new Map();
 
   allTasks.forEach(task => {
-    // Create a key for grouping similar tasks
-    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/s$/, '')}`;
+    // Create a key for grouping similar tasks (use itemBase if available for better matching)
+    const itemForKey = (task.itemBase || task.item).toLowerCase().replace(/s$/, '').replace(/\d+/g, '').trim();
+    const key = `${task.action.toLowerCase()}-${itemForKey}`;
 
     if (combined.has(key)) {
       const existing = combined.get(key);
       if (!existing.recipes.includes(task.recipe)) {
         existing.recipes.push(task.recipe);
         existing.recipeColors.push(task.recipeColor);
+        // Add quantity info
+        if (task.quantity) {
+          existing.quantities.push({ qty: task.quantity, recipe: task.recipe });
+        }
       }
     } else {
       combined.set(key, {
         action: task.action,
-        item: task.item,
+        item: task.itemBase || task.item, // Use base item for display
         category: task.category,
         recipes: [task.recipe],
         recipeColors: [task.recipeColor],
+        quantities: task.quantity ? [{ qty: task.quantity, recipe: task.recipe }] : [],
         checked: false
       });
     }
@@ -982,7 +1038,13 @@ function renderPrepList() {
   });
 
   // Combine similar tasks
-  const combinedTasks = combinePrepTasks(allTasks);
+  let combinedTasks = combinePrepTasks(allTasks);
+
+  // Filter out removed tasks and add keys
+  combinedTasks = combinedTasks.map(task => {
+    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}`;
+    return { ...task, key };
+  }).filter(task => !prepListState.removed.includes(task.key));
 
   if (combinedTasks.length === 0) {
     document.getElementById('prep-categories').innerHTML = `
@@ -1009,9 +1071,14 @@ function renderPrepList() {
     categories[task.category].push(task);
   });
 
-  // Sort tasks within each category - multi-recipe tasks first
+  // Sort tasks within each category - multi-recipe tasks first, then unchecked before checked
   Object.values(categories).forEach(tasks => {
-    tasks.sort((a, b) => b.recipes.length - a.recipes.length);
+    tasks.sort((a, b) => {
+      const aChecked = prepListState.checked.includes(a.key) ? 1 : 0;
+      const bChecked = prepListState.checked.includes(b.key) ? 1 : 0;
+      if (aChecked !== bChecked) return aChecked - bChecked;
+      return b.recipes.length - a.recipes.length;
+    });
   });
 
   // Render categories
@@ -1020,19 +1087,34 @@ function renderPrepList() {
     <div class="prep-category">
       <div class="prep-category-header">${category}</div>
       <div class="prep-category-items">
-        ${tasks.map((task, idx) => {
+        ${tasks.map((task) => {
           const colorDots = task.recipeColors
             .map(color => `<span class="ingredient-color-dot" style="background-color: ${color}"></span>`)
             .join('');
           const multiRecipe = task.recipes.length > 1 ? 'multi-recipe' : '';
+          const isChecked = prepListState.checked.includes(task.key);
+          const checkedClass = isChecked ? 'checked' : '';
+          // Format quantities
+          let quantityDisplay = '';
+          if (task.quantities && task.quantities.length > 0) {
+            if (task.quantities.length === 1) {
+              quantityDisplay = task.quantities[0].qty;
+            } else {
+              // Show combined quantities
+              quantityDisplay = task.quantities.map(q => q.qty).join(' + ');
+            }
+          }
+          const itemDisplay = quantityDisplay ? `${quantityDisplay} ${task.item}` : task.item;
           return `
-          <div class="prep-item ${multiRecipe}" title="For: ${task.recipes.join(', ')}">
+          <div class="prep-item ${multiRecipe} ${checkedClass}" title="For: ${task.recipes.join(', ')}">
+            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePrepTask('${task.key}')">
             <div class="ingredient-color-dots">${colorDots}</div>
             <div class="prep-task-text">
               <span class="prep-action">${task.action}</span>
-              <span class="prep-ingredient">${task.item}</span>
+              <span class="prep-ingredient">${itemDisplay}</span>
               ${task.recipes.length > 1 ? `<span class="prep-count">(${task.recipes.length} recipes)</span>` : ''}
             </div>
+            <button class="prep-remove" onclick="removePrepTask('${task.key}')" title="Remove task">&times;</button>
           </div>
         `}).join('')}
       </div>
@@ -1635,6 +1717,8 @@ window.toggleGroceryItem = toggleGroceryItem;
 window.openRecipeModal = openRecipeModal;
 window.deleteCategory = deleteCategory;
 window.removeManualPick = removeManualPick;
+window.togglePrepTask = togglePrepTask;
+window.removePrepTask = removePrepTask;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
