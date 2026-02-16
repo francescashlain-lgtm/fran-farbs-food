@@ -620,8 +620,16 @@ function generateGroceryList() {
       keptRecipesList.push({ name: recipe.name, color: color });
       recipe.ingredients.forEach(ingredient => {
         // Skip pantry staples - always have them on hand
-        const lower = ingredient.toLowerCase();
-        if (lower.includes('kosher salt') || lower.includes('olive oil')) {
+        const lower = ingredient.toLowerCase().trim();
+        if (lower.includes('kosher salt') || lower.includes('olive oil') || lower.includes('black pepper')) {
+          return;
+        }
+        // Skip section titles (e.g., "for cabbage salad:", "for burgers:")
+        if (lower.startsWith('for ') && lower.endsWith(':')) {
+          return;
+        }
+        // Skip lines that are just titles (end with colon)
+        if (lower.endsWith(':') && lower.split(' ').length <= 4) {
           return;
         }
         rawIngredients.push({
@@ -641,8 +649,16 @@ function generateGroceryList() {
       keptRecipesList.push({ name: getRecipeTitle(recipe), color: manualColor });
       recipe.ingredients.forEach(ingredient => {
         // Skip pantry staples - always have them on hand
-        const lower = ingredient.toLowerCase();
-        if (lower.includes('kosher salt') || lower.includes('olive oil')) {
+        const lower = ingredient.toLowerCase().trim();
+        if (lower.includes('kosher salt') || lower.includes('olive oil') || lower.includes('black pepper')) {
+          return;
+        }
+        // Skip section titles (e.g., "for cabbage salad:", "for burgers:")
+        if (lower.startsWith('for ') && lower.endsWith(':')) {
+          return;
+        }
+        // Skip lines that are just titles (end with colon)
+        if (lower.endsWith(':') && lower.split(' ').length <= 4) {
           return;
         }
         rawIngredients.push({
