@@ -530,8 +530,9 @@ function generateGroceryList() {
       const color = recipeColorsByType[type];
       keptRecipesList.push({ name: recipe.name, color: color });
       recipe.ingredients.forEach(ingredient => {
-        // Skip kosher salt - always have it on hand
-        if (ingredient.toLowerCase().includes('kosher salt')) {
+        // Skip pantry staples - always have them on hand
+        const lower = ingredient.toLowerCase();
+        if (lower.includes('kosher salt') || lower.includes('olive oil')) {
           return;
         }
         rawIngredients.push({
@@ -550,8 +551,9 @@ function generateGroceryList() {
     if (recipe) {
       keptRecipesList.push({ name: getRecipeTitle(recipe), color: manualColor });
       recipe.ingredients.forEach(ingredient => {
-        // Skip kosher salt - always have it on hand
-        if (ingredient.toLowerCase().includes('kosher salt')) {
+        // Skip pantry staples - always have them on hand
+        const lower = ingredient.toLowerCase();
+        if (lower.includes('kosher salt') || lower.includes('olive oil')) {
           return;
         }
         rawIngredients.push({
