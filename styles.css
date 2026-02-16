@@ -775,6 +775,12 @@ body {
   color: var(--color-ink-muted);
 }
 
+.ingredient-color-dots {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
 .ingredient-color-dot {
   width: 10px;
   height: 10px;

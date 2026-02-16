@@ -383,9 +383,145 @@ const recipeColorsByType = {
   vegetarian: '#4d5532'  // olive
 };
 
+// Parse an ingredient string to extract quantity and name
+function parseIngredient(ingredientStr) {
+  const str = ingredientStr.trim();
+
+  // Match leading quantity (numbers, fractions, ranges)
+  // Examples: "2", "1/2", "2-3", "1 1/2", "½"
+  const fractionMap = { '½': 0.5, '⅓': 0.33, '⅔': 0.67, '¼': 0.25, '¾': 0.75, '⅛': 0.125 };
+
+  // Pattern to match quantities at the start
+  const qtyPattern = /^([\d]+(?:\s*[-–]\s*[\d]+)?(?:\s*\/\s*[\d]+)?(?:\s+[\d]+\/[\d]+)?|[½⅓⅔¼¾⅛])\s*/;
+  const match = str.match(qtyPattern);
+
+  let quantity = null;
+  let rest = str;
+
+  if (match) {
+    const qtyStr = match[1];
+    rest = str.slice(match[0].length);
+
+    // Parse the quantity
+    if (fractionMap[qtyStr]) {
+      quantity = fractionMap[qtyStr];
+    } else if (qtyStr.includes('/')) {
+      // Handle fractions like "1/2" or "1 1/2"
+      const parts = qtyStr.split(/\s+/);
+      quantity = 0;
+      parts.forEach(p => {
+        if (p.includes('/')) {
+          const [num, den] = p.split('/').map(Number);
+          quantity += num / den;
+        } else {
+          quantity += Number(p);
+        }
+      });
+    } else if (qtyStr.includes('-') || qtyStr.includes('–')) {
+      // Range like "2-3", take the higher number
+      const nums = qtyStr.split(/[-–]/).map(n => Number(n.trim()));
+      quantity = Math.max(...nums);
+    } else {
+      quantity = Number(qtyStr);
+    }
+  }
+
+  // Extract the base ingredient name (remove unit measurements and prep instructions)
+  const unitPattern = /^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|cloves?|heads?|bunche?s?|cans?|sticks?|slices?|pieces?|pinch(?:es)?|large|medium|small|whole)\s+(?:of\s+)?/i;
+  let name = rest.replace(unitPattern, '').trim();
+
+  // Remove prep instructions in parentheses or after comma
+  name = name.replace(/\s*\([^)]*\)/g, '').replace(/,.*$/, '').trim();
+
+  // Normalize the name
+  name = name.toLowerCase()
+    .replace(/freshly\s+/g, '')
+    .replace(/fresh\s+/g, '')
+    .replace(/chopped|minced|diced|sliced|grated|shredded|crushed|ground/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return { quantity, name, original: ingredientStr };
+}
+
+// Get a normalized key for matching similar ingredients
+function getIngredientKey(name) {
+  // Further normalize for matching
+  let key = name.toLowerCase()
+    .replace(/s$/, '') // Remove trailing 's' for plurals
+    .replace(/es$/, '') // Remove 'es' plural
+    .replace(/ies$/, 'y') // 'berries' -> 'berry'
+    .trim();
+  return key;
+}
+
+// Combine similar ingredients
+function combineIngredients(rawList) {
+  const combined = new Map();
+
+  rawList.forEach(item => {
+    const parsed = parseIngredient(item.item);
+    const key = getIngredientKey(parsed.name);
+
+    if (combined.has(key)) {
+      const existing = combined.get(key);
+      // Add quantity if both have quantities
+      if (parsed.quantity && existing.quantity) {
+        existing.quantity += parsed.quantity;
+      } else if (parsed.quantity) {
+        existing.quantity = parsed.quantity;
+      }
+      // Add recipe color if not already present
+      if (!existing.recipeColors.includes(item.recipeColor)) {
+        existing.recipeColors.push(item.recipeColor);
+      }
+      existing.recipes.push(item.recipe);
+      existing.originalItems.push(item.item);
+    } else {
+      combined.set(key, {
+        key: key,
+        name: parsed.name,
+        quantity: parsed.quantity,
+        recipeColors: [item.recipeColor],
+        recipes: [item.recipe],
+        originalItems: [item.item],
+        checked: false
+      });
+    }
+  });
+
+  return Array.from(combined.values());
+}
+
+// Format combined ingredient for display
+function formatCombinedIngredient(item) {
+  if (item.quantity && item.quantity > 0) {
+    // Format quantity nicely
+    let qtyStr;
+    if (Number.isInteger(item.quantity)) {
+      qtyStr = item.quantity.toString();
+    } else {
+      // Round to 1 decimal place
+      qtyStr = item.quantity.toFixed(1).replace(/\.0$/, '');
+    }
+    // Pluralize if quantity > 1
+    let name = item.name;
+    if (item.quantity > 1 && !name.endsWith('s')) {
+      // Simple pluralization
+      if (name.endsWith('y') && !['ay', 'ey', 'oy', 'uy'].some(e => name.endsWith(e))) {
+        name = name.slice(0, -1) + 'ies';
+      } else {
+        name = name + 's';
+      }
+    }
+    return `${qtyStr} ${name}`;
+  }
+  return item.name;
+}
+
 // Generate grocery list
 function generateGroceryList() {
-  groceryList = [];
+  const rawIngredients = [];
   const keptRecipesList = [];
 
   ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
@@ -398,11 +534,10 @@ function generateGroceryList() {
         if (ingredient.toLowerCase().includes('kosher salt')) {
           return;
         }
-        groceryList.push({
+        rawIngredients.push({
           item: ingredient,
           recipe: recipe.name,
-          recipeColor: color,
-          checked: false
+          recipeColor: color
         });
       });
     }
@@ -419,15 +554,17 @@ function generateGroceryList() {
         if (ingredient.toLowerCase().includes('kosher salt')) {
           return;
         }
-        groceryList.push({
+        rawIngredients.push({
           item: ingredient,
           recipe: getRecipeTitle(recipe),
-          recipeColor: manualColor,
-          checked: false
+          recipeColor: manualColor
         });
       });
     }
   });
+
+  // Combine similar ingredients
+  groceryList = combineIngredients(rawIngredients);
 
   // Save to localStorage
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
@@ -479,13 +616,20 @@ function renderGroceryList() {
     <div class="grocery-category">
       <div class="grocery-category-header">${category}</div>
       <div class="grocery-category-items">
-        ${items.map((item, idx) => `
-          <div class="grocery-item ${item.checked ? 'checked' : ''}" data-idx="${groceryList.indexOf(item)}">
-            <span class="ingredient-color-dot" style="background-color: ${item.recipeColor || '#4d5532'}"></span>
-            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleGroceryItem(${groceryList.indexOf(item)})">
-            <label>${item.item}</label>
+        ${items.map((item, idx) => {
+          const itemIdx = groceryList.indexOf(item);
+          const displayText = formatCombinedIngredient(item);
+          // Generate color dots for each recipe
+          const colorDots = (item.recipeColors || [item.recipeColor || '#4d5532'])
+            .map(color => `<span class="ingredient-color-dot" style="background-color: ${color}"></span>`)
+            .join('');
+          return `
+          <div class="grocery-item ${item.checked ? 'checked' : ''}" data-idx="${itemIdx}">
+            <div class="ingredient-color-dots">${colorDots}</div>
+            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleGroceryItem(${itemIdx})">
+            <label title="${(item.originalItems || [item.item]).join(' + ')}">${displayText}</label>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
     </div>
   `).join('');
@@ -508,7 +652,8 @@ function categorizeIngredients(items) {
   const spiceKeywords = ['salt', 'pepper', 'cumin', 'paprika', 'cinnamon', 'oregano', 'thyme', 'chili', 'cayenne', 'coriander', 'turmeric', 'seasoning'];
 
   items.forEach(item => {
-    const lower = item.item.toLowerCase();
+    // Support both old format (item.item) and new combined format (item.name)
+    const lower = (item.name || item.item || '').toLowerCase();
 
     if (produceKeywords.some(k => lower.includes(k))) {
       categories['Produce'].push(item);
