@@ -485,7 +485,7 @@ function openRecipeModal(id) {
   // Get edited values or use original
   const displayTitle = userPreferences.titleEdits[id] || recipe.name;
   const displayCategories = getRecipeCategories(recipe);
-  const displayAuthor = userPreferences.authorEdits[id] || '';
+  const displayAuthor = userPreferences.authorEdits[id] || recipe.author || '';
 
   // Populate author dropdown with existing authors
   populateAuthorDatalist();
@@ -615,9 +615,9 @@ function getRecipeCategory(recipe) {
   return cats.join(', ');
 }
 
-// Get display author for a recipe
+// Get display author for a recipe (check edits first, then recipe data)
 function getRecipeAuthor(recipe) {
-  return userPreferences.authorEdits[recipe.id] || '';
+  return userPreferences.authorEdits[recipe.id] || recipe.author || '';
 }
 
 // Get all unique authors from preferences

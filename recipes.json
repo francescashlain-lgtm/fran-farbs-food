@@ -681,7 +681,8 @@
     "instructions": "In a food processor or blender, combine the basil, almonds, Parmesan, garlic, salt, black pepper, and pepper flakes. Pulse 8 to 10 times to break down the ingredients, stopping to scrape down the sides as needed. Slowly drizzle the olive oil into the food processor as you pulse about 4 more times, incorporating it bit by bit into the pesto. Your pesto should look well incorporated and stunningly green. Taste the pesto for seasoning, then transfer to an airtight container and store refrigerated for up to a week.",
     "source": "Basil Almond Pesto.pdf",
     "servings": "1.5 cups",
-    "time": "10 minutes"
+    "time": "10 minutes",
+    "author": "DAN PELOSI"
   },
   {
     "id": "32",
@@ -700,7 +701,8 @@
     "instructions": "In a blender or food processor, combine the olive oil, garlic, vinegar, mustard, oregano, salt, black pepper, and pepper flakes. Blend on high until well combined, about 30 seconds. Taste for seasoning. Transfer to an airtight container and store refrigerated for up to 1 week.",
     "source": "Basil Almond Pesto.pdf",
     "servings": "3/4 cup",
-    "time": "5 minutes"
+    "time": "5 minutes",
+    "author": "DAN PELOSI"
   },
   {
     "id": "33",
@@ -718,7 +720,8 @@
     "instructions": "In a blender or food processor, combine the olive oil, garlic, lemon juice, mustard, salt, black pepper, and pepper flakes. Blend on high until well combined, about 30 seconds. Taste for seasoning. Transfer to an airtight container and store refrigerated for up to 1 week.",
     "source": "Basil Almond Pesto.pdf",
     "servings": "3/4 cup",
-    "time": "5 minutes"
+    "time": "5 minutes",
+    "author": "DAN PELOSI"
   },
   {
     "id": "34",
@@ -1585,5 +1588,171 @@
     "source": "smitten kitchen.pdf",
     "servings": "4",
     "time": "45 minutes"
+  },
+  {
+    "id": "73",
+    "name": "Fried Stuffed Squash Blossoms",
+    "category": "vegetarian",
+    "ingredients": [
+      "1 cup whole-milk ricotta cheese",
+      "1 egg yolk",
+      "1/4 cup finely chopped fresh mint",
+      "1/4 cup freshly grated Parmesan or pecorino cheese",
+      "Kosher salt and freshly ground black pepper",
+      "Red pepper flakes",
+      "12 squash blossoms, stamens removed",
+      "2 quarts vegetable oil, for frying",
+      "Batter (see recipe)"
+    ],
+    "instructions": "In a large bowl, combine the ricotta, egg yolk, mint, Parmesan, and big pinches of salt, black pepper, and pepper flakes. Stir to combine thoroughly, then scoop the mixture into a large zip-top bag. Snip a corner off the bottom of the bag. Carefully pry open a squash blossom and hold it open with one hand. With your other hand, gently squeeze the bag to fill the blossom with the ricotta mixture. Twist the top of the blossom to seal the filling inside. Repeat with the rest of the blossoms. Heat vegetable oil in a Dutch oven to 375\u00b0F. Pour the batter into a rimmed sheet pan. Use tongs to toss a quarter of the stuffed blossoms in the batter, turning to coat. Carefully lower them into the oil. Cook until the batter is golden brown and crisp, 5 to 6 minutes. Transfer to paper towels to drain. Immediately season with a pinch of salt. Continue frying in batches.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "8",
+    "time": "45 minutes",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "74",
+    "name": "Creamy Cauliflower Skillet",
+    "category": "vegetarian",
+    "ingredients": [
+      "1 (2-pound) head cauliflower",
+      "2 medium red onions",
+      "3 tablespoons extra-virgin olive oil",
+      "Kosher salt and freshly ground black pepper",
+      "4 garlic cloves, thinly sliced",
+      "8 ounces Fontina cheese, shredded",
+      "1 tablespoon fresh oregano leaves, roughly chopped",
+      "1 tablespoon fresh thyme leaves",
+      "1 cup heavy cream",
+      "1/2 cup white wine"
+    ],
+    "instructions": "Preheat the oven to 450\u00b0F. Trim the leaves and stem off the cauliflower, then cut the head into quarters. Arrange the pieces in a large cast-iron skillet. Trim the tops of the onions, but keep the roots intact. Remove the papery skin, then cut each onion into quarters. Arrange the pieces around the cauliflower. Drizzle the olive oil over the veggies and rub to coat evenly. Season with salt and pepper. Scatter the garlic, Fontina, oregano, and thyme over the bottom of the skillet. Pour in the cream and white wine. Bake for 30 to 40 minutes, until the veggies are nicely browned and the cauliflower is knife-tender. Serve straight from the skillet.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "4",
+    "time": "50 minutes",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "75",
+    "name": "Charred Garlicky Green Beans",
+    "category": "side",
+    "ingredients": [
+      "3 tablespoons extra-virgin olive oil",
+      "12 ounces fresh green beans, trimmed",
+      "Kosher salt and freshly ground black pepper",
+      "Red pepper flakes",
+      "8 garlic cloves, thinly sliced"
+    ],
+    "instructions": "Heat a large cast-iron or stainless steel skillet over medium heat until smoking hot, about 5 minutes. Add the olive oil and turn the skillet to coat the bottom evenly. Add the green beans and season with salt, black pepper, and pepper flakes. Use tongs to toss and stir the green beans until bright green and slightly softened, about 4 minutes. Arrange the green beans in a single layer. Increase the heat to high and cook, undisturbed, until the green beans are charred and crisp-tender, 5 to 6 minutes. Add the garlic and cook, tossing to combine, until the garlic is fragrant and golden brown, 1 to 2 minutes. Transfer to a platter, taste for seasoning, and serve.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "4",
+    "time": "15 minutes",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "76",
+    "name": "The Only Dough You'll Knead",
+    "category": "bread",
+    "ingredients": [
+      "1 tablespoon sugar",
+      "1 (1/4-ounce) packet active dry yeast",
+      "1 1/2 cups warm tap water",
+      "1 tablespoon kosher salt",
+      "4 cups bread flour, plus more for dusting",
+      "Extra-virgin olive oil"
+    ],
+    "instructions": "In a large bowl, combine the sugar, yeast, and 1 1/2 cups warm tap water. Let the mixture sit until foamy and fragrant, about 6 minutes. Add the salt and flour. Use a wooden spoon to stir until a sticky dough forms. Lightly flour a clean work surface and turn out the dough. Knead until it comes together into a soft, smooth, and slightly sticky dough, 3 to 5 minutes. Drizzle a little bit of oil into the same large bowl, then return the dough to the bowl. Cover tightly with cling wrap and refrigerate overnight or up to 3 days. To freeze, divide into two equal portions, roll into balls, and wrap tightly with cling wrap. Freeze for up to 6 months. Thaw in the refrigerator overnight before using.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "Makes 2 pounds",
+    "time": "20 minutes + overnight rise",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "77",
+    "name": "Bimpy's Pizza",
+    "category": "bread",
+    "ingredients": [
+      "2 pounds pizza dough (homemade or store-bought)",
+      "2 tablespoons olive oil",
+      "8 ounces grated mozzarella cheese",
+      "1 1/2 cups tomato sauce",
+      "Freshly grated pecorino cheese",
+      "Fresh basil leaves",
+      "Red pepper flakes"
+    ],
+    "instructions": "Preheat the oven to 500\u00b0F. Spread the olive oil on a rimmed sheet pan, then use your hands to spread the pizza dough to the edges of the pan as much as possible. Place the sheet pan in a warm spot and cover with a clean, damp kitchen towel. Let the dough rise for about 1 hour, until it easily spreads to cover the entire sheet pan. Cover the dough with half of the mozzarella, leaving a 1/2-inch border all around. Spoon the sauce over the cheese, then sprinkle on the remaining mozzarella. Blanket the pizza with pecorino, a few basil leaves, a pinch of pepper flakes, and any other toppings. Bake for 20 to 30 minutes, until the crust is golden brown and the cheese is bubbling. Slice and serve directly from the pan.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "6",
+    "time": "1 hour 30 minutes",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "78",
+    "name": "Mushroom Bolognese",
+    "category": "pasta",
+    "ingredients": [
+      "2 medium carrots, cut into 1-inch pieces",
+      "2 celery stalks, cut into 1-inch pieces",
+      "1 large yellow onion, roughly chopped",
+      "2 garlic cloves",
+      "1/2 teaspoon fennel seeds",
+      "1/4 cup extra-virgin olive oil",
+      "Kosher salt and freshly ground black pepper",
+      "Red pepper flakes",
+      "1 pound sliced cremini mushrooms",
+      "1 teaspoon ground cumin",
+      "1 teaspoon smoked paprika",
+      "1 cup dry white wine",
+      "1 (6-ounce) can tomato paste",
+      "2 dried bay leaves",
+      "1 cup whole milk",
+      "1 cup vegetable broth",
+      "1 pound tagliatelle",
+      "Freshly grated Parmesan or pecorino cheese, for serving"
+    ],
+    "instructions": "In a food processor, combine the carrots, celery, onion, garlic, and fennel seeds. Process until the veggies are broken down into small pieces, about 1 minute. In a large Dutch oven, heat the olive oil over medium-high heat. When the oil is shimmering, add the carrot mixture and season generously with salt, black pepper, and pepper flakes. Cook, stirring occasionally, until softened, 8 to 10 minutes. Add the mushrooms to the food processor and pulse about 6 times to break them down. Add the mushrooms to the pot along with the cumin, paprika, and a pinch of salt. Cook until the mushrooms have released their liquid, about 5 minutes. Add the wine and simmer until almost completely evaporated, about 10 minutes. Add the tomato paste and bay leaves. Cook until fragrant, about 2 minutes. Add the milk and broth. Simmer for 20-30 minutes. Cook the tagliatelle according to package directions. Serve the sauce over pasta with grated cheese.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "4",
+    "time": "1 hour",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "79",
+    "name": "Chicken Marsala",
+    "category": "chicken",
+    "ingredients": [
+      "1 1/2 pounds boneless, skinless chicken breasts, pounded thin",
+      "Kosher salt and freshly ground black pepper",
+      "1 cup all-purpose flour",
+      "3 to 4 tablespoons extra-virgin olive oil",
+      "1 medium shallot, minced",
+      "8 ounces cremini mushrooms, sliced",
+      "3/4 cup Marsala wine",
+      "1/4 cup chicken broth",
+      "4 tablespoons unsalted butter",
+      "Chopped fresh parsley, for serving"
+    ],
+    "instructions": "Pat the chicken dry with paper towels and season on both sides with salt and pepper. Place the flour in a shallow bowl and dredge half of the chicken in the flour, shaking off any excess. In a large skillet, heat 2 tablespoons of the olive oil over medium heat. When the oil is shimmering, arrange the dredged chicken in the skillet and fry until the flour is golden brown, about 4 minutes per side. Transfer to a platter. Dredge the remaining chicken, heat 1 more tablespoon of oil in the skillet, and fry. Transfer to the platter. If the skillet is dry, add another tablespoon of olive oil. Add the shallot and cook, scraping up the browned bits, until softened, about 2 minutes. Add the mushrooms and cook until golden brown, about 4 minutes. Season with salt and pepper. Pour in the Marsala and chicken broth. Simmer until reduced by half, about 3 minutes. Remove from heat and add the butter. Stir as the butter melts to create a smooth, creamy sauce. Pour the sauce over the chicken, garnish with parsley, and serve.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "4",
+    "time": "30 minutes",
+    "author": "DAN PELOSI"
+  },
+  {
+    "id": "80",
+    "name": "Olive Oil Ice Cream",
+    "category": "dessert",
+    "ingredients": [
+      "1 quart heavy cream",
+      "1 teaspoon kosher salt",
+      "1 teaspoon pure vanilla extract",
+      "1 (14-ounce) can sweetened condensed milk",
+      "1 cup extra-virgin olive oil"
+    ],
+    "instructions": "In a stand mixer fitted with the whisk attachment (or a large bowl if using a handheld mixer), combine the cream, salt, and vanilla. Beginning on low speed and increasing to medium, whisk until stiff peaks form, 3 to 4 minutes. Remove the bowl from the stand mixer. Add the condensed milk and olive oil. Use a rubber spatula to fold everything together, scraping along the sides and the bottom of the bowl, making sure the mixture stays light and fluffy. Pour the mixture into a 9x13-inch baking dish, cover tightly with cling wrap, and freeze for at least 8 hours, until the ice cream is fully set. Remove from the freezer to soften about 5 minutes before serving. Store tightly covered in the freezer for up to 1 month.",
+    "source": "Basil Almond Pesto.pdf",
+    "servings": "Makes 1.5 quarts",
+    "time": "15 minutes + 8 hours freezing",
+    "author": "DAN PELOSI"
   }
 ]
