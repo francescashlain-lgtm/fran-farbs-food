@@ -260,6 +260,25 @@ function handleSkip(type) {
   if (weeklyPicks[type]) {
     skippedRecipes[type].push(weeklyPicks[type].id);
   }
+
+  // Check if we've skipped all available recipes - if so, reset to cycle through again
+  const categoryMap = {
+    pasta: ['pasta'],
+    chicken: ['chicken'],
+    meat: ['beef', 'pork', 'lamb']
+  };
+  const targetCategories = categoryMap[type];
+  const allInCategory = recipes.filter(r => {
+    const recipeCategories = getRecipeCategories(r);
+    return recipeCategories.some(cat => targetCategories.includes(cat)) &&
+      !userPreferences.removed.includes(r.id);
+  });
+
+  // If we've skipped all recipes in this category, reset the skipped list
+  if (skippedRecipes[type].length >= allInCategory.length) {
+    skippedRecipes[type] = [];
+  }
+
   generateWeeklyPicks();
 }
 
