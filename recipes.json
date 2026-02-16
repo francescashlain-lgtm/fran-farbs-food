@@ -3416,5 +3416,28 @@
     "instructions": "Add all ingredients to a blender in the order listed. Blend on high until smooth and creamy. Add more coconut milk as needed to reach desired consistency. Pour into a glass and serve immediately.",
     "servings": "1",
     "time": "5 minutes"
+  },
+  {
+    "id": "150",
+    "name": "Apple & Miso Cobbler",
+    "category": "dessert",
+    "author": "BIG NIGHT COOKBOOK",
+    "ingredients": [
+      "½ cup (1 stick) unsalted butter",
+      "1½ cups all-purpose flour",
+      "¾ cup granulated sugar, plus more for sprinkling",
+      "3 tablespoons sesame seeds",
+      "2 teaspoons baking powder",
+      "3 tablespoons white miso paste",
+      "1 cup almond milk",
+      "2 large or 3 medium sweet-tart apples (Honeycrisp, Pink Lady, or Granny Smith), peeled if desired, sliced into ½-inch-thick wedges",
+      "3 tablespoons light brown sugar",
+      "1 tablespoon fresh lemon juice",
+      "Flaky sea salt",
+      "Vanilla ice cream or whipped cream, for serving"
+    ],
+    "instructions": "Position a rack in the center of the oven and preheat to 350°F.\n\nPlace the butter in a 12-inch cast-iron skillet and transfer to the oven to melt the butter, 5 to 7 minutes. Remove from the oven and tilt the pan around to ensure that the surface, edges, and sides are coated in butter. Set aside.\n\nIn a medium bowl, whisk together the flour, sugar, sesame seeds, and baking powder. In another medium bowl, whisk the miso and almond milk until smooth. Whisk the almond milk mixture into the dry ingredients until the batter is combined.\n\nWipe out the bowl you used for the flour mixture and toss together the apples, brown sugar, and lemon juice.\n\nPour the batter into the prepared skillet, directly over the melted butter (don't be tempted to mix this). Arrange the apples evenly over the batter, then scatter the whole cobbler with more granulated sugar.\n\nBake the cobbler until puffed and deeply golden brown at the edges and a tester inserted into the center comes out with only a few moist crumbs, 35 to 45 minutes. Sprinkle with flaky salt and let cool for 10 minutes before serving warm, with ice cream or whipped cream.",
+    "servings": "8-10",
+    "time": "1 hour"
   }
 ]
