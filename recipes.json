@@ -2971,5 +2971,55 @@
     "instructions": "Preheat the oven to 350°F. Line a 12-cup muffin pan with paper liners and spray lightly with nonstick cooking spray.\n\nIn a small bowl, whisk to combine the flour, cinnamon, baking soda, baking powder, and salt. Set aside.\n\nIn the bowl of a stand mixer fitted with a paddle attachment, beat together the mashed banana, melted coconut oil, brown sugar, and vanilla extract. With the mixer on low, slowly add the eggs, one at a time, followed by the shredded zucchini.\n\nAdd the dry ingredients to the wet ingredients and mix until just barely combined. Spoon into prepared muffin pan. Bake for 22 to 25 minutes, until a toothpick inserted into a muffin comes out clean.\n\nLet cool slightly before serving. Store at room temperature in an airtight container for up to 3 days or freeze in a plastic bag up to a month.",
     "servings": "12 muffins",
     "time": "35 minutes"
+  },
+  {
+    "id": "132",
+    "name": "Sweet & Spicy Hot Chile Chicken Noodles",
+    "category": "pasta",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "1 tablespoon toasted sesame oil",
+      "1 pound 93% lean ground chicken (or ground turkey)",
+      "1 teaspoon kosher salt",
+      "Freshly ground black pepper",
+      "6 garlic cloves, thinly sliced",
+      "1 tablespoon grated fresh ginger",
+      "1 tablespoon coconut sugar",
+      "3 tablespoons sambal oelek (or another hot chili paste)",
+      "2 tablespoons tomato paste",
+      "2 cups low-sodium chicken broth",
+      "3 tablespoons low-sodium soy sauce",
+      "2 tablespoons julienned fresh Thai basil (or regular basil)",
+      "2 tablespoons rice vinegar or black vinegar",
+      "10 ounces long noodles (fettuccine, pappardelle, or 6 ounces ramen/rice noodles)",
+      "Chopped roasted cashews or peanuts, for topping",
+      "Red pepper flakes (optional)"
+    ],
+    "instructions": "Cook the chicken: In a large pot, warm the sesame oil over medium-high heat. Once the oil is hot, add the chicken, salt, and a few grinds of pepper. Use a wooden spoon to break up the chicken and cook, stirring occasionally, until nice and golden, about 5 minutes. Stir in the garlic, ginger, and coconut sugar and continue to cook the meat, breaking it up into smaller chunks, until it's cooked through, 2 to 3 minutes.\n\nAdd the sambal oelek and tomato paste. Sauté, stirring to fully incorporate the pastes with the meat mixture, until the chili paste is toasted and fragrant, 30 seconds to 1 minute. Once combined, add the broth, soy sauce, basil, and rice vinegar. Bring to a simmer, then reduce the heat to low and cook, uncovered and stirring every so often, until the sauce begins to thicken, 20 to 25 minutes. Remove from the heat.\n\nCook the noodles: While the sauce cooks, bring a large pot of generously salted water to a boil over high heat. Add the noodles and cook according to the package directions until al dente. Before draining, reserve 1 cup of the pasta water, then drain the pasta and add the cooked noodles to the pot with the meat sauce. Using tongs, toss the noodles with the chicken mixture, adding in the pasta water a few tablespoons at a time until your sauce is glossy and the noodles are well coated.\n\nDivide the noodles into bowls and serve warm, topped with lots of basil, cashews, and red pepper flakes (if using).",
+    "servings": "4",
+    "time": "35 minutes"
+  },
+  {
+    "id": "133",
+    "name": "Change Your Life Brown Butter Chocolate Chip Cookies",
+    "category": "dessert",
+    "author": "AMBITIOUS KITCHEN",
+    "ingredients": [
+      "1 cup (226 grams) unsalted butter, sliced",
+      "1½ cups (320 grams) packed dark brown sugar",
+      "¼ cup (50 grams) granulated sugar",
+      "1 large egg plus 1 large egg yolk, at room temperature",
+      "1 tablespoon vanilla extract",
+      "1 tablespoon plain whole-milk Greek yogurt",
+      "2¼ cups (270 grams) all-purpose flour",
+      "1 teaspoon baking soda",
+      "½ teaspoon kosher salt",
+      "¾ cup (135 grams) semisweet chocolate chips",
+      "¾ cup (135 grams) milk or dark chocolate chips or chunks",
+      "Flaky sea salt (like Maldon)"
+    ],
+    "instructions": "Line a large plate or baking sheet with parchment paper.\n\nBrown the butter: Melt the butter in a small saucepan over medium heat. Once melted, whisk constantly; the butter will begin to crackle, then foam. After a few minutes, the butter will begin to turn a golden amber color. As soon as the butter turns brown and gives off a nutty aroma, 5 to 8 minutes, remove from the heat and immediately transfer it to a medium bowl, scraping all the butter and brown bits from the pan. Set aside until cool enough to touch, about 15 minutes.\n\nMix the wet ingredients: In the bowl of a stand mixer fitted with the paddle attachment, mix the brown butter, brown sugar, and granulated sugar until well combined, about 1 minute. Beat in the egg, egg yolk, vanilla, and yogurt until the mixture is smooth and creamy, about 1 minute.\n\nPrepare the dry ingredients: In another large bowl, whisk the flour, baking soda, and salt until well combined. With the mixer running on low speed, slowly add the dry ingredients to the wet ingredients and mix just until combined, about 1 minute. Add both types of chocolate chips and mix on low speed until just incorporated into the dough. Cover the bowl with plastic wrap and place in the fridge for 10 minutes.\n\nChill the dough: Use a medium cookie scoop to measure 2 heaping tablespoons of the dough, roll into balls, and place onto the prepared plate. Cover with plastic wrap and refrigerate for a minimum of 2 hours and a maximum of 24 hours.\n\nWhen ready to bake, preheat oven to 350°F. Line a large baking sheet with parchment paper. Remove the dough from the fridge to soften for 15 minutes.\n\nBake the cookies: Transfer the dough balls to the prepared baking sheet, placing them 2 inches apart. Bake until the edges just begin to turn golden brown, 9 to 11 minutes. Cool on the sheet for 5 minutes, then sprinkle each cookie with flaky sea salt. Transfer to a wire rack to cool completely.",
+    "servings": "24 cookies",
+    "time": "45 minutes plus 2 hours chilling"
   }
 ]
