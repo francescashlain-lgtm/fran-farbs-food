@@ -314,6 +314,10 @@ function generateGroceryList() {
       const color = recipeColorsByType[type];
       keptRecipesList.push({ name: recipe.name, color: color });
       recipe.ingredients.forEach(ingredient => {
+        // Skip kosher salt - always have it on hand
+        if (ingredient.toLowerCase().includes('kosher salt')) {
+          return;
+        }
         groceryList.push({
           item: ingredient,
           recipe: recipe.name,
