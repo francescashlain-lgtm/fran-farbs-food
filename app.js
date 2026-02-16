@@ -473,6 +473,14 @@ function handleKeepForWeek() {
   openRecipeModal(id); // Refresh modal to update button state
 }
 
+// Open recipe modal from weekly picks
+function openWeeklyRecipeModal(type) {
+  const recipe = weeklyPicks[type];
+  if (recipe) {
+    openRecipeModal(recipe.id);
+  }
+}
+
 // Recipe colors for grocery list - mapped by category type
 const recipeColorsByType = {
   pasta: '#70271F',      // Coffee (deep red-brown)
@@ -735,6 +743,7 @@ function renderGroceryList() {
             <div class="ingredient-color-dots">${colorDots}</div>
             <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleGroceryItem(${itemIdx})">
             <label title="${(item.originalItems || [item.item]).join(' + ')}">${displayText}</label>
+            <button class="grocery-remove" onclick="removeGroceryItem(${itemIdx})" title="Remove item">&times;</button>
           </div>
         `}).join('')}
       </div>
@@ -790,6 +799,13 @@ function categorizeIngredients(items) {
 // Toggle grocery item
 function toggleGroceryItem(idx) {
   groceryList[idx].checked = !groceryList[idx].checked;
+  localStorage.setItem('groceryList', JSON.stringify(groceryList));
+  renderGroceryList();
+}
+
+// Remove grocery item
+function removeGroceryItem(idx) {
+  groceryList.splice(idx, 1);
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
   renderGroceryList();
 }
@@ -1706,6 +1722,11 @@ function setupEventListeners() {
       e.stopPropagation();
       handleSkip(type);
     });
+
+    card.querySelector('.btn-view-recipe').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openWeeklyRecipeModal(type);
+    });
   });
 
   // Expiring ingredients
@@ -1784,11 +1805,13 @@ function setupEventListeners() {
 
 // Make functions available globally
 window.toggleGroceryItem = toggleGroceryItem;
+window.removeGroceryItem = removeGroceryItem;
 window.openRecipeModal = openRecipeModal;
 window.deleteCategory = deleteCategory;
 window.removeManualPick = removeManualPick;
 window.togglePrepTask = togglePrepTask;
 window.removePrepTask = removePrepTask;
+window.openWeeklyRecipeModal = openWeeklyRecipeModal;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
