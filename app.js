@@ -281,6 +281,11 @@ function handleKeep(type) {
 
 // Handle skip action
 function handleSkip(type) {
+  // Unkeep the recipe if it was kept (switching)
+  if (keptRecipes[type]) {
+    keptRecipes[type] = false;
+  }
+
   if (weeklyPicks[type]) {
     skippedRecipes[type].push(weeklyPicks[type].id);
   }
