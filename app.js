@@ -436,11 +436,12 @@ function renderLibrary() {
     filtered = filtered.filter(r => !userPreferences.liked.includes(r.id));
   }
 
-  // Apply search (check edited title too)
+  // Apply search (check title, ingredients, and author)
   if (searchQuery) {
     filtered = filtered.filter(r =>
       getRecipeTitle(r).toLowerCase().includes(searchQuery) ||
-      r.ingredients.some(i => i.toLowerCase().includes(searchQuery))
+      r.ingredients.some(i => i.toLowerCase().includes(searchQuery)) ||
+      getRecipeAuthor(r).toLowerCase().includes(searchQuery)
     );
   }
 
