@@ -159,7 +159,7 @@ function getRecipesByType(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb'],
+    meat: ['beef', 'pork', 'lamb', 'turkey'],
     vegetarian: ['vegetarian']
   };
 
@@ -269,7 +269,7 @@ function handleSkip(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb'],
+    meat: ['beef', 'pork', 'lamb', 'turkey'],
     vegetarian: ['vegetarian']
   };
   const targetCategories = categoryMap[type];
