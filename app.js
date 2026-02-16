@@ -295,24 +295,23 @@ function updateGenerateGroceryButton() {
   btn.style.display = keptCount >= 1 ? 'inline-flex' : 'none';
 }
 
-// Recipe colors for grocery list
-const recipeColors = [
-  '#d4a574', // warm tan (pasta)
-  '#c17c5e', // terracotta (chicken)
-  '#2d3232', // dark (meat)
-  '#4d5532'  // olive (vegetarian)
-];
+// Recipe colors for grocery list - mapped by category type
+const recipeColorsByType = {
+  pasta: '#d4a574',      // warm tan
+  chicken: '#c17c5e',    // terracotta
+  meat: '#2d3232',       // dark
+  vegetarian: '#4d5532'  // olive
+};
 
 // Generate grocery list
 function generateGroceryList() {
   groceryList = [];
   const keptRecipesList = [];
-  let colorIndex = 0;
 
   ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
       const recipe = weeklyPicks[type];
-      const color = recipeColors[colorIndex % recipeColors.length];
+      const color = recipeColorsByType[type];
       keptRecipesList.push({ name: recipe.name, color: color });
       recipe.ingredients.forEach(ingredient => {
         groceryList.push({
@@ -322,7 +321,6 @@ function generateGroceryList() {
           checked: false
         });
       });
-      colorIndex++;
     }
   });
 
