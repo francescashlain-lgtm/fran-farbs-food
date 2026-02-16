@@ -1301,3 +1301,91 @@ textarea:focus-visible {
   outline: 2px solid var(--color-olive);
   outline-offset: 2px;
 }
+
+/* Keep for This Week Button */
+.btn-keep-week {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--color-olive);
+  color: var(--color-olive);
+  padding: 0.875rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.btn-keep-week svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-keep-week:hover,
+.btn-keep-week.kept {
+  background: var(--color-olive);
+  color: var(--color-cream);
+  border-color: var(--color-olive);
+}
+
+.btn-keep-week.kept svg {
+  fill: var(--color-cream);
+}
+
+/* Manual Picks Section */
+.manual-picks {
+  background: var(--color-cream-dark);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.manual-picks h4 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin-bottom: 0.875rem;
+}
+
+.manual-picks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.manual-pick-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #7a6c5d;
+  color: var(--color-cream);
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.manual-pick-remove {
+  background: transparent;
+  border: none;
+  color: var(--color-cream);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+  padding: 0;
+  margin-left: 0.25rem;
+}
+
+.manual-pick-remove:hover {
+  opacity: 1;
+}

@@ -58,16 +58,27 @@ let skippedRecipes = {
   meat: [],
   vegetarian: []
 };
+let manuallyKeptRecipes = []; // Recipes kept from the library
 
 // Initialize the app
 async function init() {
   loadUserPreferences();
+  loadManuallyKeptRecipes();
   await loadRecipes();
   setupEventListeners();
   updateSeasonalDisplay();
   renderCategoryFilter();
   generateWeeklyPicks();
+  renderManualPicks();
   renderLibrary();
+}
+
+// Load manually kept recipes from localStorage
+function loadManuallyKeptRecipes() {
+  const saved = localStorage.getItem('manuallyKeptRecipes');
+  if (saved) {
+    manuallyKeptRecipes = JSON.parse(saved);
+  }
 }
 
 // Load recipes from JSON file
@@ -289,10 +300,65 @@ function handleSkip(type) {
 
 // Update the generate grocery button visibility
 function updateGenerateGroceryButton() {
-  // Show button when at least 1 recipe is kept
-  const keptCount = Object.values(keptRecipes).filter(Boolean).length;
+  // Show button when at least 1 recipe is kept (from cards or manually)
+  const keptCount = Object.values(keptRecipes).filter(Boolean).length + manuallyKeptRecipes.length;
   const btn = document.getElementById('generate-grocery');
   btn.style.display = keptCount >= 1 ? 'inline-flex' : 'none';
+}
+
+// Toggle keeping a recipe for the week (from library)
+function toggleKeepForWeek(id) {
+  const idx = manuallyKeptRecipes.indexOf(id);
+  if (idx > -1) {
+    manuallyKeptRecipes.splice(idx, 1);
+  } else {
+    manuallyKeptRecipes.push(id);
+  }
+  localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+  renderManualPicks();
+  updateGenerateGroceryButton();
+}
+
+// Render manually kept recipes section
+function renderManualPicks() {
+  const container = document.getElementById('manual-picks');
+  const list = document.getElementById('manual-picks-list');
+
+  if (manuallyKeptRecipes.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+  list.innerHTML = manuallyKeptRecipes.map(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (!recipe) return '';
+    return `
+      <div class="manual-pick-item">
+        <span class="manual-pick-name">${getRecipeTitle(recipe)}</span>
+        <button class="manual-pick-remove" onclick="removeManualPick('${id}')" title="Remove">&times;</button>
+      </div>
+    `;
+  }).join('');
+}
+
+// Remove a manually kept recipe
+function removeManualPick(id) {
+  const idx = manuallyKeptRecipes.indexOf(id);
+  if (idx > -1) {
+    manuallyKeptRecipes.splice(idx, 1);
+    localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+    renderManualPicks();
+    updateGenerateGroceryButton();
+  }
+}
+
+// Handle keep for week button click in modal
+function handleKeepForWeek() {
+  const modal = document.getElementById('recipe-modal');
+  const id = modal.dataset.recipeId;
+  toggleKeepForWeek(id);
+  openRecipeModal(id); // Refresh modal to update button state
 }
 
 // Recipe colors for grocery list - mapped by category type
@@ -322,6 +388,27 @@ function generateGroceryList() {
           item: ingredient,
           recipe: recipe.name,
           recipeColor: color,
+          checked: false
+        });
+      });
+    }
+  });
+
+  // Add manually kept recipes from library
+  const manualColor = '#7a6c5d'; // warm gray for manual picks
+  manuallyKeptRecipes.forEach(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      keptRecipesList.push({ name: getRecipeTitle(recipe), color: manualColor });
+      recipe.ingredients.forEach(ingredient => {
+        // Skip kosher salt - always have it on hand
+        if (ingredient.toLowerCase().includes('kosher salt')) {
+          return;
+        }
+        groceryList.push({
+          item: ingredient,
+          recipe: getRecipeTitle(recipe),
+          recipeColor: manualColor,
           checked: false
         });
       });
@@ -551,6 +638,12 @@ function openRecipeModal(id) {
   const isLiked = userPreferences.liked.includes(id);
   likeBtn.classList.toggle('liked', isLiked);
   likeBtn.querySelector('span').textContent = isLiked ? 'Liked!' : 'Mark as Liked';
+
+  // Update keep for week button state
+  const keepWeekBtn = document.getElementById('modal-keep-week');
+  const isKeptForWeek = manuallyKeptRecipes.includes(id);
+  keepWeekBtn.classList.toggle('kept', isKeptForWeek);
+  keepWeekBtn.querySelector('span').textContent = isKeptForWeek ? 'Kept for This Week!' : 'Keep for This Week';
 
   // Set data attribute for current recipe
   document.getElementById('recipe-modal').dataset.recipeId = id;
@@ -993,6 +1086,7 @@ function setupEventListeners() {
     if (e.target.id === 'recipe-modal') closeModal();
   });
   document.getElementById('modal-like').addEventListener('click', toggleLike);
+  document.getElementById('modal-keep-week').addEventListener('click', handleKeepForWeek);
   document.getElementById('save-notes').addEventListener('click', saveNotes);
   document.getElementById('modal-remove').addEventListener('click', removeRecipe);
 
@@ -1041,6 +1135,7 @@ function setupEventListeners() {
 window.toggleGroceryItem = toggleGroceryItem;
 window.openRecipeModal = openRecipeModal;
 window.deleteCategory = deleteCategory;
+window.removeManualPick = removeManualPick;
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
