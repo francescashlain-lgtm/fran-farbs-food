@@ -1504,10 +1504,14 @@ body {
   }
 
   .library-card-author {
-    display: inline-block;
-    font-size: 0.65rem;
-    padding: 0.25rem 0.5rem;
+    display: block;
+    width: fit-content;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.6rem;
     margin-top: 0.5rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    border: none;
   }
 
   .modal {
