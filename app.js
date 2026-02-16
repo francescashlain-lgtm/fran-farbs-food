@@ -475,10 +475,10 @@ function handleKeepForWeek() {
 
 // Recipe colors for grocery list - mapped by category type
 const recipeColorsByType = {
-  pasta: '#d4a574',      // warm tan
-  chicken: '#c17c5e',    // terracotta
-  meat: '#2d3232',       // dark
-  vegetarian: '#4d5532'  // olive
+  pasta: '#FFEDA1',      // cream/yellow
+  chicken: '#FF2E2E',    // red
+  meat: '#372020',       // dark brown
+  vegetarian: '#9FBFFF'  // blue
 };
 
 // Parse an ingredient string to extract quantity for combining

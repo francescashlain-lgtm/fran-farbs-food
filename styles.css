@@ -1,27 +1,27 @@
-/* Lucky Cat Inspired Design System */
+/* Family Cookbook Inspired Design System */
 :root {
-  --color-cream: #fff8ef;
-  --color-cream-dark: #f5ede0;
-  --color-ink: #0d0f0b;
-  --color-ink-light: #3d3f3b;
-  --color-ink-muted: #707070;
-  --color-olive: #4d5532;
-  --color-olive-light: #6b7a48;
-  --color-olive-muted: #8a9468;
-  --color-gold: #fbc078;
-  --color-gold-light: #fdd9a8;
-  --color-gold-dark: #e5a050;
-  --color-blue-muted: #5c6eb2;
-  --color-terracotta: #c4785a;
-  --color-border: rgba(13, 15, 11, 0.08);
-  --color-border-dark: rgba(13, 15, 11, 0.15);
+  --color-cream: #FFEDA1;
+  --color-cream-dark: #f5e08a;
+  --color-cream-light: #fff8dc;
+  --color-ink: #372020;
+  --color-ink-light: #5a3a3a;
+  --color-ink-muted: #7a5a5a;
+  --color-red: #FF2E2E;
+  --color-red-light: #ff6b6b;
+  --color-red-dark: #cc2424;
+  --color-blue: #9FBFFF;
+  --color-blue-dark: #7a9fdd;
+  --color-blue-muted: #b8d0ff;
+  --color-border: rgba(55, 32, 32, 0.12);
+  --color-border-dark: rgba(55, 32, 32, 0.2);
 
   --font-display: 'Georgia', 'Times New Roman', serif;
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Georgia', 'Times New Roman', serif;
+  --font-handwritten: 'Georgia', cursive, serif;
 
-  --shadow-soft: 0 2px 20px rgba(13, 15, 11, 0.06);
-  --shadow-medium: 0 4px 30px rgba(13, 15, 11, 0.1);
-  --shadow-lifted: 0 12px 40px rgba(13, 15, 11, 0.12);
+  --shadow-soft: 0 2px 20px rgba(55, 32, 32, 0.08);
+  --shadow-medium: 0 4px 30px rgba(55, 32, 32, 0.12);
+  --shadow-lifted: 0 12px 40px rgba(55, 32, 32, 0.15);
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -50,23 +50,26 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--color-cream);
+  background: var(--color-cream-light);
   color: var(--color-ink);
-  line-height: 1.6;
+  line-height: 1.7;
   min-height: 100vh;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(255, 46, 46, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(159, 191, 255, 0.05) 0%, transparent 50%);
 }
 
 /* Selection */
 ::selection {
-  background: var(--color-gold);
+  background: var(--color-blue);
   color: var(--color-ink);
 }
 
 /* Header */
 .main-header {
   background: var(--color-cream);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 3px solid var(--color-red);
   padding: 2rem 1.5rem 0;
   position: sticky;
   top: 0;
@@ -78,22 +81,77 @@ body {
 .header-content {
   text-align: center;
   padding-bottom: 2rem;
+  position: relative;
+}
+
+.header-illustrations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.header-icon {
+  position: absolute;
+  height: 80px;
+  color: var(--color-red);
+  opacity: 0.3;
+}
+
+.header-icon-left {
+  left: 10%;
+  top: 10%;
+  transform: rotate(-15deg);
+}
+
+.header-icon-right {
+  right: 10%;
+  top: 5%;
+  transform: rotate(15deg);
+}
+
+.header-doodles {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  opacity: 0.7;
+}
+
+.doodle {
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+.doodle-tomato { animation-delay: 0s; }
+.doodle-leaf { animation-delay: 0.5s; }
+.doodle-lemon { animation-delay: 1s; }
+.doodle-pepper { animation-delay: 1.5s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .main-header h1 {
   font-family: var(--font-display);
-  font-size: 2.25rem;
-  font-weight: 400;
+  font-size: 2.5rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-ink);
   margin-bottom: 0.25rem;
+  font-style: italic;
 }
 
 .tagline {
-  font-size: 0.875rem;
-  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+  color: var(--color-red);
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -129,7 +187,7 @@ body {
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: var(--color-olive);
+  background: var(--color-red);
   transition: width var(--transition-smooth);
 }
 
@@ -174,21 +232,24 @@ body {
 
 /* Seasonal Banner */
 .seasonal-banner {
-  background: var(--color-olive);
-  color: var(--color-cream);
-  border-radius: var(--radius-xl);
+  background: var(--color-blue);
+  color: var(--color-ink);
+  border-radius: var(--radius-lg);
   padding: 2rem 2.5rem;
   margin-bottom: 3rem;
   box-shadow: var(--shadow-medium);
+  border: 2px solid var(--color-ink);
+  position: relative;
 }
 
 .seasonal-info h2 {
   font-family: var(--font-display);
   font-size: 1.75rem;
-  font-weight: 400;
-  color: var(--color-cream);
+  font-weight: 700;
+  color: var(--color-ink);
   text-transform: capitalize;
   margin-bottom: 1.25rem;
+  font-style: italic;
 }
 
 .seasonal-list {
@@ -200,7 +261,7 @@ body {
 }
 
 .seasonal-list li {
-  color: var(--color-gold-light);
+  color: var(--color-ink);
   font-size: 0.85rem;
   font-weight: 400;
   padding: 0.2rem 0;
@@ -251,7 +312,7 @@ body {
 .label-icon svg {
   width: 16px;
   height: 16px;
-  color: var(--color-gold-dark);
+  color: var(--color-blue-dark);
 }
 
 .expiring-section input {
@@ -273,13 +334,13 @@ body {
 
 .expiring-section input:focus {
   outline: none;
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
   box-shadow: 0 0 0 3px rgba(77, 85, 50, 0.1);
 }
 
 /* Buttons */
 .btn-primary {
-  background: var(--color-olive);
+  background: var(--color-red);
   color: var(--color-cream);
   border: none;
   padding: 1rem 2rem;
@@ -384,9 +445,9 @@ body {
 
 /* Recipe Card */
 .recipe-card {
-  background: var(--color-cream);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  background: var(--color-cream-light);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-md);
   padding: 1.75rem;
   box-shadow: var(--shadow-soft);
   transition: all var(--transition-smooth);
@@ -397,12 +458,12 @@ body {
 .recipe-card:hover {
   box-shadow: var(--shadow-medium);
   transform: translateY(-4px);
-  border-color: var(--color-border-dark);
+  border-color: var(--color-red);
 }
 
 .recipe-card.kept {
-  border-color: var(--color-olive);
-  background: linear-gradient(135deg, var(--color-cream) 0%, rgba(77, 85, 50, 0.05) 100%);
+  border-color: var(--color-red);
+  background: linear-gradient(135deg, var(--color-cream-light) 0%, rgba(255, 46, 46, 0.08) 100%);
 }
 
 .recipe-card.kept::after {
@@ -412,7 +473,7 @@ body {
   right: 0;
   width: 48px;
   height: 48px;
-  background: var(--color-olive);
+  background: var(--color-red);
   clip-path: polygon(100% 0, 0 0, 100% 100%);
 }
 
@@ -421,7 +482,7 @@ body {
   position: absolute;
   top: 6px;
   right: 6px;
-  color: var(--color-cream);
+  color: var(--color-cream-light);
   font-size: 0.75rem;
   font-weight: bold;
   z-index: 1;
@@ -439,23 +500,24 @@ body {
 }
 
 .card-category.pasta {
-  background: var(--color-gold-light);
+  background: var(--color-cream);
   color: var(--color-ink);
+  border: 1px solid var(--color-ink);
 }
 
 .card-category.chicken {
-  background: var(--color-terracotta);
-  color: var(--color-cream);
+  background: var(--color-red);
+  color: var(--color-cream-light);
 }
 
 .card-category.meat {
   background: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-cream-light);
 }
 
 .card-category.vegetarian {
-  background: var(--color-olive);
-  color: var(--color-cream);
+  background: var(--color-blue);
+  color: var(--color-ink);
 }
 
 .card-loading {
@@ -482,14 +544,15 @@ body {
 
 .seasonal-tag {
   display: inline-block;
-  background: rgba(77, 85, 50, 0.12);
-  color: var(--color-olive);
+  background: rgba(255, 46, 46, 0.15);
+  color: var(--color-red);
   padding: 0.375rem 0.75rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: capitalize;
+  border: 1px solid var(--color-red);
 }
 
 .card-ingredients {
@@ -506,7 +569,7 @@ body {
 
 .btn-keep {
   flex: 1;
-  background: var(--color-olive);
+  background: var(--color-red);
   color: var(--color-cream);
   border: none;
   padding: 0.875rem;
@@ -532,8 +595,8 @@ body {
 
 .btn-keep.btn-kept {
   background: transparent;
-  border: 1px solid var(--color-olive);
-  color: var(--color-olive);
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
 }
 
 .btn-keep.btn-kept:hover {
@@ -597,7 +660,7 @@ body {
 .library-filters select:focus,
 .library-filters input:focus {
   outline: none;
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
   box-shadow: 0 0 0 3px rgba(77, 85, 50, 0.1);
 }
 
@@ -624,9 +687,9 @@ body {
 
 /* Library Card */
 .library-card {
-  background: var(--color-cream);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-cream-light);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
   padding: 1.5rem;
   cursor: pointer;
   transition: all var(--transition-smooth);
@@ -636,11 +699,12 @@ body {
 .library-card:hover {
   box-shadow: var(--shadow-medium);
   transform: translateY(-3px);
-  border-color: var(--color-border-dark);
+  border-color: var(--color-red);
 }
 
 .library-card.liked {
-  border-color: var(--color-gold);
+  border-color: var(--color-red);
+  background: linear-gradient(135deg, var(--color-cream-light) 0%, rgba(255, 46, 46, 0.08) 100%);
 }
 
 .library-card.liked::before {
@@ -650,7 +714,7 @@ body {
   right: 1rem;
   width: 20px;
   height: 20px;
-  background: var(--color-gold);
+  background: var(--color-red);
   mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center/contain no-repeat;
   -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/%3E%3C/svg%3E") center/contain no-repeat;
 }
@@ -668,7 +732,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-cream);
-  background: var(--color-olive);
+  background: var(--color-red);
   padding: 0.15rem 0.5rem;
   border-radius: var(--radius-full);
   margin-bottom: 0.5rem;
@@ -742,7 +806,7 @@ body {
 }
 
 .grocery-recipe-tag {
-  background: var(--color-olive);
+  background: var(--color-red);
   color: var(--color-cream);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
@@ -756,14 +820,14 @@ body {
 }
 
 .grocery-category {
-  background: var(--color-cream);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-cream-light);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .grocery-category-header {
-  background: var(--color-olive);
+  background: var(--color-ink);
   color: var(--color-cream);
   padding: 0.875rem 1.5rem;
   font-size: 0.75rem;
@@ -792,7 +856,7 @@ body {
 .grocery-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--color-olive);
+  accent-color: var(--color-red);
   cursor: pointer;
 }
 
@@ -924,7 +988,7 @@ body {
 
 .modal-title-input:focus {
   outline: none;
-  border-bottom-color: var(--color-olive);
+  border-bottom-color: var(--color-red);
 }
 
 .modal-categories {
@@ -951,7 +1015,7 @@ body {
 }
 
 .category-checkbox:hover {
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
 }
 
 .category-checkbox input[type="checkbox"] {
@@ -959,8 +1023,8 @@ body {
 }
 
 .category-checkbox:has(input:checked) {
-  background: var(--color-olive);
-  border-color: var(--color-olive);
+  background: var(--color-red);
+  border-color: var(--color-red);
   color: var(--color-cream);
 }
 
@@ -1031,7 +1095,7 @@ body {
 .new-category-input:focus {
   outline: none;
   border-style: solid;
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
   color: var(--color-ink);
 }
 
@@ -1054,13 +1118,13 @@ body {
 }
 
 .manage-categories-btn:hover {
-  border-color: var(--color-olive);
-  color: var(--color-olive);
+  border-color: var(--color-red);
+  color: var(--color-red);
 }
 
 .manage-categories-btn.active {
-  background: var(--color-olive);
-  border-color: var(--color-olive);
+  background: var(--color-red);
+  border-color: var(--color-red);
   color: var(--color-cream);
 }
 
@@ -1094,7 +1158,7 @@ body {
 
 .modal-author-input:focus {
   outline: none;
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
   box-shadow: 0 0 0 3px rgba(77, 85, 50, 0.1);
 }
 
@@ -1115,7 +1179,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 1rem;
-  color: var(--color-olive);
+  color: var(--color-red);
   letter-spacing: 0.02em;
 }
 
@@ -1161,7 +1225,7 @@ body {
 
 #modal-notes:focus {
   outline: none;
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
   box-shadow: 0 0 0 3px rgba(77, 85, 50, 0.1);
 }
 
@@ -1178,8 +1242,8 @@ body {
   align-items: center;
   gap: 0.5rem;
   background: transparent;
-  border: 1px solid var(--color-gold);
-  color: var(--color-gold-dark);
+  border: 1px solid var(--color-blue);
+  color: var(--color-blue-dark);
   padding: 0.875rem 1.5rem;
   font-family: var(--font-body);
   font-size: 0.75rem;
@@ -1198,9 +1262,9 @@ body {
 
 .btn-like:hover,
 .btn-like.liked {
-  background: var(--color-gold);
+  background: var(--color-blue);
   color: var(--color-ink);
-  border-color: var(--color-gold);
+  border-color: var(--color-blue);
 }
 
 .btn-like.liked svg {
@@ -1223,9 +1287,9 @@ body {
 }
 
 .btn-remove:hover {
-  background: var(--color-terracotta);
+  background: var(--color-red);
   color: var(--color-cream);
-  border-color: var(--color-terracotta);
+  border-color: var(--color-red);
 }
 
 /* Empty States */
@@ -1340,7 +1404,7 @@ body {
 
 /* Focus states for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--color-olive);
+  outline: 2px solid var(--color-red);
   outline-offset: 2px;
 }
 
@@ -1348,7 +1412,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--color-olive);
+  outline: 2px solid var(--color-red);
   outline-offset: 2px;
 }
 
@@ -1358,8 +1422,8 @@ textarea:focus-visible {
   align-items: center;
   gap: 0.5rem;
   background: transparent;
-  border: 1px solid var(--color-olive);
-  color: var(--color-olive);
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
   padding: 0.875rem 1.5rem;
   font-family: var(--font-body);
   font-size: 0.75rem;
@@ -1378,9 +1442,9 @@ textarea:focus-visible {
 
 .btn-keep-week:hover,
 .btn-keep-week.kept {
-  background: var(--color-olive);
+  background: var(--color-red);
   color: var(--color-cream);
-  border-color: var(--color-olive);
+  border-color: var(--color-red);
 }
 
 .btn-keep-week.kept svg {
@@ -1486,15 +1550,15 @@ textarea:focus-visible {
 }
 
 .prep-category {
-  background: var(--color-cream);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-cream-light);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .prep-category-header {
-  background: var(--color-blue-muted);
-  color: var(--color-cream);
+  background: var(--color-blue);
+  color: var(--color-ink);
   padding: 0.875rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -1522,7 +1586,7 @@ textarea:focus-visible {
 .prep-item input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--color-olive);
+  accent-color: var(--color-red);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -1555,7 +1619,7 @@ textarea:focus-visible {
 
 .prep-remove:hover {
   opacity: 1;
-  color: var(--color-terracotta);
+  color: var(--color-red);
 }
 
 .prep-item.multi-recipe {
@@ -1563,7 +1627,7 @@ textarea:focus-visible {
   margin: 0 -1.5rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-  border-left: 3px solid var(--color-gold);
+  border-left: 3px solid var(--color-blue);
 }
 
 .prep-item.multi-recipe:first-child {
@@ -1596,6 +1660,6 @@ textarea:focus-visible {
 
 .prep-count {
   font-size: 0.75rem;
-  color: var(--color-gold-dark);
+  color: var(--color-blue-dark);
   font-weight: 600;
 }
