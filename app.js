@@ -52,6 +52,7 @@ let keptRecipes = {
   vegetarian: false
 };
 let groceryList = [];
+let miscItems = []; // Miscellaneous items not tied to recipes
 let skippedRecipes = {
   pasta: [],
   chicken: [],
@@ -66,6 +67,7 @@ async function init() {
   loadManuallyKeptRecipes();
   loadWeeklyState();
   loadPrepListState();
+  loadMiscItems();
   await loadRecipes();
   setupEventListeners();
   updateSeasonalDisplay();
@@ -812,7 +814,17 @@ function removeGroceryItem(idx) {
 
 // Copy grocery list to clipboard
 function copyGroceryList() {
-  const text = groceryList.map(item => `${item.checked ? '[x]' : '[ ]'} ${item.item}`).join('\n');
+  let text = groceryList.map(item => {
+    const displayText = formatCombinedIngredient(item);
+    return `${item.checked ? '[x]' : '[ ]'} ${displayText}`;
+  }).join('\n');
+
+  // Add misc items
+  if (miscItems.length > 0) {
+    text += '\n\n-- Other Items --\n';
+    text += miscItems.map(item => `${item.checked ? '[x]' : '[ ]'} ${item.name}`).join('\n');
+  }
+
   navigator.clipboard.writeText(text).then(() => {
     alert('Grocery list copied to clipboard!');
   });
@@ -823,9 +835,76 @@ function clearGroceryList() {
   if (confirm('Are you sure you want to clear the grocery list?')) {
     localStorage.removeItem('groceryList');
     localStorage.removeItem('groceryRecipes');
+    localStorage.removeItem('miscItems');
     groceryList = [];
+    miscItems = [];
     renderGroceryList();
+    renderMiscItems();
   }
+}
+
+// ==================== MISCELLANEOUS ITEMS ====================
+
+// Load misc items from localStorage
+function loadMiscItems() {
+  const saved = localStorage.getItem('miscItems');
+  if (saved) {
+    miscItems = JSON.parse(saved);
+  }
+}
+
+// Save misc items to localStorage
+function saveMiscItems() {
+  localStorage.setItem('miscItems', JSON.stringify(miscItems));
+}
+
+// Add a miscellaneous item
+function addMiscItem(name) {
+  if (!name || !name.trim()) return;
+
+  miscItems.push({
+    id: Date.now().toString(),
+    name: name.trim(),
+    checked: false
+  });
+  saveMiscItems();
+  renderMiscItems();
+}
+
+// Toggle misc item checked state
+function toggleMiscItem(id) {
+  const item = miscItems.find(i => i.id === id);
+  if (item) {
+    item.checked = !item.checked;
+    saveMiscItems();
+    renderMiscItems();
+  }
+}
+
+// Remove a misc item
+function removeMiscItem(id) {
+  miscItems = miscItems.filter(i => i.id !== id);
+  saveMiscItems();
+  renderMiscItems();
+}
+
+// Render miscellaneous items
+function renderMiscItems() {
+  const container = document.getElementById('misc-items-list');
+  if (!container) return;
+
+  if (miscItems.length === 0) {
+    container.innerHTML = '<p class="misc-empty">No other items added yet</p>';
+    return;
+  }
+
+  container.innerHTML = miscItems.map(item => `
+    <div class="misc-item ${item.checked ? 'checked' : ''}">
+      <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleMiscItem('${item.id}')">
+      <label>${item.name}</label>
+      <button class="misc-remove" onclick="removeMiscItem('${item.id}')" title="Remove item">&times;</button>
+    </div>
+  `).join('');
 }
 
 // ==================== PREP LIST ====================
@@ -1697,6 +1776,7 @@ function switchTab(tabName) {
     renderLibrary();
   } else if (tabName === 'grocery') {
     renderGroceryList();
+    renderMiscItems();
   } else if (tabName === 'prep') {
     renderPrepList();
   }
@@ -1752,6 +1832,19 @@ function setupEventListeners() {
   document.getElementById('copy-list').addEventListener('click', copyGroceryList);
   document.getElementById('clear-list').addEventListener('click', clearGroceryList);
 
+  // Misc items
+  document.getElementById('add-misc-item').addEventListener('click', () => {
+    const input = document.getElementById('misc-item-input');
+    addMiscItem(input.value);
+    input.value = '';
+  });
+  document.getElementById('misc-item-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      addMiscItem(e.target.value);
+      e.target.value = '';
+    }
+  });
+
   // Modal
   document.querySelector('.modal-close').addEventListener('click', closeModal);
   document.getElementById('recipe-modal').addEventListener('click', (e) => {
@@ -1806,6 +1899,8 @@ function setupEventListeners() {
 // Make functions available globally
 window.toggleGroceryItem = toggleGroceryItem;
 window.removeGroceryItem = removeGroceryItem;
+window.toggleMiscItem = toggleMiscItem;
+window.removeMiscItem = removeMiscItem;
 window.openRecipeModal = openRecipeModal;
 window.deleteCategory = deleteCategory;
 window.removeManualPick = removeManualPick;

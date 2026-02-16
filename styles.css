@@ -904,6 +904,111 @@ body {
   color: var(--color-coffee);
 }
 
+/* Miscellaneous Items */
+.misc-items-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--color-border-dark);
+}
+
+.misc-items-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 1rem;
+}
+
+.misc-items-add {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.misc-items-add input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border-dark);
+  background: var(--color-cream-light);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  border-radius: 0;
+}
+
+.misc-items-add input:focus {
+  outline: none;
+  border-color: var(--color-ink);
+}
+
+.misc-items-add input::placeholder {
+  color: var(--color-ink-muted);
+}
+
+.misc-items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.misc-empty {
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.misc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.misc-item:last-child {
+  border-bottom: none;
+}
+
+.misc-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-orange);
+  cursor: pointer;
+}
+
+.misc-item label {
+  flex: 1;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.misc-item.checked label {
+  text-decoration: line-through;
+  color: var(--color-ink-muted);
+}
+
+.misc-remove {
+  background: transparent;
+  border: none;
+  color: var(--color-ink-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  opacity: 0;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.misc-item:hover .misc-remove {
+  opacity: 1;
+}
+
+.misc-remove:hover {
+  color: var(--color-coffee);
+}
+
 /* Modal */
 .modal {
   display: none;
