@@ -8818,7 +8818,7 @@
   {
     "id": "383",
     "name": "Big Fat Greek Salad with Souvlaki-ish Chicken",
-    "category": "chicken",
+    "category": "salad",
     "author": "WISHBONE KITCHEN",
     "ingredients": [
       "For the Souvlaki-ish Chicken:",
@@ -8878,7 +8878,7 @@
   {
     "id": "385",
     "name": "Chicken Khao Soi",
-    "category": "soup",
+    "category": "chicken",
     "author": "WISHBONE KITCHEN",
     "ingredients": [
       "For the Khao Soi Paste:",
