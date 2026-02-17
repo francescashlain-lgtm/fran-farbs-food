@@ -16,9 +16,9 @@ const seasonalProduce = {
 
 // Default categories
 const defaultCategories = [
-  'pasta', 'chicken', 'beef', 'pork', 'lamb', 'seafood',
+  'pasta', 'chicken', 'meat', 'beef', 'pork', 'lamb', 'seafood',
   'vegetarian', 'soup', 'salad', 'side', 'bread', 'sauce',
-  'dessert', 'breakfast'
+  'dessert', 'baking', 'breakfast', 'smoothie'
 ];
 
 // Category display names (for nicer formatting)
@@ -407,7 +407,7 @@ function getRecipesByType(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb', 'turkey'],
+    meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
     vegetarian: ['vegetarian']
   };
 
@@ -534,7 +534,7 @@ function handleSkip(type) {
   const categoryMap = {
     pasta: ['pasta'],
     chicken: ['chicken'],
-    meat: ['beef', 'pork', 'lamb', 'turkey'],
+    meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
     vegetarian: ['vegetarian']
   };
   const targetCategories = categoryMap[type];
