@@ -7995,5 +7995,25 @@
     "instructions": "For the guac: In a small bowl, combine the avocado, red onion, cilantro, jalapeño, lime juice, garlic, and salt and pepper to taste. Mash the avocado, leaving some chunks to get that rough texture. Set aside.\n\nFor the sautéed veggies: Heat the avocado oil in a pan over medium heat. Once the oil is hot, add the onion, bell pepper, onion powder, smoked paprika, and salt and pepper to taste. Cook until the onions and peppers turn golden brown around the edges. Remove from the pan and set aside.\n\nFor the meat: In the same pan over medium heat, add the avocado oil. Once the oil is hot, add the ground beef, chipotle powder, paprika, cumin, onion powder, garlic powder, oregano, and salt and pepper. Continue chopping the beef with a spatula to prevent it from clumping. Sauté until browned and crispy and set aside.\n\nCook the rice per the instructions on the packaging.\n\nWhen the rice is cooked, place a serving of it in a bowl, add some taco meat and sautéed veggies, and pile it high with romaine, jalapeño, and a dollop of chunky guac. Drizzle some chipotle aioli on top and serve right away.",
     "servings": "4-6",
     "time": "1 hour 10 minutes"
+  },
+  {
+    "id": "347",
+    "name": "Moroccan Spice Blend",
+    "category": "sauce",
+    "author": "SHRED HAPPENS",
+    "ingredients": [
+      "2 teaspoons ground ginger",
+      "1 teaspoon ground cardamom",
+      "4 teaspoons crushed red pepper flakes",
+      "2 teaspoons ground turmeric",
+      "4 teaspoons ground cumin",
+      "4 teaspoons ground coriander",
+      "2 teaspoons ground cinnamon",
+      "1 tablespoon onion powder",
+      "1 tablespoon garlic powder"
+    ],
+    "instructions": "In a small bowl, combine the ginger, cardamom, red pepper flakes, turmeric, cumin, coriander, cinnamon, onion powder, and garlic powder and mix well.\n\nAdd them to an airtight jar, and done! Store in a dark dry place for up to 3 months.",
+    "servings": "35 teaspoons",
+    "time": "10 minutes"
   }
 ]
