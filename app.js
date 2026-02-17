@@ -18,7 +18,7 @@ const seasonalProduce = {
 const defaultCategories = [
   'pasta', 'chicken', 'meat', 'beef', 'pork', 'lamb', 'seafood',
   'vegetarian', 'soup', 'salad', 'side', 'bread', 'sauce',
-  'dessert', 'baking', 'breakfast', 'smoothie'
+  'dessert', 'baking', 'breakfast', 'lunch', 'smoothie'
 ];
 
 // Category display names (for nicer formatting)
