@@ -1328,7 +1328,30 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
     }
   });
 
-  return tasks;
+  // Deduplicate tasks within the same recipe
+  // (e.g., "zest lemon" might appear in both ingredients and instructions)
+  const seen = new Set();
+  const deduplicatedTasks = tasks.filter(task => {
+    // Normalize the action and item for comparison
+    const normalizedAction = task.action.toLowerCase();
+    // Extract just the core ingredient (remove quantities, articles, etc.)
+    const normalizedItem = (task.itemBase || task.item)
+      .toLowerCase()
+      .replace(/^\d+[\s\/½⅓⅔¼¾⅛-]*/, '') // Remove quantities
+      .replace(/^(the|a|an)\s+/i, '') // Remove articles
+      .replace(/s$/, '') // Remove trailing 's'
+      .trim();
+
+    const key = `${normalizedAction}-${normalizedItem}`;
+
+    if (seen.has(key)) {
+      return false; // Skip duplicate
+    }
+    seen.add(key);
+    return true;
+  });
+
+  return deduplicatedTasks;
 }
 
 // Combine similar prep tasks across recipes
