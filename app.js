@@ -2217,7 +2217,7 @@ function applyCloudData(cloudData) {
 }
 
 // Allowed email addresses
-const ALLOWED_EMAILS = ['francesca.shlain@gmail.com'];
+const ALLOWED_EMAILS = ['francesca.shlain@gmail.com', 'eliotgoldfarb@gmail.com'];
 
 // Handle auth state changes
 function handleAuthStateChange(user) {
