@@ -455,7 +455,10 @@ function generateWeeklyPicks() {
   // Track used recipes to avoid duplicates (especially for lunch1/lunch2)
   const usedRecipeIds = [];
 
-  ['breakfast', 'lunch1', 'lunch2', 'pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+  // Dinner types get seasonal sorting
+  const dinnerTypes = ['pasta', 'chicken', 'meat', 'vegetarian'];
+
+  ALL_MEAL_TYPES.forEach(type => {
     if (!keptRecipes[type]) {
       let available = getRecipesByType(type);
 
@@ -468,12 +471,17 @@ function generateWeeklyPicks() {
         return;
       }
 
-      // Sort by seasonal score
-      available.sort((a, b) => {
-        return getSeasonalScore(b, produce, expiringIngredients) - getSeasonalScore(a, produce, expiringIngredients);
-      });
+      // Only apply seasonal sorting for dinner types
+      if (dinnerTypes.includes(type)) {
+        available.sort((a, b) => {
+          return getSeasonalScore(b, produce, expiringIngredients) - getSeasonalScore(a, produce, expiringIngredients);
+        });
+      } else {
+        // For breakfast/lunch, shuffle randomly
+        available.sort(() => Math.random() - 0.5);
+      }
 
-      // Pick the best match
+      // Pick the best match (or random for breakfast/lunch)
       weeklyPicks[type] = available[0];
       usedRecipeIds.push(available[0].id);
       renderRecipeCard(type, available[0]);
