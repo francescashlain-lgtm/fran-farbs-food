@@ -1661,38 +1661,58 @@ function renderPrepList() {
   // Day names
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  // Group dinners by day
-  const dinnersByDay = {};
+  // Task duration estimates - determines if prep should be done day-before
+  // Quick tasks (< 5 min) = do day-of, Time-consuming (> 5 min) = prep day-before
+  const quickActions = ['zest', 'mince', 'grate', 'measure', 'season', 'crack', 'squeeze', 'garnish', 'sprinkle'];
+  const isQuickTask = (action) => quickActions.some(q => action.toLowerCase().includes(q));
+
+  // Extract all tasks with cooking day info
+  let allTasks = [];
   scheduledDinners.forEach(dinner => {
-    const day = dayAssignments[dinner.id];
-    if (!dinnersByDay[day]) dinnersByDay[day] = [];
-    dinnersByDay[day].push(dinner);
-  });
-
-  // Extract prep tasks for each day
-  const tasksByDay = {};
-  Object.entries(dinnersByDay).forEach(([day, dinners]) => {
-    let dayTasks = [];
-    dinners.forEach(dinner => {
-      const tasks = extractPrepTasks(dinner.recipe, dinner.name, dinner.color);
-      dayTasks = dayTasks.concat(tasks);
+    const cookingDay = dayAssignments[dinner.id];
+    const tasks = extractPrepTasks(dinner.recipe, dinner.name, dinner.color);
+    tasks.forEach(task => {
+      // Determine prep day: quick tasks = same day, others = day before
+      const prepDay = isQuickTask(task.action) ? cookingDay : (cookingDay === 0 ? 6 : cookingDay - 1);
+      allTasks.push({
+        ...task,
+        cookingDay,
+        prepDay,
+        forDinner: dinner.name,
+        dinnerColor: dinner.color,
+        isQuick: isQuickTask(task.action)
+      });
     });
-
-    // Combine similar tasks
-    let combinedTasks = combinePrepTasks(dayTasks);
-
-    // Filter out removed tasks and add keys
-    combinedTasks = combinedTasks.map(task => {
-      const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-day${day}`;
-      return { ...task, key, day: parseInt(day) };
-    }).filter(task => !prepListState.removed.includes(task.key));
-
-    if (combinedTasks.length > 0) {
-      tasksByDay[day] = combinedTasks;
-    }
   });
 
-  if (Object.keys(tasksByDay).length === 0) {
+  // Group tasks by prep day
+  const tasksByPrepDay = {};
+  allTasks.forEach(task => {
+    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-prep${task.prepDay}`;
+    task.key = key;
+
+    if (prepListState.removed.includes(key)) return;
+
+    if (!tasksByPrepDay[task.prepDay]) {
+      tasksByPrepDay[task.prepDay] = [];
+    }
+    tasksByPrepDay[task.prepDay].push(task);
+  });
+
+  // Combine similar tasks within each prep day
+  Object.keys(tasksByPrepDay).forEach(day => {
+    tasksByPrepDay[day] = combinePrepTasks(tasksByPrepDay[day]).map(task => ({
+      ...task,
+      key: `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-prep${day}`
+    })).filter(task => !prepListState.removed.includes(task.key));
+  });
+
+  // Remove empty days
+  Object.keys(tasksByPrepDay).forEach(day => {
+    if (tasksByPrepDay[day].length === 0) delete tasksByPrepDay[day];
+  });
+
+  if (Object.keys(tasksByPrepDay).length === 0) {
     categoriesEl.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1708,26 +1728,39 @@ function renderPrepList() {
     return;
   }
 
-  // Sort days and render
-  const sortedDays = Object.keys(tasksByDay).map(Number).sort((a, b) => a - b);
+  // Sort prep days and render
+  const sortedDays = Object.keys(tasksByPrepDay).map(Number).sort((a, b) => a - b);
 
-  categoriesEl.innerHTML = sortedDays.map(day => {
-    const tasks = tasksByDay[day];
-    const dayDinners = dinnersByDay[day];
-    const dinnerNames = dayDinners.map(d => `<span class="prep-dinner-tag" style="background-color: ${d.color}">${d.name}</span>`).join('');
+  categoriesEl.innerHTML = sortedDays.map(prepDay => {
+    const tasks = tasksByPrepDay[prepDay];
 
-    // Sort tasks - unchecked before checked
+    // Get unique dinners being prepped for on this day
+    const dinnersForDay = [...new Set(tasks.flatMap(t => t.recipes))];
+    const dinnerTags = tasks
+      .flatMap(t => t.recipeColors.map((color, i) => ({ name: t.recipes[i], color })))
+      .filter((d, i, arr) => arr.findIndex(x => x.name === d.name) === i)
+      .map(d => `<span class="prep-dinner-tag" style="background-color: ${d.color}">${d.name}</span>`)
+      .join('');
+
+    // Sort tasks - unchecked before checked, then by time-consuming first
     tasks.sort((a, b) => {
       const aChecked = prepListState.checked.includes(a.key) ? 1 : 0;
       const bChecked = prepListState.checked.includes(b.key) ? 1 : 0;
-      return aChecked - bChecked;
+      if (aChecked !== bChecked) return aChecked - bChecked;
+      // Time-consuming tasks first
+      const aQuick = quickActions.some(q => a.action.toLowerCase().includes(q)) ? 1 : 0;
+      const bQuick = quickActions.some(q => b.action.toLowerCase().includes(q)) ? 1 : 0;
+      return aQuick - bQuick;
     });
 
     return `
     <div class="prep-day">
       <div class="prep-day-header">
-        <span class="prep-day-name">${dayNames[day]}</span>
-        <span class="prep-day-dinners">${dinnerNames}</span>
+        <span class="prep-day-name">${dayNames[prepDay]}</span>
+        <span class="prep-day-label">Prep Day</span>
+      </div>
+      <div class="prep-day-subheader">
+        Prepping for: ${dinnerTags}
       </div>
       <div class="prep-day-tasks">
         ${tasks.map((task) => {
@@ -1736,6 +1769,8 @@ function renderPrepList() {
             .join('');
           const isChecked = prepListState.checked.includes(task.key);
           const checkedClass = isChecked ? 'checked' : '';
+          const isQuick = quickActions.some(q => task.action.toLowerCase().includes(q));
+          const timeLabel = isQuick ? 'quick' : '';
           // Format quantities
           let quantityDisplay = '';
           if (task.quantities && task.quantities.length > 0) {
