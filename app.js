@@ -2221,6 +2221,8 @@ const ALLOWED_EMAILS = ['francesca.shlain@gmail.com', 'eliotgoldfarb@gmail.com']
 
 // Handle auth state changes
 function handleAuthStateChange(user) {
+  const loginScreen = document.getElementById('login-screen');
+  const appContent = document.getElementById('app-content');
   const signInBtn = document.getElementById('sign-in-btn');
   const userInfo = document.getElementById('user-info');
   const userAvatar = document.getElementById('user-avatar');
@@ -2234,7 +2236,10 @@ function handleAuthStateChange(user) {
       return;
     }
 
-    // User is signed in
+    // User is signed in and authorized - show app
+    loginScreen.classList.add('hidden');
+    appContent.style.display = 'block';
+
     signInBtn.style.display = 'none';
     userInfo.style.display = 'flex';
     userAvatar.src = user.photoURL || '';
@@ -2258,7 +2263,10 @@ function handleAuthStateChange(user) {
       }
     });
   } else {
-    // User is signed out
+    // User is signed out - show login screen
+    loginScreen.classList.remove('hidden');
+    appContent.style.display = 'none';
+
     signInBtn.style.display = 'inline-flex';
     userInfo.style.display = 'none';
 
@@ -2278,9 +2286,23 @@ window.onCloudDataReceived = function(cloudData) {
 
 // Setup auth event listeners
 function setupAuthListeners() {
+  const loginBtn = document.getElementById('login-btn');
   const signInBtn = document.getElementById('sign-in-btn');
   const signOutBtn = document.getElementById('sign-out-btn');
 
+  // Login screen button
+  if (loginBtn) {
+    loginBtn.addEventListener('click', async () => {
+      try {
+        await signInWithGoogle();
+      } catch (error) {
+        console.error('Sign in failed:', error);
+        alert('Sign in failed. Please try again.');
+      }
+    });
+  }
+
+  // Header sign in button (backup)
   if (signInBtn) {
     signInBtn.addEventListener('click', async () => {
       try {
