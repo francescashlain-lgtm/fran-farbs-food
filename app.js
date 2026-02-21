@@ -1,3 +1,13 @@
+// Firebase imports
+import {
+  signInWithGoogle,
+  signOutUser,
+  getCurrentUser,
+  setAuthStateCallback,
+  saveToCloud,
+  loadFromCloud
+} from './firebase-config.js';
+
 // Seasonal produce data
 const seasonalProduce = {
   january: ['beetroot', 'broccoli rabe', 'cabbage', 'carrots', 'celery root', 'chestnuts', 'collard greens', 'crabapples', 'endive', 'escarole', 'horseradish', 'kohlrabi', 'leeks', 'parsnips', 'potatoes', 'rosemary', 'rutabaga', 'salsify', 'sumac', 'sunchokes', 'turnips', 'winter squash'],
@@ -114,11 +124,12 @@ function loadWeeklyState() {
   }
 }
 
-// Save weekly state to localStorage
+// Save weekly state to localStorage and cloud
 function saveWeeklyState() {
   localStorage.setItem('keptRecipes', JSON.stringify(keptRecipes));
   localStorage.setItem('weeklyPicks', JSON.stringify(weeklyPicks));
   localStorage.setItem('skippedRecipes', JSON.stringify(skippedRecipes));
+  if (typeof syncToCloud === 'function') syncToCloud();
 }
 
 // ==================== URL SHARING ====================
@@ -339,9 +350,10 @@ function loadUserPreferences() {
   }
 }
 
-// Save user preferences to localStorage
+// Save user preferences to localStorage and cloud
 function saveUserPreferences() {
   localStorage.setItem('recipePreferences', JSON.stringify(userPreferences));
+  if (typeof syncToCloud === 'function') syncToCloud();
 }
 
 // Get current month's seasonal produce
@@ -571,6 +583,7 @@ function toggleKeepForWeek(id) {
     manuallyKeptRecipes.push(id);
   }
   localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+  if (typeof syncToCloud === 'function') syncToCloud();
   renderManualPicks();
   updateGenerateGroceryButton();
   updateStartNewWeekButton();
@@ -605,6 +618,7 @@ function removeManualPick(id) {
   if (idx > -1) {
     manuallyKeptRecipes.splice(idx, 1);
     localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+    if (typeof syncToCloud === 'function') syncToCloud();
     renderManualPicks();
     updateGenerateGroceryButton();
   }
@@ -826,9 +840,10 @@ function generateGroceryList() {
   // Combine similar ingredients
   groceryList = combineIngredients(rawIngredients);
 
-  // Save to localStorage
+  // Save to localStorage and cloud
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
   localStorage.setItem('groceryRecipes', JSON.stringify(keptRecipesList));
+  if (typeof syncToCloud === 'function') syncToCloud();
 
   // Switch to grocery tab
   switchTab('grocery');
@@ -996,9 +1011,10 @@ function loadMiscItems() {
   }
 }
 
-// Save misc items to localStorage
+// Save misc items to localStorage and cloud
 function saveMiscItems() {
   localStorage.setItem('miscItems', JSON.stringify(miscItems));
+  if (typeof syncToCloud === 'function') syncToCloud();
 }
 
 // Add a miscellaneous item
@@ -1066,9 +1082,10 @@ function loadPrepListState() {
   }
 }
 
-// Save prep list state to localStorage
+// Save prep list state to localStorage and cloud
 function savePrepListState() {
   localStorage.setItem('prepListState', JSON.stringify(prepListState));
+  if (typeof syncToCloud === 'function') syncToCloud();
 }
 
 // Toggle prep task checked state
@@ -2054,5 +2071,240 @@ window.togglePrepTask = togglePrepTask;
 window.removePrepTask = removePrepTask;
 window.openWeeklyRecipeModal = openWeeklyRecipeModal;
 
+// ==================== FIREBASE AUTH & SYNC ====================
+
+// Debounce timer for cloud sync
+let syncTimeout = null;
+let isSyncing = false;
+
+// Gather all app data for cloud sync
+function gatherAllData() {
+  return {
+    userPreferences,
+    weeklyPicks: {
+      pasta: weeklyPicks.pasta?.id || null,
+      chicken: weeklyPicks.chicken?.id || null,
+      meat: weeklyPicks.meat?.id || null,
+      vegetarian: weeklyPicks.vegetarian?.id || null
+    },
+    keptRecipes,
+    skippedRecipes,
+    manuallyKeptRecipes,
+    groceryList,
+    miscItems,
+    prepListState
+  };
+}
+
+// Save all data to cloud (debounced)
+function syncToCloud() {
+  if (!getCurrentUser()) return;
+
+  // Clear existing timeout
+  if (syncTimeout) {
+    clearTimeout(syncTimeout);
+  }
+
+  // Debounce - wait 1 second before syncing
+  syncTimeout = setTimeout(async () => {
+    isSyncing = true;
+    updateSyncIndicator('syncing');
+
+    const data = gatherAllData();
+    const success = await saveToCloud(data);
+
+    isSyncing = false;
+    updateSyncIndicator(success ? 'synced' : 'error');
+  }, 1000);
+}
+
+// Update sync indicator UI
+function updateSyncIndicator(status) {
+  const indicator = document.getElementById('sync-indicator');
+  if (!indicator) return;
+
+  indicator.className = `sync-indicator ${status}`;
+
+  if (status === 'syncing') {
+    indicator.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      Syncing...
+    `;
+  } else if (status === 'synced') {
+    indicator.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+      Synced
+    `;
+    // Hide after 2 seconds
+    setTimeout(() => {
+      indicator.innerHTML = '';
+    }, 2000);
+  } else if (status === 'error') {
+    indicator.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      Sync failed
+    `;
+  }
+}
+
+// Apply cloud data to local state
+function applyCloudData(cloudData) {
+  if (!cloudData) return;
+
+  // Apply user preferences
+  if (cloudData.userPreferences) {
+    userPreferences = { ...userPreferences, ...cloudData.userPreferences };
+    localStorage.setItem('recipePreferences', JSON.stringify(userPreferences));
+  }
+
+  // Apply kept recipes flags
+  if (cloudData.keptRecipes) {
+    keptRecipes = cloudData.keptRecipes;
+    localStorage.setItem('keptRecipes', JSON.stringify(keptRecipes));
+  }
+
+  // Apply skipped recipes
+  if (cloudData.skippedRecipes) {
+    skippedRecipes = cloudData.skippedRecipes;
+    localStorage.setItem('skippedRecipes', JSON.stringify(skippedRecipes));
+  }
+
+  // Apply manually kept recipes
+  if (cloudData.manuallyKeptRecipes) {
+    manuallyKeptRecipes = cloudData.manuallyKeptRecipes;
+    localStorage.setItem('manuallyKeptRecipes', JSON.stringify(manuallyKeptRecipes));
+  }
+
+  // Apply grocery list
+  if (cloudData.groceryList) {
+    groceryList = cloudData.groceryList;
+    localStorage.setItem('groceryList', JSON.stringify(groceryList));
+  }
+
+  // Apply misc items
+  if (cloudData.miscItems) {
+    miscItems = cloudData.miscItems;
+    localStorage.setItem('miscItems', JSON.stringify(miscItems));
+  }
+
+  // Apply prep list state
+  if (cloudData.prepListState) {
+    prepListState = cloudData.prepListState;
+    localStorage.setItem('prepListState', JSON.stringify(prepListState));
+  }
+
+  // Apply weekly picks (need to resolve IDs to full recipes)
+  if (cloudData.weeklyPicks && recipes.length > 0) {
+    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+      const recipeId = cloudData.weeklyPicks[type];
+      if (recipeId) {
+        const recipe = recipes.find(r => r.id === recipeId);
+        if (recipe) {
+          weeklyPicks[type] = recipe;
+        }
+      }
+    });
+    localStorage.setItem('weeklyPicks', JSON.stringify(weeklyPicks));
+  }
+
+  // Refresh UI
+  renderLibrary();
+  restoreOrGenerateWeeklyPicks();
+  renderManualPicks();
+  updateStartNewWeekButton();
+  updateGenerateGroceryButton();
+}
+
+// Handle auth state changes
+function handleAuthStateChange(user) {
+  const signInBtn = document.getElementById('sign-in-btn');
+  const userInfo = document.getElementById('user-info');
+  const userAvatar = document.getElementById('user-avatar');
+  const userName = document.getElementById('user-name');
+
+  if (user) {
+    // User is signed in
+    signInBtn.style.display = 'none';
+    userInfo.style.display = 'flex';
+    userAvatar.src = user.photoURL || '';
+    userName.textContent = user.displayName || user.email;
+
+    // Add sync indicator if not exists
+    if (!document.getElementById('sync-indicator')) {
+      const indicator = document.createElement('span');
+      indicator.id = 'sync-indicator';
+      indicator.className = 'sync-indicator';
+      userInfo.appendChild(indicator);
+    }
+
+    // Load data from cloud
+    loadFromCloud().then(cloudData => {
+      if (cloudData) {
+        applyCloudData(cloudData);
+      } else {
+        // First time sign in - push local data to cloud
+        syncToCloud();
+      }
+    });
+  } else {
+    // User is signed out
+    signInBtn.style.display = 'inline-flex';
+    userInfo.style.display = 'none';
+
+    // Remove sync indicator
+    const indicator = document.getElementById('sync-indicator');
+    if (indicator) indicator.remove();
+  }
+}
+
+// Handle cloud data received (real-time updates)
+window.onCloudDataReceived = function(cloudData) {
+  // Only apply if not currently syncing (to avoid loops)
+  if (!isSyncing && cloudData) {
+    applyCloudData(cloudData);
+  }
+};
+
+// Setup auth event listeners
+function setupAuthListeners() {
+  const signInBtn = document.getElementById('sign-in-btn');
+  const signOutBtn = document.getElementById('sign-out-btn');
+
+  if (signInBtn) {
+    signInBtn.addEventListener('click', async () => {
+      try {
+        await signInWithGoogle();
+      } catch (error) {
+        console.error('Sign in failed:', error);
+        alert('Sign in failed. Please try again.');
+      }
+    });
+  }
+
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        await signOutUser();
+      } catch (error) {
+        console.error('Sign out failed:', error);
+      }
+    });
+  }
+
+  // Set up auth state callback
+  setAuthStateCallback(handleAuthStateChange);
+}
+
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  setupAuthListeners();
+});
