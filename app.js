@@ -85,6 +85,7 @@ let skippedRecipes = {
   vegetarian: []
 };
 let manuallyKeptRecipes = [];
+let dayAssignments = {}; // Maps recipe ID to day number (0=Sunday, 6=Saturday)
 
 // All meal types for iteration
 const ALL_MEAL_TYPES = ['breakfast1', 'breakfast2', 'lunch1', 'lunch2', 'lunch3', 'pasta', 'chicken', 'meat', 'vegetarian']; // Recipes kept from the library
@@ -103,6 +104,7 @@ async function init() {
   }
 
   loadPrepListState();
+  loadDayAssignments();
   await loadRecipes();
 
   // Resolve any pending sync picks now that recipes are loaded
@@ -329,6 +331,8 @@ function startNewWeek() {
   localStorage.removeItem('groceryList');
   localStorage.removeItem('groceryRecipes');
   localStorage.removeItem('prepListState');
+  localStorage.removeItem('dayAssignments');
+  dayAssignments = {};
 
   // Re-generate picks and update UI
   generateWeeklyPicks();
@@ -1362,6 +1366,230 @@ function combinePrepTasks(allTasks) {
   return Array.from(combined.values());
 }
 
+// ==================== WEEK PLANNER ====================
+
+// Dinner types for the planner
+const DINNER_TYPES = ['pasta', 'chicken', 'meat', 'vegetarian'];
+
+// Load day assignments from localStorage
+function loadDayAssignments() {
+  const saved = localStorage.getItem('dayAssignments');
+  if (saved) {
+    dayAssignments = JSON.parse(saved);
+  }
+}
+
+// Save day assignments to localStorage and cloud
+function saveDayAssignments() {
+  localStorage.setItem('dayAssignments', JSON.stringify(dayAssignments));
+  if (typeof syncToCloud === 'function') syncToCloud();
+}
+
+// Get kept dinners for the week planner
+function getKeptDinnersForPlanner() {
+  const dinners = [];
+  DINNER_TYPES.forEach(type => {
+    if (weeklyPicks[type] && keptRecipes[type]) {
+      dinners.push({
+        id: weeklyPicks[type].id,
+        name: weeklyPicks[type].name,
+        type: type,
+        color: recipeColorsByType[type],
+        recipe: weeklyPicks[type]
+      });
+    }
+  });
+
+  // Also include manually kept recipes that are dinners
+  manuallyKeptRecipes.forEach(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      const categories = getRecipeCategories(recipe);
+      // Check if it's a dinner-type recipe
+      const isDinner = categories.some(cat =>
+        ['pasta', 'chicken', 'meat', 'beef', 'pork', 'lamb', 'turkey', 'vegetarian', 'seafood'].includes(cat.toLowerCase())
+      );
+      if (isDinner) {
+        dinners.push({
+          id: recipe.id,
+          name: recipe.name,
+          type: 'manual',
+          color: '#7a6c5d',
+          recipe: recipe
+        });
+      }
+    }
+  });
+
+  return dinners;
+}
+
+// Render the week planner
+function renderWeekPlanner() {
+  const dinners = getKeptDinnersForPlanner();
+  const dinnerPool = document.getElementById('dinner-pool');
+  const daySlots = document.querySelectorAll('.day-slot');
+
+  if (!dinnerPool) return;
+
+  // Clear all slots
+  dinnerPool.innerHTML = '';
+  daySlots.forEach(slot => slot.innerHTML = '');
+
+  if (dinners.length === 0) {
+    dinnerPool.innerHTML = '<span style="color: var(--color-ink-muted); font-size: 0.85rem; font-style: italic;">Keep some dinners to start planning</span>';
+    return;
+  }
+
+  // Sort dinners into assigned and unassigned
+  const assignedToDay = {};
+  const unassigned = [];
+
+  dinners.forEach(dinner => {
+    const day = dayAssignments[dinner.id];
+    if (day !== undefined && day !== null) {
+      if (!assignedToDay[day]) assignedToDay[day] = [];
+      assignedToDay[day].push(dinner);
+    } else {
+      unassigned.push(dinner);
+    }
+  });
+
+  // Render unassigned dinners in the pool
+  if (unassigned.length === 0) {
+    dinnerPool.classList.add('empty');
+  } else {
+    dinnerPool.classList.remove('empty');
+    unassigned.forEach(dinner => {
+      dinnerPool.appendChild(createDinnerCard(dinner, false));
+    });
+  }
+
+  // Render assigned dinners in day slots
+  daySlots.forEach(slot => {
+    const day = parseInt(slot.dataset.day);
+    const dinnersForDay = assignedToDay[day] || [];
+    dinnersForDay.forEach(dinner => {
+      slot.appendChild(createDinnerCard(dinner, true));
+    });
+  });
+
+  // Setup drag and drop
+  setupWeekPlannerDragDrop();
+}
+
+// Create a dinner card element
+function createDinnerCard(dinner, inSlot) {
+  const card = document.createElement('div');
+  card.className = 'dinner-card';
+  card.draggable = true;
+  card.dataset.id = dinner.id;
+  card.dataset.type = dinner.type;
+
+  card.innerHTML = `
+    <span class="category-dot" style="background-color: ${dinner.color}"></span>
+    <span class="dinner-name">${dinner.name}</span>
+    ${inSlot ? '<button class="remove-from-day" title="Remove from day">&times;</button>' : ''}
+  `;
+
+  // Click to view recipe
+  card.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('remove-from-day')) {
+      openRecipeModal(dinner.id);
+    }
+  });
+
+  // Remove button handler
+  if (inSlot) {
+    const removeBtn = card.querySelector('.remove-from-day');
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeRecipeFromDay(dinner.id);
+    });
+  }
+
+  return card;
+}
+
+// Setup drag and drop for the week planner
+function setupWeekPlannerDragDrop() {
+  const cards = document.querySelectorAll('.dinner-card');
+  const daySlots = document.querySelectorAll('.day-slot');
+  const dinnerPool = document.getElementById('dinner-pool');
+
+  cards.forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    });
+  });
+
+  // Day slots as drop targets
+  daySlots.forEach(slot => {
+    slot.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      slot.parentElement.classList.add('drag-over');
+    });
+
+    slot.addEventListener('dragleave', (e) => {
+      if (!slot.contains(e.relatedTarget)) {
+        slot.parentElement.classList.remove('drag-over');
+      }
+    });
+
+    slot.addEventListener('drop', (e) => {
+      e.preventDefault();
+      slot.parentElement.classList.remove('drag-over');
+      const recipeId = e.dataTransfer.getData('text/plain');
+      const day = parseInt(slot.dataset.day);
+      assignRecipeToDay(recipeId, day);
+    });
+  });
+
+  // Dinner pool as drop target (to unassign)
+  if (dinnerPool) {
+    dinnerPool.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      dinnerPool.classList.add('drag-over');
+    });
+
+    dinnerPool.addEventListener('dragleave', () => {
+      dinnerPool.classList.remove('drag-over');
+    });
+
+    dinnerPool.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dinnerPool.classList.remove('drag-over');
+      const recipeId = e.dataTransfer.getData('text/plain');
+      removeRecipeFromDay(recipeId);
+    });
+  }
+}
+
+// Assign a recipe to a day
+function assignRecipeToDay(recipeId, day) {
+  dayAssignments[recipeId] = day;
+  saveDayAssignments();
+  renderWeekPlanner();
+  renderPrepList();
+}
+
+// Remove a recipe from its assigned day
+function removeRecipeFromDay(recipeId) {
+  delete dayAssignments[recipeId];
+  saveDayAssignments();
+  renderWeekPlanner();
+  renderPrepList();
+}
+
 // Get all kept recipes for prep list
 function getKeptRecipesForPrep() {
   const keptList = [];
@@ -1395,49 +1623,77 @@ function getKeptRecipesForPrep() {
 
 // Render prep list
 function renderPrepList() {
-  const keptRecipesList = getKeptRecipesForPrep();
+  const keptDinners = getKeptDinnersForPlanner();
+  const categoriesEl = document.getElementById('prep-categories');
 
-  // Show recipes we're prepping for
-  const recipeListEl = document.getElementById('prep-recipe-list');
-  const prepRecipesContainer = document.getElementById('prep-recipes');
-
-  if (keptRecipesList.length === 0) {
-    prepRecipesContainer.style.display = 'none';
-    document.getElementById('prep-categories').innerHTML = `
+  if (keptDinners.length === 0) {
+    categoriesEl.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
         </svg>
-        <h3>No recipes selected</h3>
-        <p>Keep some recipes from This Week's Menu to see your prep list</p>
+        <h3>No dinners selected</h3>
+        <p>Keep some dinners from This Week's Menu to see your prep list</p>
       </div>
     `;
     return;
   }
 
-  prepRecipesContainer.style.display = 'block';
-  recipeListEl.innerHTML = keptRecipesList.map(r =>
-    `<span class="grocery-recipe-tag clickable" style="background-color: ${r.color}" onclick="openRecipeModal('${r.recipe.id}')" title="Click to view full recipe">${r.name}</span>`
-  ).join('');
+  // Check if any dinners are scheduled
+  const scheduledDinners = keptDinners.filter(d => dayAssignments[d.id] !== undefined);
 
-  // Extract all prep tasks
-  let allTasks = [];
-  keptRecipesList.forEach(({ recipe, name, color }) => {
-    const tasks = extractPrepTasks(recipe, name, color);
-    allTasks = allTasks.concat(tasks);
+  if (scheduledDinners.length === 0) {
+    categoriesEl.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h3>Schedule your dinners</h3>
+        <p>Drag dinners to days of the week above to see your prep list organized by cooking day</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Day names
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Group dinners by day
+  const dinnersByDay = {};
+  scheduledDinners.forEach(dinner => {
+    const day = dayAssignments[dinner.id];
+    if (!dinnersByDay[day]) dinnersByDay[day] = [];
+    dinnersByDay[day].push(dinner);
   });
 
-  // Combine similar tasks
-  let combinedTasks = combinePrepTasks(allTasks);
+  // Extract prep tasks for each day
+  const tasksByDay = {};
+  Object.entries(dinnersByDay).forEach(([day, dinners]) => {
+    let dayTasks = [];
+    dinners.forEach(dinner => {
+      const tasks = extractPrepTasks(dinner.recipe, dinner.name, dinner.color);
+      dayTasks = dayTasks.concat(tasks);
+    });
 
-  // Filter out removed tasks and add keys
-  combinedTasks = combinedTasks.map(task => {
-    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}`;
-    return { ...task, key };
-  }).filter(task => !prepListState.removed.includes(task.key));
+    // Combine similar tasks
+    let combinedTasks = combinePrepTasks(dayTasks);
 
-  if (combinedTasks.length === 0) {
-    document.getElementById('prep-categories').innerHTML = `
+    // Filter out removed tasks and add keys
+    combinedTasks = combinedTasks.map(task => {
+      const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-day${day}`;
+      return { ...task, key, day: parseInt(day) };
+    }).filter(task => !prepListState.removed.includes(task.key));
+
+    if (combinedTasks.length > 0) {
+      tasksByDay[day] = combinedTasks;
+    }
+  });
+
+  if (Object.keys(tasksByDay).length === 0) {
+    categoriesEl.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
@@ -1452,36 +1708,32 @@ function renderPrepList() {
     return;
   }
 
-  // Group by category
-  const categories = {};
-  combinedTasks.forEach(task => {
-    if (!categories[task.category]) {
-      categories[task.category] = [];
-    }
-    categories[task.category].push(task);
-  });
+  // Sort days and render
+  const sortedDays = Object.keys(tasksByDay).map(Number).sort((a, b) => a - b);
 
-  // Sort tasks within each category - multi-recipe tasks first, then unchecked before checked
-  Object.values(categories).forEach(tasks => {
+  categoriesEl.innerHTML = sortedDays.map(day => {
+    const tasks = tasksByDay[day];
+    const dayDinners = dinnersByDay[day];
+    const dinnerNames = dayDinners.map(d => `<span class="prep-dinner-tag" style="background-color: ${d.color}">${d.name}</span>`).join('');
+
+    // Sort tasks - unchecked before checked
     tasks.sort((a, b) => {
       const aChecked = prepListState.checked.includes(a.key) ? 1 : 0;
       const bChecked = prepListState.checked.includes(b.key) ? 1 : 0;
-      if (aChecked !== bChecked) return aChecked - bChecked;
-      return b.recipes.length - a.recipes.length;
+      return aChecked - bChecked;
     });
-  });
 
-  // Render categories
-  const categoriesEl = document.getElementById('prep-categories');
-  categoriesEl.innerHTML = Object.entries(categories).map(([category, tasks]) => `
-    <div class="prep-category">
-      <div class="prep-category-header">${category}</div>
-      <div class="prep-category-items">
+    return `
+    <div class="prep-day">
+      <div class="prep-day-header">
+        <span class="prep-day-name">${dayNames[day]}</span>
+        <span class="prep-day-dinners">${dinnerNames}</span>
+      </div>
+      <div class="prep-day-tasks">
         ${tasks.map((task) => {
           const colorDots = task.recipeColors
             .map(color => `<span class="ingredient-color-dot" style="background-color: ${color}"></span>`)
             .join('');
-          const multiRecipe = task.recipes.length > 1 ? 'multi-recipe' : '';
           const isChecked = prepListState.checked.includes(task.key);
           const checkedClass = isChecked ? 'checked' : '';
           // Format quantities
@@ -1490,26 +1742,24 @@ function renderPrepList() {
             if (task.quantities.length === 1) {
               quantityDisplay = task.quantities[0].qty;
             } else {
-              // Show combined quantities
               quantityDisplay = task.quantities.map(q => q.qty).join(' + ');
             }
           }
           const itemDisplay = quantityDisplay ? `${quantityDisplay} ${task.item}` : task.item;
           return `
-          <div class="prep-item ${multiRecipe} ${checkedClass}" title="For: ${task.recipes.join(', ')}">
+          <div class="prep-item ${checkedClass}" title="For: ${task.recipes.join(', ')}">
             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePrepTask('${task.key}')">
             <div class="ingredient-color-dots">${colorDots}</div>
             <div class="prep-task-text">
               <span class="prep-action">${task.action}</span>
               <span class="prep-ingredient">${itemDisplay}</span>
-              ${task.recipes.length > 1 ? `<span class="prep-count">(${task.recipes.length} recipes)</span>` : ''}
             </div>
             <button class="prep-remove" onclick="removePrepTask('${task.key}')" title="Remove task">&times;</button>
           </div>
         `}).join('')}
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // Render recipe library
@@ -2003,6 +2253,7 @@ function switchTab(tabName) {
     renderGroceryList();
     renderMiscItems();
   } else if (tabName === 'prep') {
+    renderWeekPlanner();
     renderPrepList();
   }
 }
@@ -2154,7 +2405,8 @@ function gatherAllData() {
     manuallyKeptRecipes,
     groceryList,
     miscItems,
-    prepListState
+    prepListState,
+    dayAssignments
   };
 }
 
@@ -2261,6 +2513,12 @@ function applyCloudData(cloudData) {
   if (cloudData.prepListState) {
     prepListState = cloudData.prepListState;
     localStorage.setItem('prepListState', JSON.stringify(prepListState));
+  }
+
+  // Apply day assignments
+  if (cloudData.dayAssignments) {
+    dayAssignments = cloudData.dayAssignments;
+    localStorage.setItem('dayAssignments', JSON.stringify(dayAssignments));
   }
 
   // Apply weekly picks (need to resolve IDs to full recipes)

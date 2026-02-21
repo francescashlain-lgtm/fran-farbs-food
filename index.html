@@ -322,16 +322,52 @@
     <section id="prep-tab" class="tab-content">
       <div class="prep-header">
         <h2>Prep List</h2>
-        <p class="prep-subtitle">Tasks you can do ahead of time</p>
+        <p class="prep-subtitle">Plan your dinners and see prep tasks</p>
       </div>
 
-      <div class="prep-recipes" id="prep-recipes">
-        <h3>Prepping for:</h3>
-        <div id="prep-recipe-list"></div>
+      <!-- Week Planner -->
+      <div class="week-planner">
+        <div class="unassigned-dinners" id="unassigned-dinners">
+          <h4>Dinners to Schedule</h4>
+          <div class="dinner-pool" id="dinner-pool">
+            <!-- Draggable dinner cards appear here -->
+          </div>
+        </div>
+
+        <div class="week-grid">
+          <div class="day-column" data-day="0">
+            <div class="day-header">Sunday</div>
+            <div class="day-slot" data-day="0"></div>
+          </div>
+          <div class="day-column" data-day="1">
+            <div class="day-header">Monday</div>
+            <div class="day-slot" data-day="1"></div>
+          </div>
+          <div class="day-column" data-day="2">
+            <div class="day-header">Tuesday</div>
+            <div class="day-slot" data-day="2"></div>
+          </div>
+          <div class="day-column" data-day="3">
+            <div class="day-header">Wednesday</div>
+            <div class="day-slot" data-day="3"></div>
+          </div>
+          <div class="day-column" data-day="4">
+            <div class="day-header">Thursday</div>
+            <div class="day-slot" data-day="4"></div>
+          </div>
+          <div class="day-column" data-day="5">
+            <div class="day-header">Friday</div>
+            <div class="day-slot" data-day="5"></div>
+          </div>
+          <div class="day-column" data-day="6">
+            <div class="day-header">Saturday</div>
+            <div class="day-slot" data-day="6"></div>
+          </div>
+        </div>
       </div>
 
       <div class="prep-categories" id="prep-categories">
-        <!-- Prep tasks organized by type -->
+        <!-- Prep tasks organized by day -->
       </div>
     </section>
   </main>
