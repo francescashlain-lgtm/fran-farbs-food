@@ -498,6 +498,10 @@ function generateWeeklyPicks() {
 // Render a recipe card
 function renderRecipeCard(type, recipe) {
   const card = document.getElementById(`${type}-pick`);
+  if (!card) {
+    console.error(`Card not found for type: ${type}`);
+    return;
+  }
   const loading = card.querySelector('.card-loading');
   const content = card.querySelector('.card-content');
 
