@@ -447,13 +447,21 @@ function getRecipesByType(type) {
   const targetCategories = categoryMap[type];
   if (!targetCategories) return [];
 
-  return recipes.filter(r => {
+  const results = recipes.filter(r => {
     const recipeCategories = getRecipeCategories(r);
     const skippedForType = skippedRecipes[type] || [];
-    return recipeCategories.some(cat => targetCategories.includes(cat)) &&
+    return recipeCategories.some(cat => targetCategories.includes(cat.toLowerCase())) &&
       !userPreferences.removed.includes(r.id) &&
       !skippedForType.includes(r.id);
   });
+
+  // Debug: log if no recipes found
+  if (results.length === 0) {
+    console.log(`No recipes found for ${type}. Target categories:`, targetCategories);
+    console.log(`Total recipes loaded:`, recipes.length);
+  }
+
+  return results;
 }
 
 // Generate weekly picks
@@ -516,7 +524,13 @@ function renderRecipeCard(type, recipe) {
   const content = card.querySelector('.card-content');
 
   if (!recipe) {
-    loading.textContent = `No ${type} recipes available`;
+    // Friendlier message without the type key
+    const friendlyNames = {
+      breakfast1: 'breakfast', breakfast2: 'breakfast',
+      lunch1: 'lunch', lunch2: 'lunch', lunch3: 'lunch',
+      pasta: 'pasta', chicken: 'chicken', meat: 'meat', vegetarian: 'vegetarian'
+    };
+    loading.textContent = `No ${friendlyNames[type] || type} recipes available`;
     loading.style.display = 'block';
     content.style.display = 'none';
     return;
