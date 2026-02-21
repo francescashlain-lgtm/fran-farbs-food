@@ -50,18 +50,22 @@ let userPreferences = {
 };
 let manageMode = false;
 let weeklyPicks = {
-  breakfast: null,
+  breakfast1: null,
+  breakfast2: null,
   lunch1: null,
   lunch2: null,
+  lunch3: null,
   pasta: null,
   chicken: null,
   meat: null,
   vegetarian: null
 };
 let keptRecipes = {
-  breakfast: false,
+  breakfast1: false,
+  breakfast2: false,
   lunch1: false,
   lunch2: false,
+  lunch3: false,
   pasta: false,
   chicken: false,
   meat: false,
@@ -70,9 +74,11 @@ let keptRecipes = {
 let groceryList = [];
 let miscItems = []; // Miscellaneous items not tied to recipes
 let skippedRecipes = {
-  breakfast: [],
+  breakfast1: [],
+  breakfast2: [],
   lunch1: [],
   lunch2: [],
+  lunch3: [],
   pasta: [],
   chicken: [],
   meat: [],
@@ -81,7 +87,7 @@ let skippedRecipes = {
 let manuallyKeptRecipes = [];
 
 // All meal types for iteration
-const ALL_MEAL_TYPES = ['breakfast', 'lunch1', 'lunch2', 'pasta', 'chicken', 'meat', 'vegetarian']; // Recipes kept from the library
+const ALL_MEAL_TYPES = ['breakfast1', 'breakfast2', 'lunch1', 'lunch2', 'lunch3', 'pasta', 'chicken', 'meat', 'vegetarian']; // Recipes kept from the library
 
 // Initialize the app
 async function init() {
@@ -308,9 +314,9 @@ function startNewWeek() {
   }
 
   // Reset all state
-  weeklyPicks = { breakfast: null, lunch1: null, lunch2: null, pasta: null, chicken: null, meat: null, vegetarian: null };
-  keptRecipes = { breakfast: false, lunch1: false, lunch2: false, pasta: false, chicken: false, meat: false, vegetarian: false };
-  skippedRecipes = { breakfast: [], lunch1: [], lunch2: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
+  weeklyPicks = { breakfast1: null, breakfast2: null, lunch1: null, lunch2: null, lunch3: null, pasta: null, chicken: null, meat: null, vegetarian: null };
+  keptRecipes = { breakfast1: false, breakfast2: false, lunch1: false, lunch2: false, lunch3: false, pasta: false, chicken: false, meat: false, vegetarian: false };
+  skippedRecipes = { breakfast1: [], breakfast2: [], lunch1: [], lunch2: [], lunch3: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
   manuallyKeptRecipes = [];
   groceryList = [];
   prepListState = { checked: [], removed: [] };
@@ -427,9 +433,11 @@ function updateSeasonalDisplay() {
 // Get recipes by category type
 function getRecipesByType(type) {
   const categoryMap = {
-    breakfast: ['breakfast', 'smoothie'],
+    breakfast1: ['breakfast', 'smoothie'],
+    breakfast2: ['breakfast', 'smoothie'],
     lunch1: ['lunch', 'salad', 'soup', 'sandwich'],
     lunch2: ['lunch', 'salad', 'soup', 'sandwich'],
+    lunch3: ['lunch', 'salad', 'soup', 'sandwich'],
     pasta: ['pasta'],
     chicken: ['chicken'],
     meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
@@ -521,18 +529,17 @@ function renderRecipeCard(type, recipe) {
 
   // Render seasonal ingredient tags
   const tagsContainer = content.querySelector('.card-seasonal-tags');
-  if (seasonalIngredients.length > 0) {
-    tagsContainer.innerHTML = seasonalIngredients.map(ingredient =>
-      `<span class="seasonal-tag">${ingredient}</span>`
-    ).join('');
-    tagsContainer.style.display = 'flex';
-  } else {
-    tagsContainer.innerHTML = '';
-    tagsContainer.style.display = 'none';
+  if (tagsContainer) {
+    if (seasonalIngredients.length > 0) {
+      tagsContainer.innerHTML = seasonalIngredients.map(ingredient =>
+        `<span class="seasonal-tag">${ingredient}</span>`
+      ).join('');
+      tagsContainer.style.display = 'flex';
+    } else {
+      tagsContainer.innerHTML = '';
+      tagsContainer.style.display = 'none';
+    }
   }
-
-  const ingredientPreview = recipe.ingredients.slice(0, 4).join(', ') + '...';
-  content.querySelector('.card-ingredients').textContent = ingredientPreview;
 
   loading.style.display = 'none';
   content.style.display = 'block';
@@ -583,9 +590,11 @@ function handleSkip(type) {
 
   // Check if we've skipped all available recipes - if so, reset to cycle through again
   const categoryMap = {
-    breakfast: ['breakfast', 'smoothie'],
+    breakfast1: ['breakfast', 'smoothie'],
+    breakfast2: ['breakfast', 'smoothie'],
     lunch1: ['lunch', 'salad', 'soup', 'sandwich'],
     lunch2: ['lunch', 'salad', 'soup', 'sandwich'],
+    lunch3: ['lunch', 'salad', 'soup', 'sandwich'],
     pasta: ['pasta'],
     chicken: ['chicken'],
     meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
@@ -687,9 +696,11 @@ function openWeeklyRecipeModal(type) {
 
 // Recipe colors for grocery list - mapped by category type
 const recipeColorsByType = {
-  breakfast: '#a8d0ff',  // Light blue
+  breakfast1: '#a8d0ff', // Light blue
+  breakfast2: '#a8d0ff', // Light blue
   lunch1: '#9CAF88',     // Sage green
   lunch2: '#9CAF88',     // Sage green
+  lunch3: '#9CAF88',     // Sage green
   pasta: '#70271F',      // Coffee (deep red-brown)
   chicken: '#F24E07',    // Mango (orange)
   meat: '#70271F',       // Coffee
@@ -2020,8 +2031,8 @@ function setupEventListeners() {
   // Expiring ingredients
   document.getElementById('apply-expiring').addEventListener('click', () => {
     // Reset skipped recipes when applying new expiring ingredients
-    skippedRecipes = { breakfast: [], lunch1: [], lunch2: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
-    keptRecipes = { breakfast: false, lunch1: false, lunch2: false, pasta: false, chicken: false, meat: false, vegetarian: false };
+    skippedRecipes = { breakfast1: [], breakfast2: [], lunch1: [], lunch2: [], lunch3: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
+    keptRecipes = { breakfast1: false, breakfast2: false, lunch1: false, lunch2: false, lunch3: false, pasta: false, chicken: false, meat: false, vegetarian: false };
     generateWeeklyPicks();
   });
 
