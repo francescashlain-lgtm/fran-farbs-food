@@ -1427,7 +1427,9 @@ function combinePrepTasks(allTasks) {
 
 // ==================== WEEK PLANNER ====================
 
-// Dinner types for the planner
+// Meal types for the planner
+const BREAKFAST_TYPES = ['breakfast1', 'breakfast2'];
+const LUNCH_TYPES = ['lunch1', 'lunch2', 'lunch3'];
 const DINNER_TYPES = ['pasta', 'chicken', 'meat', 'vegetarian'];
 
 // Load day assignments from localStorage
@@ -1453,6 +1455,7 @@ function getKeptDinnersForPlanner() {
         id: weeklyPicks[type].id,
         name: weeklyPicks[type].name,
         type: type,
+        mealCategory: 'dinner',
         color: recipeColorsByType[type],
         recipe: weeklyPicks[type]
       });
@@ -1473,6 +1476,7 @@ function getKeptDinnersForPlanner() {
           id: recipe.id,
           name: recipe.name,
           type: 'manual',
+          mealCategory: 'dinner',
           color: '#7a6c5d',
           recipe: recipe
         });
@@ -1483,53 +1487,122 @@ function getKeptDinnersForPlanner() {
   return dinners;
 }
 
+// Get kept breakfasts for the week planner
+function getKeptBreakfastsForPlanner() {
+  const breakfasts = [];
+  BREAKFAST_TYPES.forEach(type => {
+    if (weeklyPicks[type] && keptRecipes[type]) {
+      breakfasts.push({
+        id: weeklyPicks[type].id,
+        name: weeklyPicks[type].name,
+        type: type,
+        mealCategory: 'breakfast',
+        color: recipeColorsByType[type],
+        recipe: weeklyPicks[type]
+      });
+    }
+  });
+  return breakfasts;
+}
+
+// Get kept lunches for the week planner
+function getKeptLunchesForPlanner() {
+  const lunches = [];
+  LUNCH_TYPES.forEach(type => {
+    if (weeklyPicks[type] && keptRecipes[type]) {
+      lunches.push({
+        id: weeklyPicks[type].id,
+        name: weeklyPicks[type].name,
+        type: type,
+        mealCategory: 'lunch',
+        color: recipeColorsByType[type],
+        recipe: weeklyPicks[type]
+      });
+    }
+  });
+  return lunches;
+}
+
+// Get all kept meals for the week planner
+function getAllKeptMealsForPlanner() {
+  return {
+    breakfasts: getKeptBreakfastsForPlanner(),
+    lunches: getKeptLunchesForPlanner(),
+    dinners: getKeptDinnersForPlanner()
+  };
+}
+
 // Render the week planner
 function renderWeekPlanner() {
-  const dinners = getKeptDinnersForPlanner();
+  const allMeals = getAllKeptMealsForPlanner();
+  const breakfastPool = document.getElementById('breakfast-pool');
+  const lunchPool = document.getElementById('lunch-pool');
   const dinnerPool = document.getElementById('dinner-pool');
   const daySlots = document.querySelectorAll('.day-slot');
 
   if (!dinnerPool) return;
 
-  // Clear all slots
+  // Clear all pools and slots
+  if (breakfastPool) breakfastPool.innerHTML = '';
+  if (lunchPool) lunchPool.innerHTML = '';
   dinnerPool.innerHTML = '';
   daySlots.forEach(slot => slot.innerHTML = '');
 
-  if (dinners.length === 0) {
-    dinnerPool.innerHTML = '<span style="color: var(--color-ink-muted); font-size: 0.85rem; font-style: italic;">Keep some dinners to start planning</span>';
-    return;
-  }
+  // Helper to process a meal category
+  const processMeals = (meals, pool, emptyMessage) => {
+    if (!pool) return { assignedToDay: {}, unassigned: [] };
 
-  // Sort dinners into assigned and unassigned
-  const assignedToDay = {};
-  const unassigned = [];
+    const assignedToDay = {};
+    const unassigned = [];
 
-  dinners.forEach(dinner => {
-    const day = dayAssignments[dinner.id];
-    if (day !== undefined && day !== null) {
-      if (!assignedToDay[day]) assignedToDay[day] = [];
-      assignedToDay[day].push(dinner);
-    } else {
-      unassigned.push(dinner);
-    }
-  });
-
-  // Render unassigned dinners in the pool
-  if (unassigned.length === 0) {
-    dinnerPool.classList.add('empty');
-  } else {
-    dinnerPool.classList.remove('empty');
-    unassigned.forEach(dinner => {
-      dinnerPool.appendChild(createDinnerCard(dinner, false));
+    meals.forEach(meal => {
+      const day = dayAssignments[meal.id];
+      if (day !== undefined && day !== null) {
+        if (!assignedToDay[day]) assignedToDay[day] = [];
+        assignedToDay[day].push(meal);
+      } else {
+        unassigned.push(meal);
+      }
     });
-  }
 
-  // Render assigned dinners in day slots
+    // Render unassigned meals in the pool
+    if (meals.length === 0) {
+      pool.innerHTML = `<span style="color: var(--color-ink-muted); font-size: 0.8rem; font-style: italic;">${emptyMessage}</span>`;
+      pool.classList.add('empty');
+    } else if (unassigned.length === 0) {
+      pool.classList.add('empty');
+    } else {
+      pool.classList.remove('empty');
+      unassigned.forEach(meal => {
+        pool.appendChild(createMealCard(meal, false));
+      });
+    }
+
+    return { assignedToDay, unassigned };
+  };
+
+  // Process each meal category
+  const breakfastData = processMeals(allMeals.breakfasts, breakfastPool, 'No breakfasts kept');
+  const lunchData = processMeals(allMeals.lunches, lunchPool, 'No lunches kept');
+  const dinnerData = processMeals(allMeals.dinners, dinnerPool, 'No dinners kept');
+
+  // Render assigned meals in day slots
   daySlots.forEach(slot => {
     const day = parseInt(slot.dataset.day);
-    const dinnersForDay = assignedToDay[day] || [];
-    dinnersForDay.forEach(dinner => {
-      slot.appendChild(createDinnerCard(dinner, true));
+
+    // Add meals in order: breakfast, lunch, dinner
+    const breakfastsForDay = breakfastData.assignedToDay[day] || [];
+    const lunchesForDay = lunchData.assignedToDay[day] || [];
+    const dinnersForDay = dinnerData.assignedToDay[day] || [];
+
+    breakfastsForDay.forEach(meal => {
+      slot.appendChild(createMealCard(meal, true));
+    });
+    lunchesForDay.forEach(meal => {
+      slot.appendChild(createMealCard(meal, true));
+    });
+    dinnersForDay.forEach(meal => {
+      slot.appendChild(createMealCard(meal, true));
     });
   });
 
@@ -1537,24 +1610,30 @@ function renderWeekPlanner() {
   setupWeekPlannerDragDrop();
 }
 
-// Create a dinner card element
-function createDinnerCard(dinner, inSlot) {
+// Create a meal card element (works for breakfast, lunch, or dinner)
+function createMealCard(meal, inSlot) {
   const card = document.createElement('div');
-  card.className = 'dinner-card';
+  const mealCategory = meal.mealCategory || 'dinner';
+  card.className = `meal-card ${mealCategory}-card`;
   card.draggable = true;
-  card.dataset.id = dinner.id;
-  card.dataset.type = dinner.type;
+  card.dataset.id = meal.id;
+  card.dataset.type = meal.type;
+  card.dataset.mealCategory = mealCategory;
+
+  // Meal type label
+  const mealLabel = mealCategory === 'breakfast' ? '🌅' : mealCategory === 'lunch' ? '☀️' : '🌙';
 
   card.innerHTML = `
-    <span class="category-dot" style="background-color: ${dinner.color}"></span>
-    <span class="dinner-name">${dinner.name}</span>
+    <span class="category-dot" style="background-color: ${meal.color}"></span>
+    <span class="meal-type-icon" title="${mealCategory}">${mealLabel}</span>
+    <span class="meal-name">${meal.name}</span>
     ${inSlot ? '<button class="remove-from-day" title="Remove from day">&times;</button>' : ''}
   `;
 
   // Click to view recipe
   card.addEventListener('click', (e) => {
     if (!e.target.classList.contains('remove-from-day')) {
-      openRecipeModal(dinner.id);
+      openRecipeModal(meal.id);
     }
   });
 
@@ -1563,23 +1642,29 @@ function createDinnerCard(dinner, inSlot) {
     const removeBtn = card.querySelector('.remove-from-day');
     removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      removeRecipeFromDay(dinner.id);
+      removeRecipeFromDay(meal.id);
     });
   }
 
   return card;
 }
 
+// Backwards compatibility alias
+function createDinnerCard(dinner, inSlot) {
+  return createMealCard({ ...dinner, mealCategory: 'dinner' }, inSlot);
+}
+
 // Setup drag and drop for the week planner
 function setupWeekPlannerDragDrop() {
-  const cards = document.querySelectorAll('.dinner-card');
+  const cards = document.querySelectorAll('.meal-card');
   const daySlots = document.querySelectorAll('.day-slot');
-  const dinnerPool = document.getElementById('dinner-pool');
+  const mealPools = document.querySelectorAll('.meal-pool');
 
   cards.forEach(card => {
     card.addEventListener('dragstart', (e) => {
       card.classList.add('dragging');
       e.dataTransfer.setData('text/plain', card.dataset.id);
+      e.dataTransfer.setData('meal-category', card.dataset.mealCategory);
       e.dataTransfer.effectAllowed = 'move';
     });
 
@@ -1612,25 +1697,25 @@ function setupWeekPlannerDragDrop() {
     });
   });
 
-  // Dinner pool as drop target (to unassign)
-  if (dinnerPool) {
-    dinnerPool.addEventListener('dragover', (e) => {
+  // Meal pools as drop targets (to unassign)
+  mealPools.forEach(pool => {
+    pool.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
-      dinnerPool.classList.add('drag-over');
+      pool.classList.add('drag-over');
     });
 
-    dinnerPool.addEventListener('dragleave', () => {
-      dinnerPool.classList.remove('drag-over');
+    pool.addEventListener('dragleave', () => {
+      pool.classList.remove('drag-over');
     });
 
-    dinnerPool.addEventListener('drop', (e) => {
+    pool.addEventListener('drop', (e) => {
       e.preventDefault();
-      dinnerPool.classList.remove('drag-over');
+      pool.classList.remove('drag-over');
       const recipeId = e.dataTransfer.getData('text/plain');
       removeRecipeFromDay(recipeId);
     });
-  }
+  });
 }
 
 // Assign a recipe to a day
@@ -1682,26 +1767,27 @@ function getKeptRecipesForPrep() {
 
 // Render prep list
 function renderPrepList() {
-  const keptDinners = getKeptDinnersForPlanner();
+  const allMeals = getAllKeptMealsForPlanner();
+  const allKeptMeals = [...allMeals.breakfasts, ...allMeals.lunches, ...allMeals.dinners];
   const categoriesEl = document.getElementById('prep-categories');
 
-  if (keptDinners.length === 0) {
+  if (allKeptMeals.length === 0) {
     categoriesEl.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
         </svg>
-        <h3>No dinners selected</h3>
-        <p>Keep some dinners from This Week's Menu to see your prep list</p>
+        <h3>No meals selected</h3>
+        <p>Keep some meals from This Week's Menu to see your prep list</p>
       </div>
     `;
     return;
   }
 
-  // Check if any dinners are scheduled
-  const scheduledDinners = keptDinners.filter(d => dayAssignments[d.id] !== undefined);
+  // Check if any meals are scheduled
+  const scheduledMeals = allKeptMeals.filter(m => dayAssignments[m.id] !== undefined);
 
-  if (scheduledDinners.length === 0) {
+  if (scheduledMeals.length === 0) {
     categoriesEl.innerHTML = `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1710,8 +1796,8 @@ function renderPrepList() {
           <line x1="8" y1="2" x2="8" y2="6"/>
           <line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
-        <h3>Schedule your dinners</h3>
-        <p>Drag dinners to days of the week above to see your prep list organized by cooking day</p>
+        <h3>Schedule your meals</h3>
+        <p>Drag meals to days of the week above to see your prep list organized by cooking day</p>
       </div>
     `;
     return;
@@ -1781,13 +1867,13 @@ function renderPrepList() {
   };
 
   // Extract all tasks with cooking day info
-  // Skip Sunday (day 0) dinners - cooking starts on Sunday so no prep needed
+  // Skip Sunday (day 0) meals - cooking starts on Sunday so no prep needed
   let allTasks = [];
-  scheduledDinners.forEach(dinner => {
-    const cookingDay = dayAssignments[dinner.id];
-    // Sunday dinners don't need prep - they'll be made that night
+  scheduledMeals.forEach(meal => {
+    const cookingDay = dayAssignments[meal.id];
+    // Sunday meals don't need prep - they'll be made that day
     if (cookingDay === 0) return;
-    const tasks = extractPrepTasks(dinner.recipe, dinner.name, dinner.color);
+    const tasks = extractPrepTasks(meal.recipe, meal.name, meal.color);
     tasks.forEach(task => {
       // Determine prep day: quick tasks = same day, others = day before
       const prepDay = isQuickTask(task.action) ? cookingDay : (cookingDay === 0 ? 6 : cookingDay - 1);
@@ -1795,8 +1881,9 @@ function renderPrepList() {
         ...task,
         cookingDay,
         prepDay,
-        forDinner: dinner.name,
-        dinnerColor: dinner.color,
+        forMeal: meal.name,
+        mealColor: meal.color,
+        mealCategory: meal.mealCategory || 'dinner',
         isQuick: isQuickTask(task.action)
       });
     });
