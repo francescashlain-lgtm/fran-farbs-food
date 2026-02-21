@@ -1218,13 +1218,20 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
     const regex = new RegExp(pattern.source, pattern.flags);
     while ((match = regex.exec(instructions)) !== null) {
       let item = match[1].trim();
-      // Clean up the item
+      // Clean up the item - remove leading articles
       item = item.replace(/^(and|the|a|an)\s+/i, '').trim();
-      item = item.replace(/\s+(and|then|until|before|after).*$/i, '').trim();
+      // Remove trailing phrases that aren't part of the ingredient
+      item = item.replace(/\s+(and|then|until|before|after|into|in|on|over|with|to|for|from)(\s+.*)?$/i, '').trim();
       if (item.length > 2 && item.length < 50) {
+        // Create itemBase by removing quantities for deduplication
+        const itemBase = item
+          .replace(/^[\d\s\/½⅓⅔¼¾⅛-]+/, '')
+          .replace(/^(cups?|tablespoons?|tbsp|teaspoons?|tsp|ounces?|oz|pounds?|lbs?|lb|cloves?|heads?|bunche?s?|cans?|large|medium|small|inch|cm)\s+(?:of\s+)?/gi, '')
+          .trim();
         tasks.push({
           action,
           item,
+          itemBase: itemBase || item,
           category,
           recipe: recipeName,
           recipeColor
