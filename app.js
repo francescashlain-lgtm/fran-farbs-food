@@ -126,13 +126,14 @@ function loadWeeklyState() {
   const savedSkipped = localStorage.getItem('skippedRecipes');
 
   if (savedKept) {
-    keptRecipes = JSON.parse(savedKept);
+    // Merge with defaults to handle new keys
+    keptRecipes = { ...keptRecipes, ...JSON.parse(savedKept) };
   }
   if (savedPicks) {
-    weeklyPicks = JSON.parse(savedPicks);
+    weeklyPicks = { ...weeklyPicks, ...JSON.parse(savedPicks) };
   }
   if (savedSkipped) {
-    skippedRecipes = JSON.parse(savedSkipped);
+    skippedRecipes = { ...skippedRecipes, ...JSON.parse(savedSkipped) };
   }
 }
 
@@ -440,9 +441,10 @@ function getRecipesByType(type) {
 
   return recipes.filter(r => {
     const recipeCategories = getRecipeCategories(r);
+    const skippedForType = skippedRecipes[type] || [];
     return recipeCategories.some(cat => targetCategories.includes(cat)) &&
       !userPreferences.removed.includes(r.id) &&
-      !skippedRecipes[type].includes(r.id);
+      !skippedForType.includes(r.id);
   });
 }
 
@@ -575,6 +577,7 @@ function handleSkip(type) {
   }
 
   if (weeklyPicks[type]) {
+    if (!skippedRecipes[type]) skippedRecipes[type] = [];
     skippedRecipes[type].push(weeklyPicks[type].id);
   }
 
@@ -598,7 +601,8 @@ function handleSkip(type) {
   });
 
   // If we've skipped all recipes in this category, reset the skipped list
-  if (skippedRecipes[type].length >= allInCategory.length) {
+  const skippedForType = skippedRecipes[type] || [];
+  if (skippedForType.length >= allInCategory.length) {
     skippedRecipes[type] = [];
   }
 
