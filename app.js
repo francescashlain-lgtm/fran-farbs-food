@@ -2216,6 +2216,9 @@ function applyCloudData(cloudData) {
   updateGenerateGroceryButton();
 }
 
+// Allowed email addresses
+const ALLOWED_EMAILS = ['francesca.shlain@gmail.com'];
+
 // Handle auth state changes
 function handleAuthStateChange(user) {
   const signInBtn = document.getElementById('sign-in-btn');
@@ -2224,6 +2227,13 @@ function handleAuthStateChange(user) {
   const userName = document.getElementById('user-name');
 
   if (user) {
+    // Check if user is authorized
+    if (!ALLOWED_EMAILS.includes(user.email)) {
+      alert('Sorry, this app is private. Access is limited to authorized users only.');
+      signOutUser();
+      return;
+    }
+
     // User is signed in
     signInBtn.style.display = 'none';
     userInfo.style.display = 'flex';
