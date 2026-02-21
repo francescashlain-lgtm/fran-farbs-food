@@ -89,8 +89,8 @@
       <div class="weekly-picks">
         <div class="weekly-picks-header">
           <div>
-            <h3>Your Dinners This Week</h3>
-            <p class="picks-subtitle">Keep 3 dishes - selected for seasonal freshness</p>
+            <h3>Your Menu This Week</h3>
+            <p class="picks-subtitle">Selected for seasonal freshness</p>
           </div>
           <div class="header-buttons">
             <button id="start-new-week" class="btn-new-week" style="display: none;">
@@ -103,63 +103,124 @@
           </div>
         </div>
 
-        <div class="recipe-cards">
-          <div class="recipe-card" id="pasta-pick">
-            <div class="card-category pasta">Pasta Dish</div>
-            <div class="card-loading">Finding the perfect pasta...</div>
-            <div class="card-content" style="display: none;">
-              <h4 class="card-title"></h4>
-              <div class="card-seasonal-tags"></div>
-              <div class="card-ingredients"></div>
-              <button class="btn-view-recipe">View Full Recipe</button>
-              <div class="card-actions">
-                <button class="btn-keep">Keep</button>
-                <button class="btn-skip">Skip</button>
+        <!-- Breakfast Section -->
+        <div class="meal-section">
+          <h4 class="meal-section-title">Breakfast</h4>
+          <div class="recipe-cards recipe-cards-single">
+            <div class="recipe-card" id="breakfast-pick">
+              <div class="card-category breakfast">Breakfast</div>
+              <div class="card-loading">Finding the perfect breakfast...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="recipe-card" id="chicken-pick">
-            <div class="card-category chicken">Chicken Dish</div>
-            <div class="card-loading">Finding the perfect chicken dish...</div>
-            <div class="card-content" style="display: none;">
-              <h4 class="card-title"></h4>
-              <div class="card-seasonal-tags"></div>
-              <div class="card-ingredients"></div>
-              <button class="btn-view-recipe">View Full Recipe</button>
-              <div class="card-actions">
-                <button class="btn-keep">Keep</button>
-                <button class="btn-skip">Skip</button>
+        <!-- Lunch Section -->
+        <div class="meal-section">
+          <h4 class="meal-section-title">Lunch</h4>
+          <div class="recipe-cards recipe-cards-double">
+            <div class="recipe-card" id="lunch1-pick">
+              <div class="card-category lunch">Lunch</div>
+              <div class="card-loading">Finding a great lunch...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="recipe-card" id="lunch2-pick">
+              <div class="card-category lunch">Lunch</div>
+              <div class="card-loading">Finding another great lunch...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="recipe-card" id="meat-pick">
-            <div class="card-category meat">Meat Dish</div>
-            <div class="card-loading">Finding the perfect meat dish...</div>
-            <div class="card-content" style="display: none;">
-              <h4 class="card-title"></h4>
-              <div class="card-seasonal-tags"></div>
-              <div class="card-ingredients"></div>
-              <button class="btn-view-recipe">View Full Recipe</button>
-              <div class="card-actions">
-                <button class="btn-keep">Keep</button>
-                <button class="btn-skip">Skip</button>
+        <!-- Dinner Section -->
+        <div class="meal-section">
+          <h4 class="meal-section-title">Dinner</h4>
+          <div class="recipe-cards">
+            <div class="recipe-card" id="pasta-pick">
+              <div class="card-category pasta">Pasta Dish</div>
+              <div class="card-loading">Finding the perfect pasta...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="recipe-card" id="vegetarian-pick">
-            <div class="card-category vegetarian">Vegetarian Dish</div>
-            <div class="card-loading">Finding the perfect vegetarian dish...</div>
-            <div class="card-content" style="display: none;">
-              <h4 class="card-title"></h4>
-              <div class="card-seasonal-tags"></div>
-              <div class="card-ingredients"></div>
-              <button class="btn-view-recipe">View Full Recipe</button>
-              <div class="card-actions">
-                <button class="btn-keep">Keep</button>
-                <button class="btn-skip">Skip</button>
+            <div class="recipe-card" id="chicken-pick">
+              <div class="card-category chicken">Chicken Dish</div>
+              <div class="card-loading">Finding the perfect chicken dish...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="recipe-card" id="meat-pick">
+              <div class="card-category meat">Meat Dish</div>
+              <div class="card-loading">Finding the perfect meat dish...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="recipe-card" id="vegetarian-pick">
+              <div class="card-category vegetarian">Vegetarian Dish</div>
+              <div class="card-loading">Finding the perfect vegetarian dish...</div>
+              <div class="card-content" style="display: none;">
+                <h4 class="card-title"></h4>
+                <div class="card-seasonal-tags"></div>
+                <div class="card-ingredients"></div>
+                <button class="btn-view-recipe">View Full Recipe</button>
+                <div class="card-actions">
+                  <button class="btn-keep">Keep</button>
+                  <button class="btn-skip">Skip</button>
+                </div>
               </div>
             </div>
           </div>

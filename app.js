@@ -50,12 +50,18 @@ let userPreferences = {
 };
 let manageMode = false;
 let weeklyPicks = {
+  breakfast: null,
+  lunch1: null,
+  lunch2: null,
   pasta: null,
   chicken: null,
   meat: null,
   vegetarian: null
 };
 let keptRecipes = {
+  breakfast: false,
+  lunch1: false,
+  lunch2: false,
   pasta: false,
   chicken: false,
   meat: false,
@@ -64,12 +70,18 @@ let keptRecipes = {
 let groceryList = [];
 let miscItems = []; // Miscellaneous items not tied to recipes
 let skippedRecipes = {
+  breakfast: [],
+  lunch1: [],
+  lunch2: [],
   pasta: [],
   chicken: [],
   meat: [],
   vegetarian: []
 };
-let manuallyKeptRecipes = []; // Recipes kept from the library
+let manuallyKeptRecipes = [];
+
+// All meal types for iteration
+const ALL_MEAL_TYPES = ['breakfast', 'lunch1', 'lunch2', 'pasta', 'chicken', 'meat', 'vegetarian']; // Recipes kept from the library
 
 // Initialize the app
 async function init() {
@@ -152,7 +164,7 @@ function generateShareableURL() {
   };
 
   // Only include kept recipes
-  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+  ALL_MEAL_TYPES.forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
       state.weeklyPicks[type] = weeklyPicks[type].id;
     }
@@ -247,7 +259,7 @@ function checkURLSync() {
 // Resolve pending sync picks after recipes are loaded
 function resolvePendingSyncPicks() {
   if (window._pendingSyncPicks) {
-    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+    ALL_MEAL_TYPES.forEach(type => {
       if (window._pendingSyncPicks[type]) {
         const recipe = recipes.find(r => r.id === window._pendingSyncPicks[type]);
         if (recipe) {
@@ -261,12 +273,13 @@ function resolvePendingSyncPicks() {
 }
 
 // Restore weekly picks from localStorage or generate new ones
+// All meal types
 function restoreOrGenerateWeeklyPicks() {
   const hasSavedPicks = Object.values(weeklyPicks).some(p => p !== null);
 
   if (hasSavedPicks) {
     // Restore saved picks - need to find full recipe objects
-    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+    ALL_MEAL_TYPES.forEach(type => {
       if (weeklyPicks[type]) {
         const recipe = recipes.find(r => r.id === weeklyPicks[type].id);
         if (recipe) {
@@ -294,9 +307,9 @@ function startNewWeek() {
   }
 
   // Reset all state
-  weeklyPicks = { pasta: null, chicken: null, meat: null, vegetarian: null };
-  keptRecipes = { pasta: false, chicken: false, meat: false, vegetarian: false };
-  skippedRecipes = { pasta: [], chicken: [], meat: [], vegetarian: [] };
+  weeklyPicks = { breakfast: null, lunch1: null, lunch2: null, pasta: null, chicken: null, meat: null, vegetarian: null };
+  keptRecipes = { breakfast: false, lunch1: false, lunch2: false, pasta: false, chicken: false, meat: false, vegetarian: false };
+  skippedRecipes = { breakfast: [], lunch1: [], lunch2: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
   manuallyKeptRecipes = [];
   groceryList = [];
   prepListState = { checked: [], removed: [] };
@@ -413,6 +426,9 @@ function updateSeasonalDisplay() {
 // Get recipes by category type
 function getRecipesByType(type) {
   const categoryMap = {
+    breakfast: ['breakfast', 'smoothie'],
+    lunch1: ['lunch', 'salad', 'soup', 'sandwich'],
+    lunch2: ['lunch', 'salad', 'soup', 'sandwich'],
     pasta: ['pasta'],
     chicken: ['chicken'],
     meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
@@ -420,6 +436,8 @@ function getRecipesByType(type) {
   };
 
   const targetCategories = categoryMap[type];
+  if (!targetCategories) return [];
+
   return recipes.filter(r => {
     const recipeCategories = getRecipeCategories(r);
     return recipeCategories.some(cat => targetCategories.includes(cat)) &&
@@ -434,9 +452,15 @@ function generateWeeklyPicks() {
   const expiringInput = document.getElementById('expiring-input');
   const expiringIngredients = expiringInput.value ? expiringInput.value.split(',').map(s => s.trim()) : [];
 
-  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+  // Track used recipes to avoid duplicates (especially for lunch1/lunch2)
+  const usedRecipeIds = [];
+
+  ['breakfast', 'lunch1', 'lunch2', 'pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
     if (!keptRecipes[type]) {
-      const available = getRecipesByType(type);
+      let available = getRecipesByType(type);
+
+      // Filter out already used recipes (for lunch slots sharing same category)
+      available = available.filter(r => !usedRecipeIds.includes(r.id));
 
       if (available.length === 0) {
         weeklyPicks[type] = null;
@@ -451,7 +475,11 @@ function generateWeeklyPicks() {
 
       // Pick the best match
       weeklyPicks[type] = available[0];
+      usedRecipeIds.push(available[0].id);
       renderRecipeCard(type, available[0]);
+    } else if (weeklyPicks[type]) {
+      // Track kept recipes too
+      usedRecipeIds.push(weeklyPicks[type].id);
     }
   });
 
@@ -540,12 +568,17 @@ function handleSkip(type) {
 
   // Check if we've skipped all available recipes - if so, reset to cycle through again
   const categoryMap = {
+    breakfast: ['breakfast', 'smoothie'],
+    lunch1: ['lunch', 'salad', 'soup', 'sandwich'],
+    lunch2: ['lunch', 'salad', 'soup', 'sandwich'],
     pasta: ['pasta'],
     chicken: ['chicken'],
     meat: ['meat', 'beef', 'pork', 'lamb', 'turkey'],
     vegetarian: ['vegetarian']
   };
   const targetCategories = categoryMap[type];
+  if (!targetCategories) return;
+
   const allInCategory = recipes.filter(r => {
     const recipeCategories = getRecipeCategories(r);
     return recipeCategories.some(cat => targetCategories.includes(cat)) &&
@@ -638,6 +671,9 @@ function openWeeklyRecipeModal(type) {
 
 // Recipe colors for grocery list - mapped by category type
 const recipeColorsByType = {
+  breakfast: '#a8d0ff',  // Light blue
+  lunch1: '#9CAF88',     // Sage green
+  lunch2: '#9CAF88',     // Sage green
   pasta: '#70271F',      // Coffee (deep red-brown)
   chicken: '#F24E07',    // Mango (orange)
   meat: '#70271F',       // Coffee
@@ -776,7 +812,7 @@ function generateGroceryList() {
   const rawIngredients = [];
   const keptRecipesList = [];
 
-  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+  ALL_MEAL_TYPES.forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
       const recipe = weeklyPicks[type];
       const color = recipeColorsByType[type];
@@ -1297,7 +1333,7 @@ function combinePrepTasks(allTasks) {
 function getKeptRecipesForPrep() {
   const keptList = [];
 
-  ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+  ALL_MEAL_TYPES.forEach(type => {
     if (weeklyPicks[type] && keptRecipes[type]) {
       const recipe = weeklyPicks[type];
       keptList.push({
@@ -1968,8 +2004,8 @@ function setupEventListeners() {
   // Expiring ingredients
   document.getElementById('apply-expiring').addEventListener('click', () => {
     // Reset skipped recipes when applying new expiring ingredients
-    skippedRecipes = { pasta: [], chicken: [], meat: [], vegetarian: [] };
-    keptRecipes = { pasta: false, chicken: false, meat: false, vegetarian: false };
+    skippedRecipes = { breakfast: [], lunch1: [], lunch2: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
+    keptRecipes = { breakfast: false, lunch1: false, lunch2: false, pasta: false, chicken: false, meat: false, vegetarian: false };
     generateWeeklyPicks();
   });
 
@@ -2072,14 +2108,14 @@ let isSyncing = false;
 
 // Gather all app data for cloud sync
 function gatherAllData() {
+  const weeklyPicksIds = {};
+  ALL_MEAL_TYPES.forEach(type => {
+    weeklyPicksIds[type] = weeklyPicks[type]?.id || null;
+  });
+
   return {
     userPreferences,
-    weeklyPicks: {
-      pasta: weeklyPicks.pasta?.id || null,
-      chicken: weeklyPicks.chicken?.id || null,
-      meat: weeklyPicks.meat?.id || null,
-      vegetarian: weeklyPicks.vegetarian?.id || null
-    },
+    weeklyPicks: weeklyPicksIds,
     keptRecipes,
     skippedRecipes,
     manuallyKeptRecipes,
@@ -2196,7 +2232,7 @@ function applyCloudData(cloudData) {
 
   // Apply weekly picks (need to resolve IDs to full recipes)
   if (cloudData.weeklyPicks && recipes.length > 0) {
-    ['pasta', 'chicken', 'meat', 'vegetarian'].forEach(type => {
+    ALL_MEAL_TYPES.forEach(type => {
       const recipeId = cloudData.weeklyPicks[type];
       if (recipeId) {
         const recipe = recipes.find(r => r.id === recipeId);
