@@ -1690,9 +1690,12 @@ function renderPrepList() {
   const isQuickTask = (action) => quickActions.some(q => action.toLowerCase().includes(q));
 
   // Extract all tasks with cooking day info
+  // Skip Sunday (day 0) dinners - cooking starts on Sunday so no prep needed
   let allTasks = [];
   scheduledDinners.forEach(dinner => {
     const cookingDay = dayAssignments[dinner.id];
+    // Sunday dinners don't need prep - they'll be made that night
+    if (cookingDay === 0) return;
     const tasks = extractPrepTasks(dinner.recipe, dinner.name, dinner.color);
     tasks.forEach(task => {
       // Determine prep day: quick tasks = same day, others = day before
