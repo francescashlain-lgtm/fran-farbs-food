@@ -1852,14 +1852,14 @@ textarea:focus-visible {
 
 /* ==================== Auth UI ==================== */
 .header-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  position: relative;
+  text-align: center;
 }
 
 .auth-container {
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .btn-sign-in {
@@ -1967,12 +1967,11 @@ textarea:focus-visible {
 /* Mobile auth styles */
 @media (max-width: 768px) {
   .header-title-row {
-    flex-direction: column;
-    align-items: center;
     text-align: center;
   }
 
   .auth-container {
+    position: static;
     margin-top: 0.75rem;
   }
 
@@ -1987,5 +1986,6 @@ textarea:focus-visible {
 
   .user-info {
     gap: 0.5rem;
+    justify-content: center;
   }
 }
