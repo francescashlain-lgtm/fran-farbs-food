@@ -447,21 +447,13 @@ function getRecipesByType(type) {
   const targetCategories = categoryMap[type];
   if (!targetCategories) return [];
 
-  const results = recipes.filter(r => {
+  return recipes.filter(r => {
     const recipeCategories = getRecipeCategories(r);
     const skippedForType = skippedRecipes[type] || [];
     return recipeCategories.some(cat => targetCategories.includes(cat.toLowerCase())) &&
       !userPreferences.removed.includes(r.id) &&
       !skippedForType.includes(r.id);
   });
-
-  // Debug: log if no recipes found
-  if (results.length === 0) {
-    console.log(`No recipes found for ${type}. Target categories:`, targetCategories);
-    console.log(`Total recipes loaded:`, recipes.length);
-  }
-
-  return results;
 }
 
 // Generate weekly picks
