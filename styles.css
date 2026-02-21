@@ -1813,11 +1813,16 @@ textarea:focus-visible {
 
 .prep-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.875rem;
   padding: 0.875rem 0;
   border-bottom: 1px solid var(--color-border);
   transition: all var(--transition-fast);
+}
+
+.prep-item input[type="checkbox"],
+.prep-item .ingredient-color-dots {
+  margin-top: 0.15rem;
 }
 
 .prep-item:last-child {
@@ -1903,6 +1908,35 @@ textarea:focus-visible {
   font-size: 0.75rem;
   color: var(--color-blue-dark);
   font-weight: 600;
+}
+
+.prep-task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.storage-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-ink-muted);
+  background: var(--color-cream-dark);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+.storage-tip-icon {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+}
+
+.prep-item.checked .storage-tip {
+  opacity: 0.5;
 }
 
 /* Week Planner */

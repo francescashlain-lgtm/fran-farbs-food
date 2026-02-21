@@ -1696,6 +1696,61 @@ function renderPrepList() {
   const quickActions = ['zest', 'mince', 'grate', 'measure', 'season', 'crack', 'squeeze', 'garnish', 'sprinkle'];
   const isQuickTask = (action) => quickActions.some(q => action.toLowerCase().includes(q));
 
+  // Storage tips for prepped ingredients
+  const storageTips = {
+    // By ingredient
+    'potato': 'Store peeled potatoes submerged in cold water in the fridge to prevent browning',
+    'potatoes': 'Store peeled potatoes submerged in cold water in the fridge to prevent browning',
+    'onion': 'Store in an airtight container in the fridge',
+    'garlic': 'Store minced garlic in a small container, covered with a thin layer of olive oil',
+    'carrot': 'Store in an airtight container with a damp paper towel',
+    'celery': 'Store in water or wrapped in damp paper towels',
+    'apple': 'Toss with lemon juice to prevent browning, store in airtight container',
+    'avocado': 'Press plastic wrap directly on surface and refrigerate; use within a day',
+    'lettuce': 'Wash and dry thoroughly, store in container lined with paper towels',
+    'herbs': 'Wrap in damp paper towel, store in airtight container or plastic bag',
+    'cilantro': 'Store stems in a jar of water, cover loosely with plastic bag',
+    'parsley': 'Store stems in a jar of water, cover loosely with plastic bag',
+    'basil': 'Store at room temperature in a jar of water; do not refrigerate',
+    'ginger': 'Store peeled/sliced ginger in a jar, covered with dry sherry or vodka',
+    'lemon': 'Store zest in freezer; store juice in airtight container in fridge',
+    'lime': 'Store zest in freezer; store juice in airtight container in fridge',
+    'mushroom': 'Store sliced mushrooms in a paper bag in the fridge',
+    'pepper': 'Store cut peppers in an airtight container in the fridge',
+    'tomato': 'Store cut tomatoes covered at room temperature; use within a day',
+    'broccoli': 'Store cut florets in an airtight container in the fridge',
+    'cauliflower': 'Store cut florets in an airtight container in the fridge',
+    'zucchini': 'Store sliced in an airtight container with paper towel to absorb moisture',
+    'squash': 'Store cut squash wrapped tightly in plastic wrap in the fridge',
+    'eggplant': 'Store cut eggplant in salted water to prevent browning, drain before using',
+    'cabbage': 'Store shredded cabbage in an airtight container in the fridge',
+    'kale': 'Store washed and dried in a container lined with paper towels',
+    'spinach': 'Store washed and dried in a container lined with paper towels',
+    // By action (fallbacks)
+    'Peel': 'Store peeled vegetables in cold water or airtight container in fridge',
+    'Chop': 'Store in an airtight container in the fridge',
+    'Dice': 'Store in an airtight container in the fridge',
+    'Slice': 'Store in an airtight container in the fridge',
+    'Julienne': 'Store in an airtight container with a damp paper towel',
+    'Cube': 'Store in an airtight container in the fridge',
+    'Shred': 'Store in an airtight container in the fridge',
+    'Marinate': 'Keep marinating in the fridge; bring to room temp 30 min before cooking',
+    'Toast': 'Store toasted items in an airtight container at room temperature',
+  };
+
+  // Get storage tip for a task
+  const getStorageTip = (task) => {
+    const itemLower = task.item.toLowerCase();
+    // Check for ingredient-specific tips first
+    for (const [key, tip] of Object.entries(storageTips)) {
+      if (key.length > 3 && itemLower.includes(key)) {
+        return tip;
+      }
+    }
+    // Fall back to action-based tip
+    return storageTips[task.action] || 'Store in an airtight container in the fridge';
+  };
+
   // Extract all tasks with cooking day info
   // Skip Sunday (day 0) dinners - cooking starts on Sunday so no prep needed
   let allTasks = [];
@@ -1814,13 +1869,19 @@ function renderPrepList() {
             }
           }
           const itemDisplay = quantityDisplay ? `${quantityDisplay} ${task.item}` : task.item;
+          // Show storage tip for day-before prep (non-quick tasks)
+          const storageTip = !isQuick ? getStorageTip(task) : '';
+          const storageTipHtml = storageTip ? `<div class="storage-tip"><span class="storage-tip-icon">💡</span>${storageTip}</div>` : '';
           return `
           <div class="prep-item ${checkedClass}" title="For: ${task.recipes.join(', ')}">
             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePrepTask('${task.key}')">
             <div class="ingredient-color-dots">${colorDots}</div>
-            <div class="prep-task-text">
-              <span class="prep-action">${task.action}</span>
-              <span class="prep-ingredient">${itemDisplay}</span>
+            <div class="prep-task-content">
+              <div class="prep-task-text">
+                <span class="prep-action">${task.action}</span>
+                <span class="prep-ingredient">${itemDisplay}</span>
+              </div>
+              ${storageTipHtml}
             </div>
             <button class="prep-remove" onclick="removePrepTask('${task.key}')" title="Remove task">&times;</button>
           </div>
