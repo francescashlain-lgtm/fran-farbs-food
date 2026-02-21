@@ -321,7 +321,7 @@ function startNewWeek() {
   skippedRecipes = { breakfast1: [], breakfast2: [], lunch1: [], lunch2: [], lunch3: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
   manuallyKeptRecipes = [];
   groceryList = [];
-  prepListState = { checked: [], removed: [] };
+  prepListState = { checked: [], removed: [], dayOverrides: {} };
 
   // Clear localStorage
   localStorage.removeItem('keptRecipes');
@@ -1140,7 +1140,8 @@ function renderMiscItems() {
 // Prep list state
 let prepListState = {
   checked: [],  // Array of task keys that are checked
-  removed: []   // Array of task keys that are removed
+  removed: [],  // Array of task keys that are removed
+  dayOverrides: {}  // Object mapping task keys to overridden prep days
 };
 
 // Load prep list state from localStorage
@@ -1172,6 +1173,34 @@ function togglePrepTask(key) {
 // Remove a prep task
 function removePrepTask(key) {
   prepListState.removed.push(key);
+  savePrepListState();
+  renderPrepList();
+}
+
+// Move a prep task to a different day
+function movePrepTaskToDay(oldKey, newDay) {
+  // Create new key with the new prep day
+  const baseKey = oldKey.replace(/-prep\d+$/, '');
+  const newKey = `${baseKey}-prep${newDay}`;
+
+  // Update the day override
+  if (!prepListState.dayOverrides) prepListState.dayOverrides = {};
+  prepListState.dayOverrides[baseKey] = newDay;
+
+  // Transfer checked state to new key if it was checked
+  const checkedIdx = prepListState.checked.indexOf(oldKey);
+  if (checkedIdx > -1) {
+    prepListState.checked.splice(checkedIdx, 1);
+    prepListState.checked.push(newKey);
+  }
+
+  // Transfer removed state if it was removed (shouldn't happen but just in case)
+  const removedIdx = prepListState.removed.indexOf(oldKey);
+  if (removedIdx > -1) {
+    prepListState.removed.splice(removedIdx, 1);
+    prepListState.removed.push(newKey);
+  }
+
   savePrepListState();
   renderPrepList();
 }
@@ -1773,26 +1802,38 @@ function renderPrepList() {
     });
   });
 
-  // Group tasks by prep day
+  // Group tasks by prep day (respecting day overrides)
   const tasksByPrepDay = {};
+  const dayOverrides = prepListState.dayOverrides || {};
+
   allTasks.forEach(task => {
-    const key = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-prep${task.prepDay}`;
+    // Create base key (without prep day) for override lookup
+    const baseKey = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}`;
+    // Check if there's a day override for this task
+    const effectivePrepDay = dayOverrides[baseKey] !== undefined ? dayOverrides[baseKey] : task.prepDay;
+    const key = `${baseKey}-prep${effectivePrepDay}`;
     task.key = key;
+    task.baseKey = baseKey;
+    task.effectivePrepDay = effectivePrepDay;
 
     if (prepListState.removed.includes(key)) return;
 
-    if (!tasksByPrepDay[task.prepDay]) {
-      tasksByPrepDay[task.prepDay] = [];
+    if (!tasksByPrepDay[effectivePrepDay]) {
+      tasksByPrepDay[effectivePrepDay] = [];
     }
-    tasksByPrepDay[task.prepDay].push(task);
+    tasksByPrepDay[effectivePrepDay].push(task);
   });
 
   // Combine similar tasks within each prep day
   Object.keys(tasksByPrepDay).forEach(day => {
-    tasksByPrepDay[day] = combinePrepTasks(tasksByPrepDay[day]).map(task => ({
-      ...task,
-      key: `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}-prep${day}`
-    })).filter(task => !prepListState.removed.includes(task.key));
+    tasksByPrepDay[day] = combinePrepTasks(tasksByPrepDay[day]).map(task => {
+      const baseKey = `${task.action.toLowerCase()}-${task.item.toLowerCase().replace(/\s+/g, '-')}`;
+      return {
+        ...task,
+        baseKey,
+        key: `${baseKey}-prep${day}`
+      };
+    }).filter(task => !prepListState.removed.includes(task.key));
   });
 
   // Remove empty days
@@ -1842,7 +1883,7 @@ function renderPrepList() {
     });
 
     return `
-    <div class="prep-day">
+    <div class="prep-day" data-prep-day="${prepDay}">
       <div class="prep-day-header">
         <span class="prep-day-name">${dayNames[prepDay]}</span>
         <span class="prep-day-label">Prep Day</span>
@@ -1850,7 +1891,7 @@ function renderPrepList() {
       <div class="prep-day-subheader">
         Prepping for: ${dinnerTags}
       </div>
-      <div class="prep-day-tasks">
+      <div class="prep-day-tasks" data-prep-day="${prepDay}">
         ${tasks.map((task) => {
           const colorDots = task.recipeColors
             .map(color => `<span class="ingredient-color-dot" style="background-color: ${color}"></span>`)
@@ -1873,7 +1914,8 @@ function renderPrepList() {
           const storageTip = !isQuick ? getStorageTip(task) : '';
           const storageTipHtml = storageTip ? `<div class="storage-tip"><span class="storage-tip-icon">💡</span>${storageTip}</div>` : '';
           return `
-          <div class="prep-item ${checkedClass}" title="For: ${task.recipes.join(', ')}">
+          <div class="prep-item ${checkedClass}" title="For: ${task.recipes.join(', ')}" draggable="true" data-task-key="${task.key}">
+            <div class="prep-drag-handle">⋮⋮</div>
             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePrepTask('${task.key}')">
             <div class="ingredient-color-dots">${colorDots}</div>
             <div class="prep-task-content">
@@ -1889,6 +1931,50 @@ function renderPrepList() {
       </div>
     </div>
   `}).join('');
+
+  // Setup drag and drop for prep tasks
+  setupPrepTaskDragDrop();
+}
+
+// Setup drag and drop handlers for prep tasks
+function setupPrepTaskDragDrop() {
+  const prepItems = document.querySelectorAll('.prep-item[draggable="true"]');
+  const prepDays = document.querySelectorAll('.prep-day-tasks[data-prep-day]');
+
+  prepItems.forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', item.dataset.taskKey);
+      item.classList.add('dragging');
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      // Remove drag-over from all days
+      prepDays.forEach(day => day.classList.remove('drag-over'));
+    });
+  });
+
+  prepDays.forEach(dayEl => {
+    dayEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dayEl.classList.add('drag-over');
+    });
+
+    dayEl.addEventListener('dragleave', (e) => {
+      // Only remove if leaving the element (not entering a child)
+      if (!dayEl.contains(e.relatedTarget)) {
+        dayEl.classList.remove('drag-over');
+      }
+    });
+
+    dayEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dayEl.classList.remove('drag-over');
+      const taskKey = e.dataTransfer.getData('text/plain');
+      const newDay = parseInt(dayEl.dataset.prepDay, 10);
+      movePrepTaskToDay(taskKey, newDay);
+    });
+  });
 }
 
 // Render recipe library

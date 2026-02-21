@@ -1939,6 +1939,34 @@ textarea:focus-visible {
   opacity: 0.5;
 }
 
+/* Prep task drag and drop */
+.prep-drag-handle {
+  cursor: grab;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+  letter-spacing: -0.15em;
+  opacity: 0.4;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.prep-item:hover .prep-drag-handle {
+  opacity: 0.7;
+}
+
+.prep-item.dragging {
+  opacity: 0.5;
+  background: var(--color-cream-dark);
+}
+
+.prep-day-tasks.drag-over {
+  background: rgba(251, 192, 120, 0.15);
+  border-radius: var(--radius-md);
+  outline: 2px dashed var(--color-orange);
+  outline-offset: -2px;
+}
+
 /* Week Planner */
 .week-planner {
   margin-bottom: 2.5rem;
