@@ -1182,7 +1182,7 @@ const prepPatterns = [
   { pattern: /dice(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Dice', category: 'Cutting' },
   { pattern: /mince(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Mince', category: 'Cutting' },
   { pattern: /slice(?:d|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Slice', category: 'Cutting' },
-  { pattern: /julienne(?:d)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Julienne', category: 'Cutting' },
+  { pattern: /julienne(?:d)?\s+(?:the\s+)?(?!peeler)(.+?)(?:\.|,|;|$)/gi, action: 'Julienne', category: 'Cutting' },
   { pattern: /grate(?:d|s)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Grate', category: 'Cutting' },
   { pattern: /shred(?:ded)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Shred', category: 'Cutting' },
   { pattern: /crush(?:ed)?\s+(?:the\s+)?(.+?)(?:\.|,|;|$)/gi, action: 'Crush', category: 'Cutting' },
