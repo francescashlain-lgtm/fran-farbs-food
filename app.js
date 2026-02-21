@@ -1263,14 +1263,16 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
           itemBase: itemBase || item,
           category,
           recipe: recipeName,
-          recipeColor
+          recipeColor,
+          position: match.index  // Track position in instructions for ordering
         });
       }
     }
   });
 
   // Check ingredients for prep instructions (e.g., "1 onion, diced")
-  ingredients.forEach(ing => {
+  // Ingredients come first in recipe order, so use negative position values
+  ingredients.forEach((ing, ingIndex) => {
     const lower = ing.toLowerCase();
     const prepWords = [
       { word: 'chopped', action: 'Chop' },
@@ -1355,7 +1357,8 @@ function extractPrepTasks(recipe, recipeName, recipeColor) {
             quantity,
             category,
             recipe: recipeName,
-            recipeColor
+            recipeColor,
+            position: ingIndex  // Track ingredient order for sorting
           });
           // Only match the first (most specific) prep word, then stop
           break;
@@ -1409,6 +1412,10 @@ function combinePrepTasks(allTasks) {
           existing.quantities.push({ qty: task.quantity, recipe: task.recipe });
         }
       }
+      // Keep earliest position (for recipe order sorting)
+      if (task.position !== undefined && (existing.position === undefined || task.position < existing.position)) {
+        existing.position = task.position;
+      }
     } else {
       combined.set(key, {
         action: task.action,
@@ -1417,6 +1424,7 @@ function combinePrepTasks(allTasks) {
         recipes: [task.recipe],
         recipeColors: [task.recipeColor],
         quantities: task.quantity ? [{ qty: task.quantity, recipe: task.recipe }] : [],
+        position: task.position, // Preserve position for recipe order sorting
         checked: false
       });
     }
@@ -1958,15 +1966,38 @@ function renderPrepList() {
       .map(d => `<span class="prep-dinner-tag" style="background-color: ${d.color}">${d.name}</span>`)
       .join('');
 
-    // Sort tasks - unchecked before checked, then by time-consuming first
+    // Define action order for grouping (time-consuming actions first)
+    const actionOrder = [
+      'Peel', 'Chop', 'Finely chop', 'Roughly chop', 'Coarsely chop',
+      'Dice', 'Slice', 'Thinly slice', 'Julienne', 'Cube', 'Cut', 'Quarter', 'Halve',
+      'Shred', 'Grate', 'Finely grate', 'Crush',
+      'Marinate', 'Make', 'Whisk', 'Blend', 'Puree', 'Pulse',
+      'Toast', 'Roast', 'Blanch',
+      'Trim', 'Core', 'Seed', 'Deseed', 'Devein', 'Debone',
+      'Wash', 'Soak', 'Tear', 'Break', 'Separate',
+      'Zest', 'Mince', 'Squeeze', 'Measure', 'Season', 'Crack', 'Garnish', 'Sprinkle'
+    ];
+    const getActionOrder = (action) => {
+      const idx = actionOrder.findIndex(a => a.toLowerCase() === action.toLowerCase());
+      return idx >= 0 ? idx : actionOrder.length;
+    };
+
+    // Sort tasks: unchecked first, then by action group, then by position in recipe
     tasks.sort((a, b) => {
+      // Checked items at the bottom
       const aChecked = prepListState.checked.includes(a.key) ? 1 : 0;
       const bChecked = prepListState.checked.includes(b.key) ? 1 : 0;
       if (aChecked !== bChecked) return aChecked - bChecked;
-      // Time-consuming tasks first
-      const aQuick = quickActions.some(q => a.action.toLowerCase().includes(q)) ? 1 : 0;
-      const bQuick = quickActions.some(q => b.action.toLowerCase().includes(q)) ? 1 : 0;
-      return aQuick - bQuick;
+
+      // Group by action type
+      const aOrder = getActionOrder(a.action);
+      const bOrder = getActionOrder(b.action);
+      if (aOrder !== bOrder) return aOrder - bOrder;
+
+      // Within same action, sort by position (recipe order)
+      const aPos = a.position !== undefined ? a.position : 999;
+      const bPos = b.position !== undefined ? b.position : 999;
+      return aPos - bPos;
     });
 
     return `
