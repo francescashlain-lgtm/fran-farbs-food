@@ -320,12 +320,8 @@ function startNewWeek() {
 function updateStartNewWeekButton() {
   const hasSelections = Object.values(keptRecipes).some(Boolean) || manuallyKeptRecipes.length > 0;
   const btn = document.getElementById('start-new-week');
-  const syncBtn = document.getElementById('sync-device');
   if (btn) {
     btn.style.display = hasSelections ? 'inline-flex' : 'none';
-  }
-  if (syncBtn) {
-    syncBtn.style.display = hasSelections ? 'inline-flex' : 'none';
   }
 }
 
@@ -1982,9 +1978,6 @@ function setupEventListeners() {
 
   // Start new week
   document.getElementById('start-new-week').addEventListener('click', startNewWeek);
-
-  // Sync to device
-  document.getElementById('sync-device').addEventListener('click', copyShareableURL);
 
   // Library filters
   document.getElementById('category-filter').addEventListener('change', renderLibrary);
