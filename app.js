@@ -2101,6 +2101,7 @@ function renderLibrary() {
   const grid = document.getElementById('library-grid');
   const categoryFilter = document.getElementById('category-filter').value;
   const statusFilter = document.getElementById('status-filter').value;
+  const eliotFilter = document.getElementById('eliot-filter').value;
   const searchQuery = document.getElementById('search-recipes').value.toLowerCase();
 
   let filtered = recipes.filter(r => !userPreferences.removed.includes(r.id));
@@ -2113,10 +2114,13 @@ function renderLibrary() {
   // Apply status filter
   if (statusFilter === 'liked') {
     filtered = filtered.filter(r => userPreferences.liked.includes(r.id));
-  } else if (statusFilter === 'eliot') {
-    filtered = filtered.filter(r => (userPreferences.eliotCanCook || []).includes(r.id));
   } else if (statusFilter === 'unmarked') {
     filtered = filtered.filter(r => !userPreferences.liked.includes(r.id));
+  }
+
+  // Apply eliot filter (independent — can combine with status filter)
+  if (eliotFilter === 'eliot') {
+    filtered = filtered.filter(r => (userPreferences.eliotCanCook || []).includes(r.id));
   }
 
   // Apply search (check title, ingredients, and author)
@@ -2151,13 +2155,11 @@ function renderLibrary() {
   grid.innerHTML = filtered.map(recipe => {
     const author = getRecipeAuthor(recipe);
     const categories = getRecipeCategories(recipe);
-    const isEliot = (userPreferences.eliotCanCook || []).includes(recipe.id);
     return `
-    <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''} ${isEliot ? 'eliot' : ''}" onclick="openRecipeModal('${recipe.id}')">
+    <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''}" onclick="openRecipeModal('${recipe.id}')">
       <div class="library-card-categories">${categories.map(cat => `<span class="library-card-category">${cat}</span>`).join('')}</div>
       <h4 class="library-card-title">${getRecipeTitle(recipe)}</h4>
       ${author ? `<div class="library-card-author">${author}</div>` : ''}
-      ${isEliot ? '<div class="eliot-badge">👨‍🍳 Eliot can cook!</div>' : ''}
     </div>
   `;
   }).join('');
@@ -2665,6 +2667,7 @@ function setupEventListeners() {
   // Library filters
   document.getElementById('category-filter').addEventListener('change', renderLibrary);
   document.getElementById('status-filter').addEventListener('change', renderLibrary);
+  document.getElementById('eliot-filter').addEventListener('change', renderLibrary);
   document.getElementById('search-recipes').addEventListener('input', renderLibrary);
 
   // Grocery actions
