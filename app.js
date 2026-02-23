@@ -40,6 +40,7 @@ const categoryDisplayNames = {
 let recipes = [];
 let userPreferences = {
   liked: [],
+  eliotCanCook: [],
   removed: [],
   notes: {},
   titleEdits: {},
@@ -2112,6 +2113,8 @@ function renderLibrary() {
   // Apply status filter
   if (statusFilter === 'liked') {
     filtered = filtered.filter(r => userPreferences.liked.includes(r.id));
+  } else if (statusFilter === 'eliot') {
+    filtered = filtered.filter(r => (userPreferences.eliotCanCook || []).includes(r.id));
   } else if (statusFilter === 'unmarked') {
     filtered = filtered.filter(r => !userPreferences.liked.includes(r.id));
   }
@@ -2128,6 +2131,7 @@ function renderLibrary() {
   // Update stats
   document.getElementById('recipe-count').textContent = `${filtered.length} recipes`;
   document.getElementById('liked-count').textContent = `${userPreferences.liked.length} liked`;
+  document.getElementById('eliot-count').textContent = `${(userPreferences.eliotCanCook || []).length} eliot can cook`;
 
   // Render cards
   if (filtered.length === 0) {
@@ -2147,11 +2151,13 @@ function renderLibrary() {
   grid.innerHTML = filtered.map(recipe => {
     const author = getRecipeAuthor(recipe);
     const categories = getRecipeCategories(recipe);
+    const isEliot = (userPreferences.eliotCanCook || []).includes(recipe.id);
     return `
-    <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''}" onclick="openRecipeModal('${recipe.id}')">
+    <div class="library-card ${userPreferences.liked.includes(recipe.id) ? 'liked' : ''} ${isEliot ? 'eliot' : ''}" onclick="openRecipeModal('${recipe.id}')">
       <div class="library-card-categories">${categories.map(cat => `<span class="library-card-category">${cat}</span>`).join('')}</div>
       <h4 class="library-card-title">${getRecipeTitle(recipe)}</h4>
       ${author ? `<div class="library-card-author">${author}</div>` : ''}
+      ${isEliot ? '<div class="eliot-badge">👨‍🍳 Eliot can cook!</div>' : ''}
     </div>
   `;
   }).join('');
@@ -2188,6 +2194,11 @@ function openRecipeModal(id) {
   likeBtn.classList.toggle('liked', isLiked);
   likeBtn.querySelector('span').textContent = isLiked ? 'Liked!' : 'Mark as Liked';
 
+  const eliotBtn = document.getElementById('modal-eliot');
+  const isEliot = (userPreferences.eliotCanCook || []).includes(id);
+  eliotBtn.classList.toggle('active', isEliot);
+  eliotBtn.querySelector('span:last-child').textContent = isEliot ? 'Eliot Can Cook!' : 'Eliot Can Cook?';
+
   // Update keep for week button state
   const keepWeekBtn = document.getElementById('modal-keep-week');
   const isKeptForWeek = manuallyKeptRecipes.includes(id);
@@ -2216,6 +2227,25 @@ function toggleLike() {
     userPreferences.liked.splice(idx, 1);
   } else {
     userPreferences.liked.push(id);
+  }
+
+  saveUserPreferences();
+  openRecipeModal(id); // Refresh modal
+  renderLibrary();
+}
+
+// Toggle Eliot Can Cook
+function toggleEliotCanCook() {
+  const modal = document.getElementById('recipe-modal');
+  const id = modal.dataset.recipeId;
+
+  if (!userPreferences.eliotCanCook) userPreferences.eliotCanCook = [];
+
+  const idx = userPreferences.eliotCanCook.indexOf(id);
+  if (idx > -1) {
+    userPreferences.eliotCanCook.splice(idx, 1);
+  } else {
+    userPreferences.eliotCanCook.push(id);
   }
 
   saveUserPreferences();
@@ -2660,6 +2690,7 @@ function setupEventListeners() {
     if (e.target.id === 'recipe-modal') closeModal();
   });
   document.getElementById('modal-like').addEventListener('click', toggleLike);
+  document.getElementById('modal-eliot').addEventListener('click', toggleEliotCanCook);
   document.getElementById('modal-keep-week').addEventListener('click', handleKeepForWeek);
   document.getElementById('save-notes').addEventListener('click', saveNotes);
   document.getElementById('modal-remove').addEventListener('click', removeRecipe);

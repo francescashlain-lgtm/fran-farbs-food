@@ -269,6 +269,7 @@
           <select id="status-filter">
             <option value="all">All Recipes</option>
             <option value="liked">Liked</option>
+            <option value="eliot">Eliot Can Cook</option>
             <option value="unmarked">Not Yet Made</option>
           </select>
           <input type="text" id="search-recipes" placeholder="Search recipes...">
@@ -278,6 +279,7 @@
       <div class="library-stats">
         <span id="recipe-count">0 recipes</span>
         <span id="liked-count">0 liked</span>
+        <span id="eliot-count">0 eliot can cook</span>
       </div>
 
       <div class="library-grid" id="library-grid">
@@ -441,6 +443,10 @@
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
           <span>Mark as Liked</span>
+        </button>
+        <button id="modal-eliot" class="btn-eliot">
+          <span class="btn-eliot-icon">👨‍🍳</span>
+          <span>Eliot Can Cook!</span>
         </button>
         <button id="modal-remove" class="btn-remove">Remove from Collection</button>
       </div>
