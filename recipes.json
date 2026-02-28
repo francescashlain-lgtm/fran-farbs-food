@@ -9461,6 +9461,29 @@
     "time": "30 minutes"
   },
   {
+    "id": "407",
+    "name": "One-Pot Creamy Orzo with Chicken Sausage",
+    "category": "pasta",
+    "author": "JULIE CHIOU",
+    "source": "One-Pot Creamy Orzo with Chicken Sausage - Table for Two® by Julie Chiou.pdf",
+    "ingredients": [
+      "3 cloves garlic, minced",
+      "1/2 large onion, chopped",
+      "1/2 large zucchini, sliced into round discs then quartered",
+      "4 oz (113g) white button mushrooms, sliced",
+      "3 fully-cooked chicken sausage links, sliced into round discs then quartered",
+      "1 1/2 cups (225g) orzo",
+      "2 cups (473ml) low-sodium chicken stock or broth",
+      "7 oz (199g) canned diced tomatoes",
+      "Splash of heavy cream",
+      "Salt and pepper to taste",
+      "1 tbsp olive oil"
+    ],
+    "instructions": "In a large pot, over medium high heat, heat 1 tbsp olive oil and add in the garlic. Cook until fragrant, about 1 minute. Add the onions and zucchini. Cook, stirring occasionally, until tender, about 4-5 minutes. Add the mushrooms and sausage. Cook until mushrooms have reduced in size, about 2 minutes.\n\nAdd the orzo to the pot and toast it for about 1 minute, stirring constantly. Gently add the chicken stock, bring to a boil, then turn down the heat to low and cover and cook for 10 minutes, or until orzo has cooked through.\n\nStir in the diced tomatoes and add a splash of cream (about 1 tbsp). The mixture should still be creamy because of the starch from the orzo. If it is still a bit runny, cover and let it cook for another 5 minutes. Add salt and pepper to taste.\n\nServe hot. Store in an airtight container in the refrigerator for up to 5 days.",
+    "servings": "4",
+    "time": "30 minutes"
+  },
+  {
     "id": "406",
     "name": "One-Pot Lemony Orzo with Chicken and Feta",
     "category": "chicken",
