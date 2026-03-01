@@ -1030,6 +1030,7 @@ function categorizeIngredients(items) {
 function toggleGroceryItem(idx) {
   groceryList[idx].checked = !groceryList[idx].checked;
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
+  if (typeof syncToCloud === 'function') syncToCloud();
   renderGroceryList();
 }
 
@@ -1037,6 +1038,7 @@ function toggleGroceryItem(idx) {
 function removeGroceryItem(idx) {
   groceryList.splice(idx, 1);
   localStorage.setItem('groceryList', JSON.stringify(groceryList));
+  if (typeof syncToCloud === 'function') syncToCloud();
   renderGroceryList();
 }
 
