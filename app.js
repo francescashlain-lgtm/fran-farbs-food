@@ -2104,6 +2104,44 @@ function renderLibrary() {
   const eliotFilter = document.getElementById('eliot-filter').value;
   const searchQuery = document.getElementById('search-recipes').value.toLowerCase();
 
+  // Removed filter: show only removed recipes
+  if (statusFilter === 'removed') {
+    const removedRecipes = (userPreferences.removed || [])
+      .map(id => recipes.find(r => r.id === id))
+      .filter(Boolean);
+
+    document.getElementById('recipe-count').textContent = `${removedRecipes.length} removed`;
+    document.getElementById('liked-count').textContent = `${userPreferences.liked.length} liked`;
+    document.getElementById('eliot-count').textContent = `${(userPreferences.eliotCanCook || []).length} eliot can cook`;
+
+    if (removedRecipes.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <h3>No removed recipes</h3>
+          <p>Recipes you remove will appear here</p>
+        </div>
+      `;
+    } else {
+      grid.innerHTML = removedRecipes.map(recipe => {
+        const author = getRecipeAuthor(recipe);
+        const categories = getRecipeCategories(recipe);
+        return `
+        <div class="library-card" style="opacity:0.6">
+          <div class="library-card-categories">${categories.map(cat => `<span class="library-card-category">${cat}</span>`).join('')}</div>
+          <h4 class="library-card-title">${getRecipeTitle(recipe)}</h4>
+          ${author ? `<div class="library-card-author">${author}</div>` : ''}
+          <button onclick="event.stopPropagation(); restoreRecipe('${recipe.id}')" style="margin-top:8px; font-size:0.8em; padding:4px 10px; cursor:pointer;">Restore</button>
+        </div>
+        `;
+      }).join('');
+    }
+    return;
+  }
+
   let filtered = recipes.filter(r => !userPreferences.removed.includes(r.id));
 
   // Apply category filter (check edited categories too)
@@ -2590,10 +2628,21 @@ function removeRecipe() {
   const id = modal.dataset.recipeId;
   const recipe = recipes.find(r => r.id === id);
 
-  if (confirm(`Remove "${recipe.name}" from your collection? This cannot be undone.`)) {
+  if (confirm(`Remove "${recipe.name}" from your collection? You can restore it later via the Removed filter.`)) {
     userPreferences.removed.push(id);
     saveUserPreferences();
     closeModal();
+    renderLibrary();
+    generateWeeklyPicks();
+  }
+}
+
+// Restore a removed recipe
+function restoreRecipe(id) {
+  const idx = userPreferences.removed.indexOf(id);
+  if (idx > -1) {
+    userPreferences.removed.splice(idx, 1);
+    saveUserPreferences();
     renderLibrary();
     generateWeeklyPicks();
   }
