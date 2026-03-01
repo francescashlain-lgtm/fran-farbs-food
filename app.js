@@ -1471,19 +1471,19 @@ function getKeptDinnersForPlanner() {
     }
   });
 
-  // Also include manually kept recipes that are dinners
+  // Also include manually kept recipes that are not breakfast or lunch
+  const breakfastCats = ['breakfast', 'smoothie'];
+  const lunchCats = ['lunch', 'salad', 'soup', 'sandwich'];
   manuallyKeptRecipes.forEach(id => {
     const recipe = recipes.find(r => r.id === id);
     if (recipe) {
-      const categories = getRecipeCategories(recipe);
-      // Check if it's a dinner-type recipe
-      const isDinner = categories.some(cat =>
-        ['pasta', 'chicken', 'meat', 'beef', 'pork', 'lamb', 'turkey', 'vegetarian', 'seafood'].includes(cat.toLowerCase())
-      );
-      if (isDinner) {
+      const categories = getRecipeCategories(recipe).map(c => c.toLowerCase());
+      const isBreakfast = categories.some(cat => breakfastCats.includes(cat));
+      const isLunch = categories.some(cat => lunchCats.includes(cat));
+      if (!isBreakfast && !isLunch) {
         dinners.push({
           id: recipe.id,
-          name: recipe.name,
+          name: getRecipeTitle(recipe),
           type: 'manual',
           mealCategory: 'dinner',
           color: '#7a6c5d',
@@ -1511,6 +1511,26 @@ function getKeptBreakfastsForPlanner() {
       });
     }
   });
+
+  // Include manually kept breakfast recipes
+  const breakfastCats = ['breakfast', 'smoothie'];
+  manuallyKeptRecipes.forEach(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      const categories = getRecipeCategories(recipe).map(c => c.toLowerCase());
+      if (categories.some(cat => breakfastCats.includes(cat))) {
+        breakfasts.push({
+          id: recipe.id,
+          name: getRecipeTitle(recipe),
+          type: 'manual',
+          mealCategory: 'breakfast',
+          color: '#7a6c5d',
+          recipe: recipe
+        });
+      }
+    }
+  });
+
   return breakfasts;
 }
 
@@ -1529,6 +1549,26 @@ function getKeptLunchesForPlanner() {
       });
     }
   });
+
+  // Include manually kept lunch recipes
+  const lunchCats = ['lunch', 'salad', 'soup', 'sandwich'];
+  manuallyKeptRecipes.forEach(id => {
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      const categories = getRecipeCategories(recipe).map(c => c.toLowerCase());
+      if (categories.some(cat => lunchCats.includes(cat))) {
+        lunches.push({
+          id: recipe.id,
+          name: getRecipeTitle(recipe),
+          type: 'manual',
+          mealCategory: 'lunch',
+          color: '#7a6c5d',
+          recipe: recipe
+        });
+      }
+    }
+  });
+
   return lunches;
 }
 
