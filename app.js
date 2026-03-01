@@ -38,6 +38,7 @@ const categoryDisplayNames = {
 
 // App State
 let recipes = [];
+let allRecipes = []; // full list, unfiltered (used for restoring removed recipes)
 let userPreferences = {
   liked: [],
   eliotCanCook: [],
@@ -354,11 +355,12 @@ function updateStartNewWeekButton() {
 async function loadRecipes() {
   try {
     const response = await fetch('recipes.json');
-    recipes = await response.json();
+    allRecipes = await response.json();
     // Filter out removed recipes
-    recipes = recipes.filter(r => !userPreferences.removed.includes(r.id));
+    recipes = allRecipes.filter(r => !userPreferences.removed.includes(r.id));
   } catch (error) {
     console.error('Error loading recipes:', error);
+    allRecipes = [];
     recipes = [];
   }
 }
@@ -2149,7 +2151,7 @@ function renderLibrary() {
   // Removed filter: show only removed recipes
   if (statusFilter === 'removed') {
     const removedRecipes = (userPreferences.removed || [])
-      .map(id => recipes.find(r => r.id === id))
+      .map(id => allRecipes.find(r => r.id === id))
       .filter(Boolean);
 
     document.getElementById('recipe-count').textContent = `${removedRecipes.length} removed`;
@@ -2684,6 +2686,8 @@ function restoreRecipe(id) {
   const idx = userPreferences.removed.indexOf(id);
   if (idx > -1) {
     userPreferences.removed.splice(idx, 1);
+    // Re-sync the active recipes list from the full set
+    recipes = allRecipes.filter(r => !userPreferences.removed.includes(r.id));
     saveUserPreferences();
     renderLibrary();
     generateWeeklyPicks();
