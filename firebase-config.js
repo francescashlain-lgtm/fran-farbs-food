@@ -94,11 +94,12 @@ export function setAuthStateCallback(callback) {
   }
 }
 
-// Start real-time sync for user data
-function startDataSync(uid) {
-  const userDocRef = doc(db, 'users', uid);
+// Shared document used by all accounts
+const sharedDocRef = () => doc(db, 'shared', 'main');
 
-  unsubscribeSnapshot = onSnapshot(userDocRef, (docSnap) => {
+// Start real-time sync for shared data
+function startDataSync(uid) {
+  unsubscribeSnapshot = onSnapshot(sharedDocRef(), (docSnap) => {
     if (docSnap.exists()) {
       const cloudData = docSnap.data();
       // Notify app.js that cloud data is available
@@ -111,16 +112,14 @@ function startDataSync(uid) {
   });
 }
 
-// Save user data to Firestore
+// Save data to Firestore shared document
 export async function saveToCloud(data) {
   if (!currentUser) return false;
 
   try {
-    const userDocRef = doc(db, 'users', currentUser.uid);
-    await setDoc(userDocRef, {
+    await setDoc(sharedDocRef(), {
       ...data,
-      updatedAt: new Date().toISOString(),
-      email: currentUser.email
+      updatedAt: new Date().toISOString()
     }, { merge: true });
     return true;
   } catch (error) {
@@ -129,13 +128,12 @@ export async function saveToCloud(data) {
   }
 }
 
-// Load user data from Firestore (one-time fetch)
+// Load shared data from Firestore (one-time fetch)
 export async function loadFromCloud() {
   if (!currentUser) return null;
 
   try {
-    const userDocRef = doc(db, 'users', currentUser.uid);
-    const docSnap = await getDoc(userDocRef);
+    const docSnap = await getDoc(sharedDocRef());
 
     if (docSnap.exists()) {
       return docSnap.data();
