@@ -2845,6 +2845,7 @@ window.removeManualPick = removeManualPick;
 window.togglePrepTask = togglePrepTask;
 window.removePrepTask = removePrepTask;
 window.openWeeklyRecipeModal = openWeeklyRecipeModal;
+window.restoreRecipe = restoreRecipe;
 
 // ==================== FIREBASE AUTH & SYNC ====================
 
