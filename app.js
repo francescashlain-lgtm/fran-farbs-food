@@ -5,8 +5,7 @@ import {
   getCurrentUser,
   setAuthStateCallback,
   saveToCloud,
-  loadFromCloud,
-  handleRedirectSignIn
+  loadFromCloud
 } from './firebase-config.js';
 
 // Seasonal produce data
@@ -95,9 +94,6 @@ const ALL_MEAL_TYPES = ['breakfast1', 'breakfast2', 'lunch1', 'lunch2', 'lunch3'
 
 // Initialize the app
 async function init() {
-  // Handle redirect sign-in result on mobile before anything else
-  await handleRedirectSignIn();
-
   loadUserPreferences();
 
   // Check for URL sync first - this overrides localStorage if present

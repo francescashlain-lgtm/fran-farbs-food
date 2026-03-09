@@ -3,8 +3,6 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebas
 import {
   getAuth,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged
@@ -61,33 +59,14 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// Detect mobile browsers
-function isMobile() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-// Sign in with Google — redirect on mobile, popup on desktop
+// Sign in with Google
 export async function signInWithGoogle() {
   try {
-    if (isMobile()) {
-      await signInWithRedirect(auth, provider);
-      // Page will reload; auth state is handled via onAuthStateChanged after redirect
-    } else {
-      const result = await signInWithPopup(auth, provider);
-      return result.user;
-    }
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
   } catch (error) {
     console.error('Sign in error:', error);
     throw error;
-  }
-}
-
-// Call this once on page load to pick up the result of a redirect sign-in
-export async function handleRedirectSignIn() {
-  try {
-    await getRedirectResult(auth);
-  } catch (error) {
-    console.error('Redirect sign in error:', error);
   }
 }
 
