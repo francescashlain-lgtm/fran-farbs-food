@@ -135,17 +135,17 @@ function startDataSync(uid) {
 
 // Save data to Firestore shared document
 export async function saveToCloud(data) {
-  if (!currentUser) return false;
+  if (!currentUser) return { success: false, error: 'Not signed in' };
 
   try {
     await setDoc(sharedDocRef(), {
       ...data,
       updatedAt: new Date().toISOString()
     }, { merge: true });
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('Error saving to cloud:', error);
-    return false;
+    return { success: false, error: error.message || error.code || 'Unknown error' };
   }
 }
 

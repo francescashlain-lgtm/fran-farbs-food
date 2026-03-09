@@ -2892,10 +2892,10 @@ function syncToCloud() {
     updateSyncIndicator('syncing');
 
     const data = gatherAllData();
-    const success = await saveToCloud(data);
+    const result = await saveToCloud(data);
 
     isSyncing = false;
-    updateSyncIndicator(success ? 'synced' : 'error');
+    updateSyncIndicator(result.success ? 'synced' : 'error', result.error);
   }, 1000);
 }
 
@@ -2925,13 +2925,14 @@ function updateSyncIndicator(status) {
       indicator.innerHTML = '';
     }, 2000);
   } else if (status === 'error') {
+    const errorDetail = arguments[1] ? `: ${arguments[1]}` : '';
     indicator.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/>
         <line x1="15" y1="9" x2="9" y2="15"/>
         <line x1="9" y1="9" x2="15" y2="15"/>
       </svg>
-      Sync failed
+      Sync failed${errorDetail}
     `;
   }
 }
