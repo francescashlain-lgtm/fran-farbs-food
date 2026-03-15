@@ -75,7 +75,7 @@ let keptRecipes = {
 };
 let groceryList = [];
 let miscItems = []; // Miscellaneous items not tied to recipes
-let pantryItems = { fridge: [], pantry: [] }; // Items in fridge and pantry
+let pantryItems = { fridge: [], pantry: [], freezer: [] }; // Items in fridge, pantry, and freezer
 let skippedRecipes = {
   breakfast1: [],
   breakfast2: [],
@@ -474,9 +474,9 @@ function getRecipesByType(type) {
 // Generate weekly picks
 function generateWeeklyPicks() {
   const { produce } = getCurrentSeasonalProduce();
-  const expiringInput = document.getElementById('expiring-input');
-  const expiringIngredients = expiringInput.value ? expiringInput.value.split(',').map(s => s.trim()) : [];
-  const allPantryIngredients = [...(pantryItems.fridge || []), ...(pantryItems.pantry || [])];
+  const allPantry = getAllPantryIngredientsWithSection();
+  const expiringIngredients = allPantry.filter(item => isItemExpiringSoon(item)).map(item => item.name);
+  const allPantryIngredients = allPantry.filter(item => !isItemExpiringSoon(item)).map(item => item.name);
 
   // Track used recipes to avoid duplicates (especially for lunch1/lunch2)
   const usedRecipeIds = [];
@@ -1151,11 +1151,19 @@ function renderMiscItems() {
 
 // ==================== PANTRY ITEMS ====================
 
-// Load pantry items from localStorage
+// Load pantry items from localStorage (with migration from old string format)
 function loadPantryItems() {
   const saved = localStorage.getItem('pantryItems');
   if (saved) {
-    pantryItems = JSON.parse(saved);
+    const loaded = JSON.parse(saved);
+    const migrate = (arr) => (arr || []).map((item, i) =>
+      typeof item === 'string' ? { id: `migrated_${i}_${item}`, name: item } : item
+    );
+    pantryItems = {
+      fridge: migrate(loaded.fridge),
+      pantry: migrate(loaded.pantry),
+      freezer: migrate(loaded.freezer)
+    };
   }
 }
 
@@ -1165,38 +1173,142 @@ function savePantryItems() {
   syncToCloud();
 }
 
-// Add a pantry item
-function addPantryItem(section, name) {
-  if (!name || !name.trim()) return;
-  const trimmed = name.trim().toLowerCase();
-  if (!pantryItems[section].includes(trimmed)) {
-    pantryItems[section].push(trimmed);
-    savePantryItems();
+// Returns true if this item is expiring within 30 days
+function isItemExpiringSoon(item) {
+  if (item.isFresh) return true;
+  const thirtyDaysOut = new Date();
+  thirtyDaysOut.setDate(thirtyDaysOut.getDate() + 30);
+  if (item.frozenDate && item.freezerLifeMonths) {
+    const [y, m, d] = item.frozenDate.split('-').map(Number);
+    const expiry = new Date(y, m - 1 + parseInt(item.freezerLifeMonths), d);
+    return expiry <= thirtyDaysOut;
   }
-  renderPantryItems();
+  if (item.expirationDate) {
+    const [y, m, d] = item.expirationDate.split('-').map(Number);
+    const expiry = new Date(y, m - 1, d);
+    return expiry <= thirtyDaysOut;
+  }
+  return false;
 }
 
-// Remove a pantry item
-function removePantryItem(section, name) {
-  pantryItems[section] = pantryItems[section].filter(i => i !== name);
+// Returns all items across all sections, each tagged with their section
+function getAllPantryIngredientsWithSection() {
+  const all = [];
+  ['fridge', 'pantry', 'freezer'].forEach(section => {
+    (pantryItems[section] || []).forEach(item => {
+      const normalized = typeof item === 'string' ? { id: item, name: item } : item;
+      all.push({ ...normalized, section });
+    });
+  });
+  return all;
+}
+
+// Format a YYYY-MM-DD date string as "Mar 28"
+function formatPantryDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Returns the small meta label HTML for a chip
+function getChipMeta(item) {
+  if (item.isFresh) {
+    return '<span class="chip-meta chip-meta-fresh">fresh</span>';
+  }
+  if (item.expirationDate) {
+    const expiring = isItemExpiringSoon(item);
+    return `<span class="chip-meta ${expiring ? 'chip-meta-expiring' : ''}">exp ${formatPantryDate(item.expirationDate)}</span>`;
+  }
+  if (item.frozenDate && item.freezerLifeMonths) {
+    const [y, m, d] = item.frozenDate.split('-').map(Number);
+    const expiry = new Date(y, m - 1 + parseInt(item.freezerLifeMonths), d);
+    const expiryStr = `${expiry.getFullYear()}-${String(expiry.getMonth()+1).padStart(2,'0')}-${String(expiry.getDate()).padStart(2,'0')}`;
+    const expiring = isItemExpiringSoon(item);
+    return `<span class="chip-meta ${expiring ? 'chip-meta-expiring' : ''}">exp ${formatPantryDate(expiryStr)}</span>`;
+  }
+  return '';
+}
+
+// Add a fridge item
+function addFridgeItem(name, isFresh, expirationDate) {
+  if (!name || !name.trim()) return;
+  pantryItems.fridge.push({
+    id: Date.now().toString(),
+    name: name.trim().toLowerCase(),
+    isFresh: isFresh || false,
+    expirationDate: (!isFresh && expirationDate) ? expirationDate : null
+  });
   savePantryItems();
   renderPantryItems();
 }
 
-// Render pantry chips for both sections
+// Add a pantry shelf item
+function addPantryShelfItem(name, expirationDate) {
+  if (!name || !name.trim()) return;
+  pantryItems.pantry.push({
+    id: Date.now().toString(),
+    name: name.trim().toLowerCase(),
+    expirationDate: expirationDate || null
+  });
+  savePantryItems();
+  renderPantryItems();
+}
+
+// Add a freezer item
+function addFreezerItem(name, frozenDate, freezerLifeMonths) {
+  if (!name || !name.trim()) return;
+  pantryItems.freezer.push({
+    id: Date.now().toString(),
+    name: name.trim().toLowerCase(),
+    frozenDate: frozenDate || new Date().toISOString().split('T')[0],
+    freezerLifeMonths: parseInt(freezerLifeMonths) || 6
+  });
+  savePantryItems();
+  renderPantryItems();
+}
+
+// Remove a pantry item by id from a given section
+function removePantryItem(section, id) {
+  pantryItems[section] = pantryItems[section].filter(item => {
+    const itemId = typeof item === 'string' ? item : item.id;
+    return itemId !== id;
+  });
+  savePantryItems();
+  renderPantryItems();
+}
+
+// Render all pantry sections and the computed Expiring Soon section
 function renderPantryItems() {
-  ['fridge', 'pantry'].forEach(section => {
+  // Expiring Soon (computed)
+  const expiringContainer = document.getElementById('expiring-chips');
+  if (expiringContainer) {
+    const expiringSoon = getAllPantryIngredientsWithSection().filter(item => isItemExpiringSoon(item));
+    if (expiringSoon.length === 0) {
+      expiringContainer.innerHTML = '<p class="pantry-empty">No items expiring soon</p>';
+    } else {
+      expiringContainer.innerHTML = expiringSoon.map(item => `
+        <span class="pantry-chip expiring-chip">
+          ${item.name}
+          ${getChipMeta(item)}
+          <button class="pantry-chip-remove" onclick="removePantryItem('${item.section}', '${item.id}')" title="Remove">&times;</button>
+        </span>
+      `).join('');
+    }
+  }
+
+  // Fridge, Pantry, Freezer
+  ['fridge', 'pantry', 'freezer'].forEach(section => {
     const container = document.getElementById(`${section}-chips`);
     if (!container) return;
-    const items = pantryItems[section] || [];
+    const items = (pantryItems[section] || []).map(i => typeof i === 'string' ? { id: i, name: i } : i);
     if (items.length === 0) {
       container.innerHTML = '<p class="pantry-empty">Nothing added yet</p>';
       return;
     }
     container.innerHTML = items.map(item => `
-      <span class="pantry-chip">
-        ${item}
-        <button class="pantry-chip-remove" onclick="removePantryItem('${section}', '${item.replace(/'/g, "\\'")}')" title="Remove">&times;</button>
+      <span class="pantry-chip ${isItemExpiringSoon(item) ? 'expiring-chip' : ''}">
+        ${item.name}
+        ${getChipMeta(item)}
+        <button class="pantry-chip-remove" onclick="removePantryItem('${section}', '${item.id}')" title="Remove">&times;</button>
       </span>
     `).join('');
   });
@@ -2809,13 +2921,6 @@ function setupEventListeners() {
     });
   });
 
-  // Expiring ingredients
-  document.getElementById('apply-expiring').addEventListener('click', () => {
-    // Reset skipped recipes when applying new expiring ingredients
-    skippedRecipes = { breakfast1: [], breakfast2: [], lunch1: [], lunch2: [], lunch3: [], pasta: [], chicken: [], meat: [], vegetarian: [] };
-    keptRecipes = { breakfast1: false, breakfast2: false, lunch1: false, lunch2: false, lunch3: false, pasta: false, chicken: false, meat: false, vegetarian: false };
-    generateWeeklyPicks();
-  });
 
   // Generate grocery list
   document.getElementById('generate-grocery').addEventListener('click', generateGroceryList);
@@ -2846,28 +2951,53 @@ function setupEventListeners() {
     }
   });
 
-  // Pantry items
+  // Pantry — Fridge
   document.getElementById('add-fridge-item').addEventListener('click', () => {
-    const input = document.getElementById('fridge-input');
-    addPantryItem('fridge', input.value);
-    input.value = '';
+    const name = document.getElementById('fridge-name').value;
+    const isFresh = document.getElementById('fridge-fresh').checked;
+    const expiry = document.getElementById('fridge-expiry').value;
+    addFridgeItem(name, isFresh, expiry);
+    document.getElementById('fridge-name').value = '';
+    document.getElementById('fridge-expiry').value = '';
+    document.getElementById('fridge-fresh').checked = false;
+    document.getElementById('fridge-expiry-wrap').style.display = '';
   });
-  document.getElementById('fridge-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      addPantryItem('fridge', e.target.value);
-      e.target.value = '';
-    }
+  document.getElementById('fridge-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('add-fridge-item').click();
   });
+  document.getElementById('fridge-fresh').addEventListener('change', (e) => {
+    document.getElementById('fridge-expiry-wrap').style.display = e.target.checked ? 'none' : '';
+  });
+
+  // Pantry — Shelf
   document.getElementById('add-pantry-item').addEventListener('click', () => {
-    const input = document.getElementById('pantry-input');
-    addPantryItem('pantry', input.value);
-    input.value = '';
+    const name = document.getElementById('pantry-name').value;
+    const expiry = document.getElementById('pantry-expiry').value;
+    addPantryShelfItem(name, expiry);
+    document.getElementById('pantry-name').value = '';
+    document.getElementById('pantry-expiry').value = '';
   });
-  document.getElementById('pantry-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      addPantryItem('pantry', e.target.value);
-      e.target.value = '';
-    }
+  document.getElementById('pantry-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('add-pantry-item').click();
+  });
+
+  // Pantry — Freezer
+  // Default the frozen-date to today when the tab loads
+  const frozenDateInput = document.getElementById('freezer-frozen-date');
+  if (frozenDateInput && !frozenDateInput.value) {
+    frozenDateInput.value = new Date().toISOString().split('T')[0];
+  }
+  document.getElementById('add-freezer-item').addEventListener('click', () => {
+    const name = document.getElementById('freezer-name').value;
+    const frozenDate = document.getElementById('freezer-frozen-date').value;
+    const life = document.getElementById('freezer-life').value;
+    addFreezerItem(name, frozenDate, life);
+    document.getElementById('freezer-name').value = '';
+    document.getElementById('freezer-frozen-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('freezer-life').value = '6';
+  });
+  document.getElementById('freezer-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('add-freezer-item').click();
   });
 
   // Modal

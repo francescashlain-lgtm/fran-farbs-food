@@ -2509,17 +2509,11 @@ textarea:focus-visible {
   line-height: 1.5;
 }
 
-.pantry-sections {
-  display: grid;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
 .pantry-section {
   background: var(--color-cream);
   border: 2px solid var(--color-ink);
-  border-radius: 0;
   overflow: hidden;
+  margin-bottom: 1.5rem;
 }
 
 .pantry-section-title {
@@ -2536,11 +2530,41 @@ textarea:focus-visible {
   text-transform: uppercase;
 }
 
-.pantry-add {
+/* Expiring Soon section — orange header */
+.expiring-soon-section {
+  border-color: var(--color-orange-dark);
+}
+
+.expiring-soon-title {
+  background: var(--color-orange);
+  color: var(--color-cream);
+}
+
+.expiring-soon-note {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  border-bottom: 1px solid var(--color-border);
+  line-height: 1.5;
+}
+
+/* Add form layout */
+.pantry-add-form {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pantry-add-row {
   display: flex;
   gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.pantry-add-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem 0.875rem;
 }
 
 .pantry-input {
@@ -2563,6 +2587,65 @@ textarea:focus-visible {
   color: var(--color-ink-muted);
 }
 
+/* Fresh toggle */
+.pantry-fresh-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pantry-fresh-label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-ink);
+  cursor: pointer;
+}
+
+/* Expiry / frozen date fields */
+.pantry-expiry-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pantry-expiry-label {
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.pantry-date-input {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-cream-light);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-ink);
+  border-radius: 0;
+  outline: none;
+}
+
+.pantry-date-input:focus {
+  border-color: var(--color-ink);
+}
+
+.pantry-select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border-dark);
+  background: var(--color-cream-light);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-ink);
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Chips */
 .pantry-chips {
   display: flex;
   flex-wrap: wrap;
@@ -2574,15 +2657,41 @@ textarea:focus-visible {
 .pantry-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background: var(--color-blue);
   color: var(--color-ink);
-  padding: 0.35rem 0.6rem 0.35rem 0.75rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.7rem;
   border-radius: var(--radius-full);
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   border: 1px solid var(--color-blue-dark);
+}
+
+.expiring-chip {
+  background: #fff0e0;
+  border-color: #f5b87a;
+  color: var(--color-ink);
+}
+
+.chip-meta {
+  font-size: 0.68rem;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.chip-meta-fresh {
+  color: #2e7d4f;
+  opacity: 1;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.chip-meta-expiring {
+  color: var(--color-orange-dark);
+  opacity: 1;
+  font-weight: 600;
+  font-style: normal;
 }
 
 .pantry-chip-remove {
@@ -2592,7 +2701,7 @@ textarea:focus-visible {
   color: var(--color-ink-muted);
   font-size: 1rem;
   line-height: 1;
-  padding: 0;
+  padding: 0 0 0 0.1rem;
   display: flex;
   align-items: center;
   transition: color var(--transition-fast);
@@ -2606,22 +2715,4 @@ textarea:focus-visible {
   color: var(--color-ink-muted);
   font-size: 0.8rem;
   font-style: italic;
-}
-
-.pantry-tip {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  background: var(--color-cream-dark);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0.875rem 1rem;
-  font-size: 0.8rem;
-  color: var(--color-ink-muted);
-  line-height: 1.5;
-}
-
-.pantry-tip svg {
-  flex-shrink: 0;
-  margin-top: 0.1rem;
 }
