@@ -75,6 +75,7 @@ let keptRecipes = {
 };
 let groceryList = [];
 let miscItems = []; // Miscellaneous items not tied to recipes
+let pantryItems = { fridge: [], pantry: [] }; // Items in fridge and pantry
 let skippedRecipes = {
   breakfast1: [],
   breakfast2: [],
@@ -103,6 +104,7 @@ async function init() {
     loadManuallyKeptRecipes();
     loadWeeklyState();
     loadMiscItems();
+    loadPantryItems();
   }
 
   loadPrepListState();
@@ -391,7 +393,7 @@ function getCurrentSeasonalProduce() {
 }
 
 // Calculate seasonal score for a recipe
-function getSeasonalScore(recipe, seasonalIngredients, expiringIngredients = []) {
+function getSeasonalScore(recipe, seasonalIngredients, expiringIngredients = [], pantryIngredients = []) {
   if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) return 0;
 
   let score = 0;
@@ -400,6 +402,12 @@ function getSeasonalScore(recipe, seasonalIngredients, expiringIngredients = [])
   seasonalIngredients.forEach(produce => {
     if (ingredientText.includes(produce.toLowerCase())) {
       score += 2;
+    }
+  });
+
+  pantryIngredients.forEach(item => {
+    if (ingredientText.includes(item.toLowerCase().trim())) {
+      score += 3; // Pantry items boost recipe priority
     }
   });
 
@@ -468,6 +476,7 @@ function generateWeeklyPicks() {
   const { produce } = getCurrentSeasonalProduce();
   const expiringInput = document.getElementById('expiring-input');
   const expiringIngredients = expiringInput.value ? expiringInput.value.split(',').map(s => s.trim()) : [];
+  const allPantryIngredients = [...(pantryItems.fridge || []), ...(pantryItems.pantry || [])];
 
   // Track used recipes to avoid duplicates (especially for lunch1/lunch2)
   const usedRecipeIds = [];
@@ -491,7 +500,7 @@ function generateWeeklyPicks() {
       // Only apply seasonal sorting for dinner types
       if (dinnerTypes.includes(type)) {
         available.sort((a, b) => {
-          return getSeasonalScore(b, produce, expiringIngredients) - getSeasonalScore(a, produce, expiringIngredients);
+          return getSeasonalScore(b, produce, expiringIngredients, allPantryIngredients) - getSeasonalScore(a, produce, expiringIngredients, allPantryIngredients);
         });
       } else {
         // For breakfast/lunch, shuffle randomly
@@ -1138,6 +1147,59 @@ function renderMiscItems() {
       <button class="misc-remove" onclick="removeMiscItem('${item.id}')" title="Remove item">&times;</button>
     </div>
   `).join('');
+}
+
+// ==================== PANTRY ITEMS ====================
+
+// Load pantry items from localStorage
+function loadPantryItems() {
+  const saved = localStorage.getItem('pantryItems');
+  if (saved) {
+    pantryItems = JSON.parse(saved);
+  }
+}
+
+// Save pantry items to localStorage and cloud
+function savePantryItems() {
+  localStorage.setItem('pantryItems', JSON.stringify(pantryItems));
+  syncToCloud();
+}
+
+// Add a pantry item
+function addPantryItem(section, name) {
+  if (!name || !name.trim()) return;
+  const trimmed = name.trim().toLowerCase();
+  if (!pantryItems[section].includes(trimmed)) {
+    pantryItems[section].push(trimmed);
+    savePantryItems();
+  }
+  renderPantryItems();
+}
+
+// Remove a pantry item
+function removePantryItem(section, name) {
+  pantryItems[section] = pantryItems[section].filter(i => i !== name);
+  savePantryItems();
+  renderPantryItems();
+}
+
+// Render pantry chips for both sections
+function renderPantryItems() {
+  ['fridge', 'pantry'].forEach(section => {
+    const container = document.getElementById(`${section}-chips`);
+    if (!container) return;
+    const items = pantryItems[section] || [];
+    if (items.length === 0) {
+      container.innerHTML = '<p class="pantry-empty">Nothing added yet</p>';
+      return;
+    }
+    container.innerHTML = items.map(item => `
+      <span class="pantry-chip">
+        ${item}
+        <button class="pantry-chip-remove" onclick="removePantryItem('${section}', '${item.replace(/'/g, "\\'")}')" title="Remove">&times;</button>
+      </span>
+    `).join('');
+  });
 }
 
 // ==================== PREP LIST ====================
@@ -2712,6 +2774,8 @@ function switchTab(tabName) {
   } else if (tabName === 'grocery') {
     renderGroceryList();
     renderMiscItems();
+  } else if (tabName === 'pantry') {
+    renderPantryItems();
   } else if (tabName === 'prep') {
     renderWeekPlanner();
     renderPrepList();
@@ -2778,6 +2842,30 @@ function setupEventListeners() {
   document.getElementById('misc-item-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       addMiscItem(e.target.value);
+      e.target.value = '';
+    }
+  });
+
+  // Pantry items
+  document.getElementById('add-fridge-item').addEventListener('click', () => {
+    const input = document.getElementById('fridge-input');
+    addPantryItem('fridge', input.value);
+    input.value = '';
+  });
+  document.getElementById('fridge-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      addPantryItem('fridge', e.target.value);
+      e.target.value = '';
+    }
+  });
+  document.getElementById('add-pantry-item').addEventListener('click', () => {
+    const input = document.getElementById('pantry-input');
+    addPantryItem('pantry', input.value);
+    input.value = '';
+  });
+  document.getElementById('pantry-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      addPantryItem('pantry', e.target.value);
       e.target.value = '';
     }
   });
@@ -2868,6 +2956,7 @@ function gatherAllData() {
     manuallyKeptRecipes,
     groceryList,
     miscItems,
+    pantryItems,
     prepListState,
     dayAssignments
   };
@@ -2971,6 +3060,12 @@ function applyCloudData(cloudData) {
   if (cloudData.miscItems) {
     miscItems = cloudData.miscItems;
     localStorage.setItem('miscItems', JSON.stringify(miscItems));
+  }
+
+  // Apply pantry items
+  if (cloudData.pantryItems) {
+    pantryItems = cloudData.pantryItems;
+    localStorage.setItem('pantryItems', JSON.stringify(pantryItems));
   }
 
   // Apply prep list state
